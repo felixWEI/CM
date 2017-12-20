@@ -5,5 +5,6 @@ from django.shortcuts import render
 
 # Create your views here.
 
-def main_page(requests):
-    render(requests,'info_search.html')
+
+def main_page(request):
+    return render(request, 'info_search.html')
