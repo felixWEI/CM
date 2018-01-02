@@ -75,26 +75,26 @@ WSGI_APPLICATION = 'ClassManagement.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'ufs',#'fte_db_debug',
-#         'USER': 'woodpecker',
-#         'PASSWORD':'Jenkins44',
-#         'HOST':'10.166.96.54',
-#         'PORT':'3306',
-#     }
-# }
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'classmanagement',
+        'NAME': 'ufs',#'fte_db_debug',
         'USER': 'woodpecker',
-        'PASSWORD': 'Jenkins44',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'PASSWORD':'Jenkins44',
+        'HOST':'10.166.96.54',
+        'PORT':'3306',
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.mysql',
+#         'NAME': 'classmanagement',
+#         'USER': 'woodpecker',
+#         'PASSWORD': 'Jenkins44',
+#         'HOST': '127.0.0.1',
+#         'PORT': '3306',
+#     }
+# }
 
 
 # Password validation
