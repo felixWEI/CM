@@ -7,4 +7,4 @@ from django.shortcuts import render
 
 
 def main_page(request):
-    return render(request, 'info_search.html')
+    return render(request, 'teacher_manage.html')

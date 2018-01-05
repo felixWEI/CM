@@ -46,14 +46,14 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="navbar-brand" href="#">Project name</a>
+          <a class="navbar-brand" href="/" style="font-size: 30px;">排课系统</a>
         </div>
         <div id="navbar" class="navbar-collapse collapse">
-          <ul class="nav navbar-nav navbar-right">
-            <li><a href="#">Dashboard</a></li>
-            <li><a href="#">Settings</a></li>
-            <li><a href="#">Profile</a></li>
-            <li><a href="#">Help</a></li>
+          <ul class="nav navbar-nav">
+            <li class="nav-item active"><a href="/info_search/">教师信息管理</a></li>
+            <li class="nav-item active"><a href="#">课程信息管理</a></li>
+            <li class="nav-item active"><a href="#">排课</a></li>
+            <li class="nav-item active"><a href="#">信息查询</a></li>
           </ul>
           <form class="navbar-form navbar-right">
             <input type="text" class="form-control" placeholder="Search...">
@@ -66,49 +66,36 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li class="active"><a href="#">Overview <span class="sr-only">(current)</span></a></li>
-            <li><a href="#">Reports</a></li>
-            <li><a href="#">Analytics</a></li>
-            <li><a href="#">Export</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="">Nav item</a></li>
-            <li><a href="">Nav item again</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
-            <li><a href="">More navigation</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li><a href="">Nav item again</a></li>
-            <li><a href="">One more nav</a></li>
-            <li><a href="">Another nav item</a></li>
+            <li class="active"><a href="#">2018<span class="sr-only">(current)</span></a></li>
+            <li><a href="#">2019</a></li>
+            <li><a href="#">2020</a></li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">Dashboard</h1>
+          <h1 class="page-header">统计信息</h1>
 
-          <div class="row placeholders">
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-          </div>
+{#          <div class="row placeholders">#}
+{#            <div class="col-xs-6 col-sm-3 placeholder">#}
+{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
+{#              <h4>Label</h4>#}
+{#              <span class="text-muted">Something else</span>#}
+{#            </div>#}
+{#            <div class="col-xs-6 col-sm-3 placeholder">#}
+{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
+{#              <h4>Label</h4>#}
+{#              <span class="text-muted">Something else</span>#}
+{#            </div>#}
+{#            <div class="col-xs-6 col-sm-3 placeholder">#}
+{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
+{#              <h4>Label</h4>#}
+{#              <span class="text-muted">Something else</span>#}
+{#            </div>#}
+{#            <div class="col-xs-6 col-sm-3 placeholder">#}
+{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
+{#              <h4>Label</h4>#}
+{#              <span class="text-muted">Something else</span>#}
+{#            </div>#}
+{#          </div>#}
           <div class="row">
             <div class="col-xs-6 col-sm-3">
                 <div class="placeholders2">
@@ -134,10 +121,34 @@
                   <div>2500</div>
                 </div>
             </div>
+            <div class="col-xs-6 col-sm-3">
+                <div class="placeholders2">
+                  <span class=""> Total Users</span>
+                  <div>2500</div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <div class="placeholders2">
+                  <span class=""> Total Users</span>
+                  <div>2500</div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <div class="placeholders2">
+                  <span class=""> Total Users</span>
+                  <div>2500</div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-3">
+                <div class="placeholders2">
+                  <span class=""> Total Users</span>
+                  <div>2500</div>
+                </div>
+            </div>
           </div>
-          <h2 class="sub-header">Section title</h2>
+          <h2 class="sub-header">教师信息</h2>
           <div class="table-responsive">
-            <table class="table table-striped" id="table_1">
+            <table class="table table-striped" id="table_teacher">
               <thead>
                 <tr>
                   <th>#</th>
@@ -263,7 +274,16 @@
               </tbody>
             </table>
           </div>
+            <div class="container">
+                <div class="row" style="margin-top: 10px;">
+                    <button id="add" class="btn btn-primary">Export</button>
+                    <button id="add" class="btn btn-primary">Import</button>
+                    <button id="add" class="btn btn-primary">Add Information</button>
+                </div>
+            </div>
         </div>
+
+
       </div>
     </div>
 
