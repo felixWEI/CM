@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'Home',
     'Info_Search',
+    'Info_Manage',
 ]
 
 MIDDLEWARE = [
@@ -75,26 +76,26 @@ WSGI_APPLICATION = 'ClassManagement.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'ufs',#'fte_db_debug',
-        'USER': 'woodpecker',
-        'PASSWORD':'Jenkins44',
-        'HOST':'10.166.96.54',
-        'PORT':'3306',
-    }
-}
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.mysql',
-#         'NAME': 'classmanagement',
+#         'NAME': 'ufs',#'fte_db_debug',
 #         'USER': 'woodpecker',
-#         'PASSWORD': 'Jenkins44',
-#         'HOST': '127.0.0.1',
-#         'PORT': '3306',
+#         'PASSWORD':'Jenkins44',
+#         'HOST':'10.166.96.54',
+#         'PORT':'3306',
 #     }
 # }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'classmanagement',
+        'USER': 'woodpecker',
+        'PASSWORD': 'Jenkins44',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
+    }
+}
 
 
 # Password validation
@@ -139,3 +140,5 @@ STATICFILES_DIRS =[
     os.path.join(BASE_DIR, 'Home/static'),
     os.path.join(BASE_DIR, 'Info_Search/static'),
 ]
+LOGIN_REDIRECT_URL = "/teacher_manage/"
+LOGOUT_URL = "/"

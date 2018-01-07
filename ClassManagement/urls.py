@@ -15,10 +15,15 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
-from Home.views import home_page
+from django.contrib.auth.views import login
+from Home.views import home_page, logout_view
+from Info_Manage.views import teacher_manage, class_manage
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', home_page, name='home'),
-    url(r'^teacher_manage/', include('Info_Search.urls'))
+    url(r'^teacher_manage/', teacher_manage),
+    url(r'^class_manage/', class_manage),
+    url(r'^accounts/login/$', login, {'template_name': 'login.html'}),
+    url(r'^accounts/logout/$', logout_view),
 ]

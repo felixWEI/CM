@@ -7,9 +7,9 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <!--<link rel="icon" href="../../favicon.ico">-->
+    <link rel="icon" href="../static/home2.png">
 
-    <title>Dashboard Template for Bootstrap</title>
+    <title>排课系统</title>
 
     <!-- Bootstrap core CSS -->
     <link href="../static/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -50,14 +50,31 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav">
-            <li class="nav-item active"><a href="/info_search/">教师信息管理</a></li>
-            <li class="nav-item active"><a href="#">课程信息管理</a></li>
+            <li class="nav-item active"><a href="/teacher_manage/">教师信息管理</a></li>
+            <li class="nav-item active"><a href="/class_manage/">课程信息管理</a></li>
             <li class="nav-item active"><a href="#">排课</a></li>
             <li class="nav-item active"><a href="#">信息查询</a></li>
           </ul>
-          <form class="navbar-form navbar-right">
-            <input type="text" class="form-control" placeholder="Search...">
-          </form>
+          <ul class="nav navbar-nav navbar-right">
+              <li class="nav-item">
+                 <a>
+                     <b>
+                         {% if UserName %}
+                            {{ UserName }}
+                         {% else %}
+                             匿名
+                         {% endif %}
+                     </b>
+                 </a>
+              </li>
+              <li class="nav-item">
+                 <a href="/accounts/logout/">
+                     <b>
+                         登出
+                     </b>
+                 </a>
+              </li>
+          </ul>
         </div>
       </div>
     </nav>
@@ -99,50 +116,26 @@
           <div class="row">
             <div class="col-xs-6 col-sm-3">
                 <div class="placeholders2">
-                  <span class=""> Total Users</span>
-                  <div>2500</div>
+                  <span class="">教师总数</span>
+                  <div>X</div>
                 </div>
             </div>
             <div class="col-xs-6 col-sm-3">
                 <div class="placeholders2">
-                  <span class=""> Total Users</span>
-                  <div>2500</div>
+                  <span class="">第一学期制定学时</span>
+                  <div>X</div>
                 </div>
             </div>
             <div class="col-xs-6 col-sm-3">
                 <div class="placeholders2">
-                  <span class=""> Total Users</span>
-                  <div>2500</div>
+                  <span class="">第二学期制定学时</span>
+                  <div>X</div>
                 </div>
             </div>
             <div class="col-xs-6 col-sm-3">
                 <div class="placeholders2">
-                  <span class=""> Total Users</span>
-                  <div>2500</div>
-                </div>
-            </div>
-            <div class="col-xs-6 col-sm-3">
-                <div class="placeholders2">
-                  <span class=""> Total Users</span>
-                  <div>2500</div>
-                </div>
-            </div>
-            <div class="col-xs-6 col-sm-3">
-                <div class="placeholders2">
-                  <span class=""> Total Users</span>
-                  <div>2500</div>
-                </div>
-            </div>
-            <div class="col-xs-6 col-sm-3">
-                <div class="placeholders2">
-                  <span class=""> Total Users</span>
-                  <div>2500</div>
-                </div>
-            </div>
-            <div class="col-xs-6 col-sm-3">
-                <div class="placeholders2">
-                  <span class=""> Total Users</span>
-                  <div>2500</div>
+                  <span class="">认领课程教师数</span>
+                  <div>X</div>
                 </div>
             </div>
           </div>
@@ -151,139 +144,69 @@
             <table class="table table-striped" id="table_teacher">
               <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
-                  <th>Header</th>
+                  <th>教师代码</th>
+                  <th>教师姓名</th>
+                  <th>第一学期课时</th>
+                  <th>第二学期课时</th>
+                  <th>认领课程</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>1,001</td>
-                  <td>Lorem</td>
-                  <td>ipsum</td>
-                  <td>dolor</td>
-                  <td>sit</td>
-                </tr>
-                <tr>
-                  <td>1,002</td>
-                  <td>amet</td>
-                  <td>consectetur</td>
-                  <td>adipiscing</td>
-                  <td>elit</td>
-                </tr>
-                <tr>
-                  <td>1,003</td>
-                  <td>Integer</td>
-                  <td>nec</td>
-                  <td>odio</td>
-                  <td>Praesent</td>
-                </tr>
-                <tr>
-                  <td>1,003</td>
-                  <td>libero</td>
-                  <td>Sed</td>
-                  <td>cursus</td>
-                  <td>ante</td>
-                </tr>
-                <tr>
-                  <td>1,004</td>
-                  <td>dapibus</td>
-                  <td>diam</td>
-                  <td>Sed</td>
-                  <td>nisi</td>
-                </tr>
-                <tr>
-                  <td>1,005</td>
-                  <td>Nulla</td>
-                  <td>quis</td>
-                  <td>sem</td>
-                  <td>at</td>
-                </tr>
-                <tr>
-                  <td>1,006</td>
-                  <td>nibh</td>
-                  <td>elementum</td>
-                  <td>imperdiet</td>
-                  <td>Duis</td>
-                </tr>
-                <tr>
-                  <td>1,007</td>
-                  <td>sagittis</td>
-                  <td>ipsum</td>
-                  <td>Praesent</td>
-                  <td>mauris</td>
-                </tr>
-                <tr>
-                  <td>1,008</td>
-                  <td>Fusce</td>
-                  <td>nec</td>
-                  <td>tellus</td>
-                  <td>sed</td>
-                </tr>
-                <tr>
-                  <td>1,009</td>
-                  <td>augue</td>
-                  <td>semper</td>
-                  <td>porta</td>
-                  <td>Mauris</td>
-                </tr>
-                <tr>
-                  <td>1,010</td>
-                  <td>massa</td>
-                  <td>Vestibulum</td>
-                  <td>lacinia</td>
-                  <td>arcu</td>
-                </tr>
-                <tr>
-                  <td>1,011</td>
-                  <td>eget</td>
-                  <td>nulla</td>
-                  <td>Class</td>
-                  <td>aptent</td>
-                </tr>
-                <tr>
-                  <td>1,012</td>
-                  <td>taciti</td>
-                  <td>sociosqu</td>
-                  <td>ad</td>
-                  <td>litora</td>
-                </tr>
-                <tr>
-                  <td>1,013</td>
-                  <td>torquent</td>
-                  <td>per</td>
-                  <td>conubia</td>
-                  <td>nostra</td>
-                </tr>
-                <tr>
-                  <td>1,014</td>
-                  <td>per</td>
-                  <td>inceptos</td>
-                  <td>himenaeos</td>
-                  <td>Curabitur</td>
-                </tr>
-                <tr>
-                  <td>1,015</td>
-                  <td>sodales</td>
-                  <td>ligula</td>
-                  <td>in</td>
-                  <td>libero</td>
-                </tr>
               </tbody>
             </table>
           </div>
-            <div class="container">
-                <div class="row" style="margin-top: 10px;">
-                    <button id="add" class="btn btn-primary">Export</button>
-                    <button id="add" class="btn btn-primary">Import</button>
-                    <button id="add" class="btn btn-primary">Add Information</button>
-                </div>
+            <div class="pull-right" style="margin-top: 10px;">
+                  <button id="export" class="btn btn-primary">导出</button>
+                  <button id="import" class="btn btn-primary">导入</button>
+                  <button id="add_single" class="btn btn-primary" data-toggle="modal" data-target="#configModal">添加教师信息</button>
             </div>
         </div>
 
 
+      </div>
+
+      <!-- Modal -->
+      <div class="modal fade" id="configModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myConfigModalLabel">Config</h4>
+                <h4 hidden="hidden" id="Load_right" style="color:red">Config...</h4>
+            </div>
+            <div class="modal-body " id="config_modal_body">
+              <table width="100%" class="display" cellspacing="0" style="table-layout: fixed;word-wrap: break-word">
+                  <tbody>
+                      <tr>
+                          <td style="width: 5%"><input onclick="doToggle(set)" type ='checkbox' class='icheckbox_minimal'></td>
+                          <td style="width: 15%">1</td>
+                          <td style="width: 80%"><input style="width:95%;margin-bottom: 0;" disabled="disabled" id="1" type="text"></td>
+                      </tr>
+                      <tr>
+                          <td style="width: 5%"><input onclick="doToggle(add)" type ='checkbox' class='icheckbox_minimal'></td>
+                          <td style="width: 15%">2</td>
+                          <td style="width: 80%"><input style="width:95%;margin-bottom: 0;" disabled="disabled" id="2" type="text"></td>
+                      </tr>
+                      <tr>
+                          <td style="width: 5%"><input onclick="doToggle(remove)" type ='checkbox' class='icheckbox_minimal'></td>
+                          <td style="width: 15%">3</td>
+                          <td style="width: 80%"><input style="width:95%;margin-bottom: 0;" disabled="disabled" id="3" type="text"></td>
+                      </tr>
+                      <tr>
+                          <td style="width: 5%"><input onclick="doToggle(remove)" type ='checkbox' class='icheckbox_minimal'></td>
+                          <td style="width: 15%">4</td>
+                          <td style="width: 80%"><input style="width:95%;margin-bottom: 0;" disabled="disabled" id="4" type="text"></td>
+                      </tr>
+                  </tbody>
+
+              </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="button" id="submit">submit</button>
+                <button type="button" class="button" data-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
