@@ -8,5 +8,5 @@ from django.contrib.auth.decorators import login_required
 
 
 @login_required()
-def main_page(request):
-    return render(request, 'teacher_manage.html')
+def info_search_main(request):
+    return render(request, 'info_search_main.html')

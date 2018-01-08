@@ -16,3 +16,7 @@ def teacher_manage(request):
 def class_manage(request):
     return render(request, 'class_manage.html')
 
+
+@login_required()
+def arrange_class(request):
+    return render(request, 'arrange_class.html')
