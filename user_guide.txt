@@ -1,0 +1,5 @@
+1. 本地mysql数据创建root用户：woodpcker  密码：Jenkins44
+2. 创建数据库 classmanagement(create database classmanagement;)
+3. 然后把Dump20180109的sql全部执行一遍（可以用mysql workbench）
+4. 在source的跟目录位置执行： python manage.py runserver 127.0.0.1:8000
+5. 在浏览器输入127.0.0.1:8000
