@@ -17,6 +17,7 @@ $(document).ready(function () {
 
 	$('#edit_table').click( function(){
 	    console.log(t.row('.selected').data());
+
         document.getElementById('teacher_code_2').value = t.row('.selected').data()[0];
         document.getElementById('teacher_name_2').value = t.row('.selected').data()[1];
         document.getElementById('time_first_season_2').value = t.row('.selected').data()[2];
@@ -32,5 +33,33 @@ $(document).ready(function () {
             document.getElementById('time_second_season').value,
             document.getElementById('class_order').value,
 	    ]).draw();
+	})
+
+	$('#check_table').click( function(){
+
+	    table_info = t.rows().data();
+	    table_str = "";
+        for (var i=0; i < table_info.length; i++){
+            tmp = "";
+            for (var j=0; j < table_info[i].length; j++){
+
+                tmp += table_info[i][j]+"&&";
+            }
+            table_str += tmp+'$$';
+        }
+	    $.ajax({
+            type: 'POST',
+            url: '/teacher_save_and_config/',
+            data: {"teacher_table": table_str},
+            dataType: "json",
+            success: function(result){
+                alert('Yes');
+            },
+            error: function (){
+                alert('No');
+            }
+
+	    })
+
 	})
 });

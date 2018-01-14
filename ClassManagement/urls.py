@@ -17,7 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth.views import login
 from Home.views import home_page, logout_view
-from Info_Manage.views import teacher_manage, class_manage, arrange_class
+from Info_Manage.views import teacher_manage, class_manage, arrange_class, teacher_save_and_config
 from Info_Search.views import info_search_main
 
 urlpatterns = [
@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^accounts/logout/$', logout_view),
     url(r'^$', home_page, name='home'),
     url(r'^teacher_manage/', teacher_manage),
+    url(r'^teacher_save_and_config/', teacher_save_and_config),
     url(r'^class_manage/', class_manage),
     url(r'^arrange_class/', arrange_class),
     url(r'^info_search/', info_search_main),

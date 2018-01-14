@@ -9,4 +9,4 @@ from django.contrib.auth.decorators import login_required
 
 @login_required()
 def info_search_main(request):
-    return render(request, 'info_search_main.html')
+    return render(request, 'info_search_main.html', {'UserName': request.user.username.upper()})
