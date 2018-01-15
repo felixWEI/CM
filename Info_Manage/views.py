@@ -16,16 +16,20 @@ import datetime
 
 @login_required()
 def teacher_manage(request):
-
-    return render(request, 'teacher_manage.html', {'UserName': request.user.username.upper()})
+    teacher_table = TeacherInfo.objects.all()
+    search_result = []
+    for eachItem in teacher_table:
+        search_result.append([eachItem.teacher_id, eachItem.teacher_name, eachItem.first_semester, eachItem.second_semester, eachItem.claiming_course])
+    summary_table = [len(search_result)]
+    return render(request, 'teacher_manage.html', {'UserName': request.user.username.upper(), 'teacher_table': search_result, 'summary_table': summary_table})
 
 
 @csrf_exempt
 def teacher_save_and_config(request):
     teacher_table = json.loads(request.POST['teacher_table'])
-    dataLength = teacher_table['length']
+    data_length = teacher_table['length']
     all_teacher = []
-    for i in range(dataLength):
+    for i in range(data_length):
         all_teacher.append(teacher_table[str(i)])
 
     save_teacher_into_database(all_teacher)
