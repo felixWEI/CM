@@ -23,7 +23,7 @@ $(document).ready(function () {
         document.getElementById('time_first_season_2').value = t.row('.selected').data()[2];
         document.getElementById('time_second_season_2').value = t.row('.selected').data()[3];
         document.getElementById('class_order_2').value = t.row('.selected').data()[4];
-	})
+	});
 
 	$('#add_teacher_info').on('click',function(){
 	    t.row.add([
@@ -33,20 +33,12 @@ $(document).ready(function () {
             document.getElementById('time_second_season').value,
             document.getElementById('class_order').value,
 	    ]).draw();
-	})
+	});
 
 	$('#check_table').click( function(){
 
-	    table_info = t.rows().data();
-	    table_str = "";
-        for (var i=0; i < table_info.length; i++){
-            tmp = "";
-            for (var j=0; j < table_info[i].length; j++){
-
-                tmp += table_info[i][j]+"&&";
-            }
-            table_str += tmp+'$$';
-        }
+	    var table_info = t.rows().data();
+	    var table_str = JSON.stringify(table_info);
 	    $.ajax({
             type: 'POST',
             url: '/teacher_save_and_config/',

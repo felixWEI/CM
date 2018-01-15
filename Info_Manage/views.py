@@ -22,15 +22,13 @@ def teacher_manage(request):
 
 @csrf_exempt
 def teacher_save_and_config(request):
-    teacher_table = request.POST['teacher_table'].split('&&$$')
+    teacher_table = json.loads(request.POST['teacher_table'])
+    dataLength = teacher_table['length']
     all_teacher = []
-    for eachItem in teacher_table:
-        if eachItem:
-            one_teacher = eachItem.split('&&')
-            if one_teacher:
-                all_teacher.append(one_teacher)
-    save_teacher_into_database(all_teacher)
+    for i in range(dataLength):
+        all_teacher.append(teacher_table[str(i)])
 
+    save_teacher_into_database(all_teacher)
     result = 'Pass'
     result = json.dumps({'result': result})
     return HttpResponse(result)
