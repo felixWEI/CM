@@ -16,7 +16,7 @@ $(document).ready(function () {
     } );
 
 	$('#edit_table').click( function(){
-        if ( t.row('.selected').length == 0 ){
+        if ( t.row('.selected').length === 0 ){
             return
         }
         document.getElementById('teacher_code_2').value = t.row('.selected').data()[0];
@@ -32,10 +32,13 @@ $(document).ready(function () {
         time_first_season = document.getElementById('time_first_season_2').value
         time_second_season = document.getElementById('time_second_season_2').value
         class_order = document.getElementById('class_order_2').value
-//        t.row('.selected').fnUpdate([teacher_code, teacher_name, time_first_season, time_second_season, class_order])
-        console.log(t.row('.selected').position)
+        t.row('.selected').data([teacher_code, teacher_name, time_first_season, time_second_season, class_order]).draw();
     });
 	$('#add_teacher_info').on('click',function(){
+        if (document.getElementById('teacher_code').value in t.column(0).data()){
+            alert('Teacher Id already exist!!');
+            return
+        }
 	    t.row.add([
             document.getElementById('teacher_code').value,
             document.getElementById('teacher_name').value,
