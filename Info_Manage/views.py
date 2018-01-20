@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 
-from Info_Manage.models import TeacherInfo
+from Info_Manage.models import TeacherInfo, CourseInfo
 # Create your views here.
 
 import datetime
@@ -52,7 +52,17 @@ def save_teacher_into_database(all_teacher):
 
 @login_required()
 def class_manage(request):
-    return render(request, 'class_manage.html', {'UserName': request.user.username.upper()})
+    course_table = CourseInfo.objects.all()
+    search_result = []
+    for eachItem in course_table:
+        search_result.append([eachItem.course_id, eachItem.course_name, eachItem.course_hour,
+                              eachItem.course_degree, eachItem.course_type, eachItem.class_name,
+                              eachItem.course_time, eachItem.suit_teacher, eachItem.teacher_claiming,
+                              eachItem.semester, eachItem.year, eachItem.update_time])
+    summary_table = [len(search_result)]
+    table_head = ['课程代码', '课程名称', '课程学时', '课程难度', '课程种类', '班级', '上课时间', '适格教师', '学期', '人数']
+    return render(request, 'class_manage.html', {'UserName': request.user.username.upper(), 'class_table': search_result,
+                                                 'table_head': table_head, 'summary_table': summary_table})
 
 
 @login_required()

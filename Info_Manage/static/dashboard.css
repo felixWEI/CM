@@ -117,4 +117,19 @@ body {
     opacity: 1;
     transition: all .2s ease
 }
-
+.placeholders2-success{
+    background: #33ff00ad;
+}
+.placeholders2-fail{
+    background: #ff3300bd;
+}
+.badge-pill {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+.badge-success{
+    background-color: #78e04a;
+}
+.badge-fail{
+    background-color: #f86c6b;
+}

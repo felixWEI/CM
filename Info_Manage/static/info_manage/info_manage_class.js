@@ -1,7 +1,7 @@
 $(document).ready(function () {
-	t = $('#table_teacher').DataTable();
+	t = $('#table_course').DataTable();
 
-    $('#table_teacher tbody').on( 'click', 'tr', function () {
+    $('#table_course tbody').on( 'click', 'tr', function () {
         if ( $(this).hasClass('selected') ) {
             $(this).removeClass('selected');
         }

@@ -91,55 +91,54 @@
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">验证信息</h1>
-
-          <div class="row placeholders">
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-            <div class="col-xs-6 col-sm-3 placeholder">
-              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">
-              <h4>Label</h4>
-              <span class="text-muted">Something else</span>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-xs-6 col-sm-3">
-                <div class="placeholders2">
-                  <span class="">课程总数</span>
-                  <div>X</div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-6">
+                    <div class="placeholders2 placeholders2-fail">
+                        <h4>教师信息校验</h4>
+                      <ul>
+                          <li style="margin-bottom: 10px">本科 <span class="badge badge-pill badge-success">成功</span></li>
+                          <li style="margin-bottom: 10px">硕士 <span class="badge badge-pill badge-fail">失败</span></li>
+                          <li style="margin-bottom: 10px">博士 <span class="badge badge-pill badge-fail">失败</span></li>
+                      </ul>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-6">
+                    <div class="placeholders2 placeholders2-success">
+                      <h4>课程信息校验</h4>
+                      <ul>
+                          <li style="margin-bottom: 10px">本科 <span class="badge badge-pill badge-success">成功</span></li>
+                          <li style="margin-bottom: 10px">硕士 <span class="badge badge-pill badge-success">成功</span></li>
+                          <li style="margin-bottom: 10px">博士 <span class="badge badge-pill badge-success">成功</span></li>
+                      </ul>
+                    </div>
                 </div>
             </div>
-            <div class="col-xs-6 col-sm-3">
-                <div class="placeholders2">
-                  <span class="">学时总数</span>
-                  <div>X</div>
+            <div class="row">
+                <div class="col-xs-6 col-sm-3">
+                    <div class="placeholders2">
+                      <span class="">教师总数</span>
+                      <div id="teacher_number">X</div>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-3">
+                    <div class="placeholders2">
+                      <span class="">课程总数</span>
+                      <div>X</div>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-3">
+                    <div class="placeholders2">
+                      <span class="">总学时</span>
+                      <div>X</div>
+                    </div>
+                </div>
+                <div class="col-xs-6 col-sm-3">
+                    <div class="placeholders2">
+                      <span class="">总</span>
+                      <div>X</div>
+                    </div>
                 </div>
             </div>
-            <div class="col-xs-6 col-sm-3">
-                <div class="placeholders2">
-                  <span class="">难度总数</span>
-                  <div>X</div>
-                </div>
-            </div>
-            <div class="col-xs-6 col-sm-3">
-                <div class="placeholders2">
-                  <span class="">班级数</span>
-                  <div>X</div>
-                </div>
-            </div>
-          </div>
         </div>
 
       </div>
@@ -159,6 +158,6 @@
 
     <script type="text/javascript" src="../static/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../static/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"></script>
-    <script type="text/javascript" src="../static/info_search/info_search.js"></script>
+    <script type="text/javascript" src="../static/info_manage/info_manage.js"></script>
   </body>
 </html>
