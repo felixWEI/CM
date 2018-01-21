@@ -1,5 +1,14 @@
 $(document).ready(function () {
-	t = $('#table_course').DataTable();
+	t = $('#table_course').DataTable({
+        dom: 'Bfrtip',
+        buttons: [ {
+            extend: 'excelHtml5',
+            customize: function( xlsx ) {
+                var sheet = xlsx.xl.worksheets['sheet1.xml'];
+                $('row c[r^="C"]', sheet).attr( 's', '2' );
+            }
+        } ]
+	});
 
     $('#table_course tbody').on( 'click', 'tr', function () {
         if ( $(this).hasClass('selected') ) {

@@ -3,3 +3,8 @@
 3. 然后把Dump20180109的sql全部执行一遍（可以用mysql workbench）
 4. 在source的跟目录位置执行： python manage.py runserver 127.0.0.1:8000
 5. 在浏览器输入127.0.0.1:8000
+
+
+
+xlsxWriter 1.0.2
+xlrd 1.1.0
