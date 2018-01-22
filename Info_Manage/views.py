@@ -60,9 +60,10 @@ def class_manage(request):
                               eachItem.course_time, eachItem.suit_teacher, eachItem.teacher_claiming,
                               eachItem.semester, eachItem.year, eachItem.update_time])
     summary_table = [len(search_result)]
-    table_head = ['课程代码', '课程名称', '课程学时', '课程难度', '课程种类', '班级', '上课时间', '适格教师', '学期', '人数']
+    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '学生数', '教师数', '次/周', '适格教师']
+    length = len(table_head)
     return render(request, 'class_manage.html', {'UserName': request.user.username.upper(), 'class_table': search_result,
-                                                 'table_head': table_head, 'summary_table': summary_table})
+                                                 'table_head': table_head, 'length': length, 'summary_table': summary_table})
 
 
 @login_required()

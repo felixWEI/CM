@@ -43,19 +43,6 @@ $(document).ready(function () {
         class_order = document.getElementById('class_order_2').value
         t.row('.selected').data([teacher_code, teacher_name, time_first_season, time_second_season, class_order]).draw();
     });
-	$('#add_teacher_info').on('click',function(){
-        if (document.getElementById('teacher_code').value in t.column(0).data()){
-            alert('Teacher Id already exist!!');
-            return
-        }
-	    t.row.add([
-            document.getElementById('teacher_code').value,
-            document.getElementById('teacher_name').value,
-            document.getElementById('time_first_season').value,
-            document.getElementById('time_second_season').value,
-            document.getElementById('class_order').value,
-	    ]).draw();
-	});
 
 	$('#check_table').click( function(){
 
@@ -77,3 +64,16 @@ $(document).ready(function () {
 
 	})
 });
+function add_course_info(length){
+    if (document.getElementById('1').value in t.column(0).data()){
+        alert('Teacher Id already exist!!');
+        return
+    }
+    row_data = Array();
+    for (var i=0; i < Number(length); i++ ){
+        row_data[i] = document.getElementById(String(i)).value;
+//        console.log(document.getElementById(i).value);
+    }
+    console.log(row_data);
+    t.row.add(row_data).draw();
+}

@@ -84,11 +84,6 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li class="active"><a href="#">2018</a></li>
-            <li><a href="#">2019</a></li>
-            <li><a href="#">2020</a></li>
-          </ul>
-          <ul class="nav nav-sidebar">
               <li>
                   <div class="checkbox" style="padding-left:20px">
                       <label>
@@ -99,7 +94,14 @@
               <li>
                   <div class="checkbox" style="padding-left:20px">
                       <label>
-                          <input type="checkbox" checked="checked"> 硕士
+                          <input type="checkbox" checked="checked"> 法律硕士
+                      </label>
+                  </div>
+              </li>
+              <li>
+                  <div class="checkbox" style="padding-left:20px">
+                      <label>
+                          <input type="checkbox" checked="checked"> 法学硕士
                       </label>
                   </div>
               </li>
@@ -117,47 +119,58 @@
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">统计信息</h1>
+          <div><p class="bg-info">当前在排课中：目标学期为2018-2019学年第一学期</p></div>
           <div class="row">
-            <div class="col-xs-6 col-sm-3">
+            <div class="col-xs-6 col-sm-2">
                 <div class="placeholders2">
                   <span class="">课程总数</span>
                   <div>{{ summary_table.0 }}</div>
                 </div>
             </div>
-            <div class="col-xs-6 col-sm-3">
+            <div class="col-xs-6 col-sm-2">
                 <div class="placeholders2">
                   <span class="">学时总数</span>
                   <div>X</div>
                 </div>
             </div>
-            <div class="col-xs-6 col-sm-3">
+            <div class="col-xs-6 col-sm-2">
                 <div class="placeholders2">
                   <span class="">难度总数</span>
                   <div>X</div>
                 </div>
             </div>
-            <div class="col-xs-6 col-sm-3">
+            <div class="col-xs-6 col-sm-2">
                 <div class="placeholders2">
-                  <span class="">班级数</span>
+                  <span class="">学生总人数</span>
+                  <div>X</div>
+                </div>
+            </div>
+            <div class="col-xs-6 col-sm-2">
+                <div class="placeholders2">
+                  <span class="">被认领课程数</span>
+                  <div>X</div>
+                </div>
+            </div>
+              <div class="col-xs-6 col-sm-2">
+                <div class="placeholders2">
+                  <span class="">适格老师总数</span>
                   <div>X</div>
                 </div>
             </div>
           </div>
           <h2 class="sub-header">课程信息</h2>
+
           <div class="table-responsive">
+            <div class="pull-right" style="margin-top: 10px;">
+                  <button id="import" class="btn btn-primary">导入</button>
+                  <button id="delete" class="btn btn-danger">删除该行</button>
+                  <button id="check_table" class="btn btn-primary">验证课程信息</button>
+                  <button id="edit_table" class="btn btn-primary" data-toggle="modal" data-target="#editModal">编辑课程信息</button>
+                  <button id="add_single" class="btn btn-primary" data-toggle="modal" data-target="#configModal">添加课程信息</button>
+            </div>
             <table class="table table-striped" id="table_course">
               <thead>
                 <tr>
-                  <!--<th>课程代码</th>-->
-                  <!--<th>课程名称</th>-->
-                  <!--<th>课程学时</th>-->
-                  <!--<th>课程难度</th>-->
-                  <!--<th>课程种类</th>-->
-                  <!--<th>班级</th>-->
-                  <!--<th>上课时间</th>-->
-                  <!--<th>适格教师</th>-->
-                  <!--<th>学期</th>-->
-                  <!--<th>人数</th>-->
                     {% for col in table_head %}
                         <th>{{ col }}</th>
                     {% endfor %}
@@ -167,13 +180,6 @@
               </tbody>
             </table>
           </div>
-            <div class="pull-right" style="margin-top: 10px;">
-                  <button id="import" class="btn btn-primary">导入</button>
-                  <button id="delete" class="btn btn-danger">删除该行</button>
-                  <button id="check_table" class="btn btn-primary">验证课程信息</button>
-                  <button id="edit_table" class="btn btn-primary" data-toggle="modal" data-target="#editModal">编辑课程信息</button>
-                  <button id="add_single" class="btn btn-primary" data-toggle="modal" data-target="#configModal">添加课程信息</button>
-            </div>
         </div>
 
 
@@ -188,28 +194,17 @@
                 <h4 class="modal-title" id="myConfigModalLabel">添加课程信息</h4>
             </div>
             <div class="modal-body " id="config_modal_body">
-              <!--<table width="100%" class="display" cellspacing="0" style="table-layout: fixed;word-wrap: break-word">-->
               <form class="form-horizontal">
                 {% for col in table_head %}
                   <div class="row form-group">
                       <div class="col-sm-3" style="width: 15%">{{ col }}</div>
-                      {% if forloop.first or forloop.last %}
-                        <div class="col-sm-9" style="width: 80%"><input type="text" style="width:100%"></div>
-                      {% else %}
-                          <div class="col-sm-9" style="width: 80%">
-                              <select class="form-control-sm form-control">
-                                  <option>1</option>
-                              </select>
-                          </div>
-                      {% endif %}
+                      <div class="col-sm-9" style="width: 80%"><input id={{forloop.counter0}}  type="text" style="width:100%" value="1"></div>
                   </div>
                 {% endfor %}
               </form>
-
-              <!--</table>-->
             </div>
             <div class="modal-footer">
-                <button type="button" class="button" id="add_course_info">submit</button>
+                <button type="button" class="button" onclick="add_course_info({{length}})">submit</button>
                 <button type="button" class="button" data-dismiss="modal">Close</button>
             </div>
           </div>
