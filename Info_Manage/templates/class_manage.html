@@ -7,7 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="../static/home2.png">
+    <link rel="icon" href="../static/home4.png">
 
     <title>排课系统</title>
 
@@ -185,7 +185,7 @@
       </div>
 
       <!-- Modal --><!-- Modal -->
-      <div class="modal fade" id="configModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
+      <div class="modal fade" id="configModal" tabindex="-1" role="dialog">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
             <div class="modal-header">
@@ -194,12 +194,60 @@
             </div>
             <div class="modal-body " id="config_modal_body">
               <form class="form-horizontal">
-                {% for col in table_head %}
                   <div class="row form-group">
-                      <div class="col-sm-3" style="width: 15%">{{ col }}</div>
-                      <div class="col-sm-9" style="width: 80%"><input id={{forloop.counter0}}  type="text" style="width:100%" value="1"></div>
+                      <div class="col-sm-2">{{ table_head.0 }}</div>
+                      <div class="col-sm-10"><input id="0"  type="text" style="width: 60%" value="1"></div>
                   </div>
-                {% endfor %}
+                  <div class="row form-group">
+                      <div class="col-sm-2">{{ table_head.1 }}</div>
+                      <div class="col-sm-10"><input id="1"  type="text" style="width: 100%" value="1"></div>
+                  </div>
+                  <div class="row form-group">
+                      <div class="col-sm-2">{{ table_head.2 }}</div>
+                      <div class="col-sm-4"><input id="2"  type="text" style="width: 90%" value="1"></div>
+                      <div class="col-sm-2">{{ table_head.3 }}</div>
+                      <div class="col-sm-4"><input id="3"  type="text" style="width: 100%" value="1"></div>
+                  </div>
+                  <div class="row form-group">
+                      <div class="col-sm-2">{{ table_head.4 }}</div>
+                      <div class="col-sm-10"><input id="4"  type="text" style="width: 100%" value="1"></div>
+                  </div>
+                  <div class="row form-group">
+                      <div class="col-sm-2">{{ table_head.5 }}</div>
+                      <div class="col-sm-4"><input id="5"  type="text" style="width: 90%" value="1"></div>
+                      <div class="col-sm-2">{{ table_head.6 }}</div>
+                      <div class="col-sm-4"><input id="6"  type="text" style="width: 100%" value="1"></div>
+                  </div>
+                  <div class="row form-group">
+                      <div class="col-sm-6">
+                          <div class="row form-group">
+                            <div class="col-sm-4">{{ table_head.5 }}</div>
+                            <div class="col-sm-8"><input id="7"  type="text" style="width: 90%" value="1"></div>
+                          </div>
+                          <div class="row form-group">
+                            <div class="col-sm-4">{{ table_head.5 }}</div>
+                            <div class="col-sm-8"><input id="8"  type="text" style="width: 90%" value="1"></div>
+                          </div>
+                          <div class="row form-group">
+                            <div class="col-sm-4">{{ table_head.5 }}</div>
+                            <div class="col-sm-8"><input id="9"  type="text" style="width: 90%" value="1"></div>
+                          </div>
+                          <div class="row form-group">
+                            <div class="col-sm-4">{{ table_head.5 }}</div>
+                            <div class="col-sm-8"><input id="10"  type="text" style="width: 90%" value="1"></div>
+                          </div>
+                      </div>
+                      <div class="col-sm-6">
+                          <div class="row form-group">
+                              <div class="col-sm-4">{{ table_head.5 }}</div>
+                              <div class="col-sm-8"><textarea class="form-control" rows="6"></textarea></div>
+                          </div>
+                          <div class="row form-group">
+                              <div class="col-sm-4 col-sm-offset-4"><button id="" class="btn btn-primary" style="width:100%">添加</button></div>
+                              <div class="col-sm-4"><button id="" class="btn btn-primary" style="width:100%">删除</button></div>
+                          </div>
+                      </div>
+                  </div>
               </form>
             </div>
             <div class="modal-footer">
