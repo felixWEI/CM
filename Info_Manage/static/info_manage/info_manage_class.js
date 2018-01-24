@@ -65,13 +65,17 @@ $(document).ready(function () {
 	})
 });
 function add_course_info(length){
-    if (document.getElementById('1').value in t.column(0).data()){
+    if (String(document.getElementById('0').value) in t.column(0).data()){
         alert('Teacher Id already exist!!');
         return
     }
     row_data = Array();
     for (var i=0; i < Number(length); i++ ){
-        row_data[i] = document.getElementById(String(i)).value;
+        if ( document.getElementById(String(i)).value !== undefined ){
+            row_data[i] = document.getElementById(String(i)).value;
+        }else{
+            row_data[i] = "";
+        }
 //        console.log(document.getElementById(i).value);
     }
     console.log(row_data);
