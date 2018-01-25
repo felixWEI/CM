@@ -78,6 +78,20 @@ function add_course_info(length){
         }
 //        console.log(document.getElementById(i).value);
     }
-    console.log(row_data);
     t.row.add(row_data).draw();
+    var row_str = JSON.stringify(row_data);
+    console.log(row_str);
+    $.ajax({
+        type: 'POST',
+            url:'/class_save_one_row/',
+            data: {"row_data": row_str},
+            dataType: "json",
+            success: function (result) {
+                alert('success');
+            },
+            error: function () {
+                alert('fail');
+            }
+
+    })
 }
