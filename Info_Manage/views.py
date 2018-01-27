@@ -59,10 +59,23 @@ def class_manage(request):
                               eachItem.year, eachItem.class_name, eachItem.semester,
                               eachItem.course_hour, eachItem.course_degree, eachItem.student_type,
                               eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher])
-    summary_table = [len(search_result)]
+    current_course_count = len(search_result)
+    current_hour_count = 0
+    current_degree_count = 0
+    current_course_claim = 0
+    for eachItem in search_result:
+        current_hour_count += float(eachItem[6])
+        current_degree_count += float(eachItem[7])
+        if eachItem[11]:
+            current_course_claim += 1
+    summary_table = [current_course_count, current_hour_count, current_degree_count, current_course_claim]
+
     table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '次/周', '可选教师']
+    table_default = ['', '', ['本科', '法律硕士', '法学硕士', '博士'], ['17', '16', '15', '14'], '',
+                     ['一', '二', '三', '四', '五', '七', '八'], '', ['1', '2', '3', '4', '5'], ['必修', '选修'], '', '']
     return render(request, 'class_manage.html', {'UserName': request.user.username.upper(), 'class_table': search_result,
-                                                 'table_head': table_head, 'length': len(table_head), 'summary_table': summary_table})
+                                                 'table_head': table_head, 'table_default': table_default,
+                                                 'summary_table': summary_table})
 
 
 @csrf_exempt

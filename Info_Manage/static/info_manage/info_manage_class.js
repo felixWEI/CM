@@ -65,14 +65,14 @@ $(document).ready(function () {
 	})
 });
 function add_course_info(length){
-    if (String(document.getElementById('0').value) in t.column(0).data()){
+    if (String(document.getElementById('a_0').value) in t.column(0).data()){
         alert('Teacher Id already exist!!');
         return
     }
     row_data = Array();
     for (var i=0; i < Number(length); i++ ){
-        if ( document.getElementById(String(i)).value !== undefined ){
-            row_data[i] = document.getElementById(String(i)).value;
+        if ( document.getElementById('a_'+String(i)).value !== undefined ){
+            row_data[i] = document.getElementById('a_'+String(i)).value;
         }else{
             row_data[i] = "";
         }
@@ -80,7 +80,6 @@ function add_course_info(length){
     }
     t.row.add(row_data).draw();
     var row_str = JSON.stringify(row_data);
-    console.log(row_str);
     $.ajax({
         type: 'POST',
             url:'/class_save_one_row/',
@@ -94,4 +93,50 @@ function add_course_info(length){
             }
 
     })
+}
+function edit_course_info(){
+    if ( t.row('.selected').length === 0 ){
+        return
+    }
+    document.getElementById('e_0').value = t.row('.selected').data()[0];
+    document.getElementById('e_1').value = t.row('.selected').data()[1];
+
+    document.getElementById('e_2').innerHTML = '<option>'+t.row('.selected').data()[2]+'</option>'+document.getElementById('e_2').innerHTML;
+    document.getElementById('e_3').innerHTML = '<option>'+t.row('.selected').data()[3]+'</option>'+document.getElementById('e_3').innerHTML;
+    document.getElementById('e_4').value = t.row('.selected').data()[4];
+    document.getElementById('e_5').innerHTML = '<option>'+t.row('.selected').data()[5]+'</option>'+document.getElementById('e_5').innerHTML;
+    document.getElementById('e_6').innerHTML = '<option>'+t.row('.selected').data()[6]+'</option>'+document.getElementById('e_6').innerHTML;
+    document.getElementById('e_7').innerHTML = '<option>'+t.row('.selected').data()[7]+'</option>'+document.getElementById('e_7').innerHTML;
+    document.getElementById('e_8').value = t.row('.selected').data()[8];
+    document.getElementById('e_9').value = t.row('.selected').data()[9];
+    document.getElementById('e_10').value = t.row('.selected').data()[10];
+    document.getElementById('e_11').value = t.row('.selected').data()[11];
+
+}
+function submit_edit_info(){
+    row_data = Array();
+    for (var i=0; i < 12; i++ ){
+        if ( document.getElementById('e_'+String(i)).value !== undefined ){
+            row_data[i] = document.getElementById('e_'+String(i)).value;
+        }else{
+            row_data[i] = "";
+        }
+//        console.log(document.getElementById(i).value);
+    }
+    t.row('.selected').data(row_data).draw();
+    var row_str = JSON.stringify(row_data);
+    $.ajax({
+        type: 'POST',
+            url:'/class_save_one_row/',
+            data: {"row_data": row_str},
+            dataType: "json",
+            success: function (result) {
+                alert('success');
+            },
+            error: function () {
+                alert('fail');
+            }
+
+    })
+
 }
