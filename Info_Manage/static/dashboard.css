@@ -23,8 +23,21 @@ body {
  */
 .navbar-fixed-top {
   border: 0;
+  background-color: rgb(30, 50, 115);
 }
-
+.navbar-brand {
+    height: 120px;
+    line-height: 90px;
+    font-size: 30px;
+}
+.navbar-nav >li >a{
+    height: 120px;
+    line-height: 90px;
+    font-size: 20px;
+}
+a {
+    color: #f0f0f0;
+}
 /*
  * Sidebar
  */
@@ -36,7 +49,7 @@ body {
 @media (min-width: 768px) {
   .sidebar {
     position: fixed;
-    top: 51px;
+    top: 121px;
     bottom: 0;
     left: 0;
     z-index: 1000;
@@ -66,7 +79,6 @@ body {
   background-color: #428bca;
 }
 
-
 /*
  * Main content
  */
@@ -77,6 +89,8 @@ body {
   .main {
     padding-right: 40px;
     padding-left: 40px;
+    position: fixed;
+    /*height: 121px;*/
   }
 }
 .main .page-header {
@@ -132,4 +146,7 @@ body {
 }
 .badge-fail{
     background-color: #f86c6b;
+}
+.nav-active{
+    background-color: #0e589896;
 }
