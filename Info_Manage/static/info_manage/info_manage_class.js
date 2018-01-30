@@ -21,19 +21,23 @@ $(document).ready(function () {
     } );
 
     $('#delete').click( function () {
+        course_id = t.row('.selected').data()[0];
+        console.log(course_id)
         t.row('.selected').remove().draw( false );
-    } );
+        $.ajax({
+            type: 'POST',
+            url: '/class_delete_one_row/',
+            data: {'course_id': course_id},
+            dataType: 'json',
+            success: function(result){
+                alert('Pass');
+            },
+            error: function(){
+                alert('Delete fail');
+            }
+        })
 
-	$('#edit_table').click( function(){
-        if ( t.row('.selected').length === 0 ){
-            return
-        }
-        document.getElementById('teacher_code_2').value = t.row('.selected').data()[0];
-        document.getElementById('teacher_name_2').value = t.row('.selected').data()[1];
-        document.getElementById('time_first_season_2').value = t.row('.selected').data()[2];
-        document.getElementById('time_second_season_2').value = t.row('.selected').data()[3];
-        document.getElementById('class_order_2').value = t.row('.selected').data()[4];
-	});
+    } );
 
     $('#edit_teacher_info').click( function(){
         teacher_code = document.getElementById('teacher_code_2').value
@@ -73,6 +77,9 @@ function add_course_info(length){
     for (var i=0; i < Number(length); i++ ){
         if ( document.getElementById('a_'+String(i)).value !== undefined ){
             row_data[i] = document.getElementById('a_'+String(i)).value;
+            if (i==0){
+                row_data[i] = row_data[i].toUpperCase();
+            }
         }else{
             row_data[i] = "";
         }
@@ -118,6 +125,9 @@ function submit_edit_info(){
     for (var i=0; i < 12; i++ ){
         if ( document.getElementById('e_'+String(i)).value !== undefined ){
             row_data[i] = document.getElementById('e_'+String(i)).value;
+            if (i==0){
+                row_data[i] = row_data[i].toUpperCase();
+            }
         }else{
             row_data[i] = "";
         }
@@ -129,6 +139,23 @@ function submit_edit_info(){
         type: 'POST',
             url:'/class_save_one_row/',
             data: {"row_data": row_str},
+            dataType: "json",
+            success: function (result) {
+                alert('success');
+            },
+            error: function () {
+                alert('fail');
+            }
+
+    })
+
+}
+function submit_request(){
+    course_id = document.getElementById('e_0').value;
+    $.ajax({
+        type: 'POST',
+            url:'/teacher_request_course/',
+            data: {"course_id": course_id},
             dataType: "json",
             success: function (result) {
                 alert('success');
