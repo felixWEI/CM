@@ -39,11 +39,13 @@ $(document).ready(function () {
         if ( t.row('.selected').length === 0 ){
             return
         }
-        document.getElementById('teacher_code_2').value = t.row('.selected').data()[0];
-        document.getElementById('teacher_name_2').value = t.row('.selected').data()[1];
-        document.getElementById('time_first_season_2').value = t.row('.selected').data()[2];
-        document.getElementById('time_second_season_2').value = t.row('.selected').data()[3];
-        document.getElementById('class_order_2').value = t.row('.selected').data()[4];
+        console.log(t.row('.selected').data());
+        document.getElementById('0').value = t.row('.selected').data()[0];
+        document.getElementById('1').value = t.row('.selected').data()[1];
+        document.getElementById('2').value = t.row('.selected').data()[2];
+        document.getElementById('3').value = t.row('.selected').data()[3];
+        document.getElementById('4').value = t.row('.selected').data()[4];
+        document.getElementById('5').value = t.row('.selected').data()[5];
 	});
 
     $('#edit_teacher_info').click( function(){
@@ -54,6 +56,7 @@ $(document).ready(function () {
         class_order = document.getElementById('class_order_2').value
         t.row('.selected').data([teacher_code, teacher_name, time_first_season, time_second_season, class_order]).draw();
     });
+
 	$('#add_teacher_info').on('click',function(){
         if (document.getElementById('teacher_code').value in t.column(0).data()){
             alert('Teacher Id already exist!!');

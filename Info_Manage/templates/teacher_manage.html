@@ -54,7 +54,7 @@
             <li class="nav-item"><a href="/arrange_class/">分配授课教师</a></li>
             <li class="nav-item"><a href="#">分配上课时间</a></li>
             <li class="nav-item"><a href="/class_manage/">课程信息管理</a></li>
-            <li class="nav-item"><a class="nav-active" href="/teacher_manage/">教师信息管理</a></li>
+            <li class="nav-item"><a class="nav-active" href="/teacher_personal/">教师信息管理</a></li>
             <li class="nav-item"><a href="/info_search/">排课结果查询</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
@@ -86,7 +86,10 @@
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li class="active">
-              <a>教务员</a>
+              <a href="\teacher_manage\">教务员</a>
+            </li>
+            <li>
+              <a href="\teacher_personal\" style="color: black">教师个人</a>
             </li>
           </ul>
           <ul class="nav nav-sidebar">
@@ -141,29 +144,7 @@
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">统计信息</h1>
-
-{#          <div class="row placeholders">#}
-{#            <div class="col-xs-6 col-sm-3 placeholder">#}
-{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
-{#              <h4>Label</h4>#}
-{#              <span class="text-muted">Something else</span>#}
-{#            </div>#}
-{#            <div class="col-xs-6 col-sm-3 placeholder">#}
-{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
-{#              <h4>Label</h4>#}
-{#              <span class="text-muted">Something else</span>#}
-{#            </div>#}
-{#            <div class="col-xs-6 col-sm-3 placeholder">#}
-{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
-{#              <h4>Label</h4>#}
-{#              <span class="text-muted">Something else</span>#}
-{#            </div>#}
-{#            <div class="col-xs-6 col-sm-3 placeholder">#}
-{#              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAHd3dwAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==" width="200" height="200" class="img-responsive" alt="Generic placeholder thumbnail">#}
-{#              <h4>Label</h4>#}
-{#              <span class="text-muted">Something else</span>#}
-{#            </div>#}
-{#          </div>#}
+          <div><p class="bg-info">当前在排课中：目标学期为2018-2019学年第一学期</p></div>
           <div class="row">
             <div class="col-sm-2">
                 <div class="placeholders2">
@@ -192,20 +173,26 @@
             <div class="col-sm-2">
                 <div class="placeholders2">
                   <span class="">其余平均学时2</span>
-                  <div>X</div>
+                  <div>{{ summary_table.3 }}</div>
                 </div>
             </div>
           </div>
           <h2 class="sub-header">教师信息</h2>
           <div class="table-responsive">
+             <div class="pull-right" style="margin-top: 10px;">
+                  <button id="import" class="btn btn-primary">导入</button>
+                  <button id="delete" class="btn btn-danger">删除该行</button>
+                  <button id="edit_table" class="btn btn-primary" data-toggle="modal" data-target="#editModal">编辑教师信息</button>
+            </div>
             <table class="table table-striped" id="table_teacher">
               <thead>
                 <tr>
                   <th>教师代码</th>
                   <th>教师姓名</th>
-                  <th>第一学期课时</th>
-                  <th>第二学期课时</th>
-                  <th>认领课程</th>
+                  <th>期望学时1</th>
+                  <th>期望学时2</th>
+                  <th>估算学时1</th>
+                  <th>估算学时2</th>
                 </tr>
               </thead>
               <tbody>
@@ -219,64 +206,10 @@
               </tbody>
             </table>
           </div>
-            <div class="pull-right" style="margin-top: 10px;">
-                  <button id="import" class="btn btn-primary">导入</button>
-                  <button id="delete" class="btn btn-danger">删除该行</button>
-                  <button id="check_table" class="btn btn-primary">验证教师信息</button>
-                  <button id="edit_table" class="btn btn-primary" data-toggle="modal" data-target="#editModal">编辑教师信息</button>
-                  <button id="add_single" class="btn btn-primary" data-toggle="modal" data-target="#configModal">添加教师信息</button>
-            </div>
         </div>
 
       </div>
 
-      <!-- Modal -->
-      <div class="modal fade" id="configModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myConfigModalLabel">添加教师信息</h4>
-            </div>
-            <div class="modal-body " id="config_modal_body">
-              <table width="100%" class="display" cellspacing="0" style="table-layout: fixed;word-wrap: break-word">
-                  <tbody>
-                      <tr>
-                          <td style="width: 5%"><input onclick="doToggle(set)" type ='checkbox' class='icheckbox_minimal'></td>
-                          <td style="width: 15%">教师代码</td>
-                          <td style="width: 80%"><input style="width:95%;margin-bottom: 0;" id="teacher_code" type="text"></td>
-                      </tr>
-                      <tr>
-                          <td style="width: 5%"><input onclick="doToggle(add)" type ='checkbox' class='icheckbox_minimal'></td>
-                          <td style="width: 15%">教师姓名</td>
-                          <td style="width: 80%"><input style="width:95%;margin-bottom: 0;" id="teacher_name" type="text"></td>
-                      </tr>
-                      <tr>
-                          <td style="width: 5%"><input onclick="doToggle(remove)" type ='checkbox' class='icheckbox_minimal'></td>
-                          <td style="width: 15%">第一学期课时</td>
-                          <td style="width: 80%"><input style="width:95%;margin-bottom: 0;" id="time_first_season" type="text"></td>
-                      </tr>
-                      <tr>
-                          <td style="width: 5%"><input onclick="doToggle(remove)" type ='checkbox' class='icheckbox_minimal'></td>
-                          <td style="width: 15%">第二学期课时</td>
-                          <td style="width: 80%"><input style="width:95%;margin-bottom: 0;" id="time_second_season" type="text"></td>
-                      </tr>
-                      <tr>
-                          <td style="width: 5%"><input onclick="doToggle(remove)" type ='checkbox' class='icheckbox_minimal'></td>
-                          <td style="width: 15%">认领课程</td>
-                          <td style="width: 80%"><input style="width:95%;margin-bottom: 0;" id="class_order" type="text"></td>
-                      </tr>
-                  </tbody>
-
-              </table>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="button" id="add_teacher_info">submit</button>
-                <button type="button" class="button" data-dismiss="modal">Close</button>
-            </div>
-          </div>
-        </div>
-      </div>
       <!-- Modal -->
       <div class="modal fade" id="editModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
         <div class="modal-dialog" role="document">
@@ -286,36 +219,14 @@
                 <h4 class="modal-title" id="myEditModalLabel">编辑教师信息</h4>
             </div>
             <div class="modal-body " id="edit_modal_body">
-              <table width="100%" class="display" cellspacing="0" style="table-layout: fixed;word-wrap: break-word">
-                  <tbody>
-                      <tr>
-                          <td style="width: 5%"><input onclick="doToggle(set)" type ='checkbox' class='icheckbox_minimal'></td>
-                          <td style="width: 15%">教师代码</td>
-                          <td style="width: 80%"><input style="width:95%;margin-bottom: 0;" id="teacher_code_2" type="text"></td>
-                      </tr>
-                      <tr>
-                          <td style="width: 5%"><input onclick="doToggle(add)" type ='checkbox' class='icheckbox_minimal'></td>
-                          <td style="width: 15%">教师姓名</td>
-                          <td style="width: 80%"><input style="width:95%;margin-bottom: 0;" id="teacher_name_2" type="text"></td>
-                      </tr>
-                      <tr>
-                          <td style="width: 5%"><input onclick="doToggle(remove)" type ='checkbox' class='icheckbox_minimal'></td>
-                          <td style="width: 15%">第一学期课时</td>
-                          <td style="width: 80%"><input style="width:95%;margin-bottom: 0;" id="time_first_season_2" type="text"></td>
-                      </tr>
-                      <tr>
-                          <td style="width: 5%"><input onclick="doToggle(remove)" type ='checkbox' class='icheckbox_minimal'></td>
-                          <td style="width: 15%">第二学期课时</td>
-                          <td style="width: 80%"><input style="width:95%;margin-bottom: 0;" id="time_second_season_2" type="text"></td>
-                      </tr>
-                      <tr>
-                          <td style="width: 5%"><input onclick="doToggle(remove)" type ='checkbox' class='icheckbox_minimal'></td>
-                          <td style="width: 15%">认领课程</td>
-                          <td style="width: 80%"><input style="width:95%;margin-bottom: 0;" id="class_order_2" type="text"></td>
-                      </tr>
-                  </tbody>
-
-              </table>
+              <form class="form-horizontal">
+                {% for row in table_head %}
+                  <div class="row form-group">
+                    <label for={{forloop.counter0}} class="col-sm-2 control-label">{{ row }}</label>
+                    <div class="col-sm-10"><input id="{{forloop.counter0}}"  class="form-control" type="text" placeholder="{{ row }} "></div>
+                  </div>
+                {% endfor %}
+              </form>
             </div>
             <div class="modal-footer">
                 <button type="button" class="button" id="edit_teacher_info">submit</button>
