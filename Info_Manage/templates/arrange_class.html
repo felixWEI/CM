@@ -108,43 +108,119 @@
                 </ul>
             </div>
 	    </div>
-
-      <form class="container">
-          <div class="row form-group step-main">
-              <div class="col-xs-12">
-                  <div class="col-md-12 well text-center">
-                    <h1 class="text-center">STEP 1</h1>
-                    <button id="activate-step-2" class="btn btn-primary btn-md">Activate Step 2</button>
-                  </div>
-              </div>
-          </div>
-      </form>
     </div>
 
-    <!--<form class="container">-->
+    <form class="container">
+        <div class="row setup-content step-main" id="step-1">
+            <div class="col-xs-12">
+                <div class="col-md-12 well text-center">
+                  <h1 class="text-center">STEP 1</h1>
+                    <div class="container col-xs-12">
+                    <div class="row clearfix">
+                    <div class="col-md-12 column">
+                      <table class="table table-bordered table-hover" id="tab_logic">
+                        <thead>
+                          <tr >
+                            <th class="text-center">
+                              #
+                            </th>
+                            <th class="text-center">
+                              Name
+                            </th>
+                            <th class="text-center">
+                              Surname
+                            </th>
+                            <th class="text-center">
+                              Email
+                            </th>
 
-        <!--<div class="row setup-content" id="step-3">-->
-            <!--<div class="col-xs-12">-->
-                <!--<div class="col-md-12 well text-center">-->
-                    <!--<h1 class="text-center"> STEP 3</h1>-->
-                    <!--<button id="activate-step-4" class="btn btn-primary btn-md">Activate Step 4</button>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
+                            <th class="text-center">
+                              Gender
+                            </th>
 
-    <!--</form>-->
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr id='addr0'>
+                            <td>
+                            1
+                            </td>
+                            <td>
+                            <input type="text" name='name0'  placeholder='Name' class="form-control"/>
+                            </td>
+                            <td>
+                            <input type="text" name='sur0' placeholder='Surname' class="form-control"/>
+                            </td>
+                            <td>
+                            <input type="text" name='email0' placeholder='Email' class="form-control"/>
+                            </td>
+                            <td>
+                                        <select type="text" name="gender0" class="form-control">
+                                            <option name="male" value="male">Male</option>
+                                            <option name="Female" value="Female">Female</option>
+                                            <option name="3rdgen" value="none">None</option>
+                                        </select>
+                                        </td>
+                          </tr>
+                                    <tr id='addr1'></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    </div>
+                  <a id="add_row" class="btn btn-success pull-left">Add Row</a><a id='delete_row' class="btn btn-danger pull-right">Delete Row</a>
+                </div>
+                  <button id="activate-step-2" class="btn btn-primary btn-md">Activate Step 2</button>
+                </div>
+            </div>
+        </div>
+    </form>
 
-    <!--<form class="container">-->
+    <form class="container">
 
-        <!--<div class="row setup-content" id="step-4">-->
-            <!--<div class="col-xs-12">-->
-                <!--<div class="col-md-12 well text-center">-->
-                    <!--<h1 class="text-center"> STEP 4</h1>-->
-                <!--</div>-->
-            <!--</div>-->
-        <!--</div>-->
+        <div class="row setup-content step-main" id="step-2">
+            <div class="col-xs-12">
+                <div class="col-md-12 well text-center">
+                    <h1 class="text-center"> STEP 3</h1>
+                    <button id="activate-step-3" class="btn btn-primary btn-md">Activate Step 3</button>
+                </div>
+            </div>
+        </div>
 
-    <!--</form>-->
+    </form>
+
+    <form class="container">
+
+        <div class="row setup-content step-main" id="step-3">
+            <div class="col-xs-12">
+                <div class="col-md-12 well text-center">
+                    <h1 class="text-center"> STEP 3</h1>
+                    <button id="activate-step-4" class="btn btn-primary btn-md">Activate Step 4</button>
+                </div>
+            </div>
+        </div>
+
+    </form>
+
+    <form class="container">
+      <div class="row setup-content step-main" id="step-4">
+          <div class="col-xs-12">
+              <div class="col-md-12 well text-center">
+                  <h1 class="text-center"> STEP 4</h1>
+                  <button id="activate-step-5" class="btn btn-primary btn-md">Activate Step 5</button>
+              </div>
+          </div>
+      </div>
+    </form>
+
+    <form class="container">
+      <div class="row setup-content step-main" id="step-5">
+          <div class="col-xs-12">
+              <div class="col-md-12 well text-center">
+                  <h1 class="text-center"> STEP 5</h1>
+              </div>
+          </div>
+      </div>
+    </form>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
