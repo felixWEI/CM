@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 
-from Info_Manage.models import TeacherInfo, CourseInfo
+from Info_Manage.models import TeacherInfo, CourseInfo, CurrentStepInfo
 # Create your views here.
 
 import datetime
@@ -165,6 +165,30 @@ def delete_course_from_database(course_id):
         CourseInfo.objects.filter(course_id=course_id).delete()
     else:
         return False
+
+
 @login_required()
 def arrange_class(request):
-    return render(request, 'arrange_class.html', {'UserName': request.user.username.upper()})
+    step_info = []
+    step_position = ['active', 'disabled', 'disabled', 'disabled', 'disabled']
+    search_result = CurrentStepInfo.objects.all()
+    if len(search_result) == 1:
+        if search_result[0].arrange_class_status == 'start':
+            step_info.append(search_result[0].s1_year_info)
+            step_position[0] = 'disabled'
+            step_position[1] = 'active'
+    return render(request, 'arrange_class.html', {'UserName': request.user.username.upper(), 'step_info': step_info,
+                                                  'step_position': step_position})
+
+
+@csrf_exempt
+def arrange_step_1(request):
+    year = request.POST['year']
+    search_result = CurrentStepInfo.objects.all()
+    if search_result:
+        pass
+    else:
+        CurrentStepInfo.objects.create(arrange_class_status='start', s1_year_info=year)
+    result = 'Pass'
+    result = json.dumps({'result': result})
+    return HttpResponse(result)
