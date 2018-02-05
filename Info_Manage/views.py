@@ -177,6 +177,14 @@ def arrange_class(request):
             step_info.append(search_result[0].s1_year_info)
             step_position[0] = 'disabled'
             step_position[1] = 'active'
+            if search_result[0].s2_undergraduate:
+                step_info.append(int(search_result[0].s2_undergraduate))
+            if search_result[0].s2_postgraduate_1:
+                step_info.append(int(search_result[0].s2_postgraduate_1))
+            if search_result[0].s2_postgraduate_2:
+                step_info.append(int(search_result[0].s2_postgraduate_2))
+            if search_result[0].s2_doctor:
+                step_info.append(int(search_result[0].s2_doctor))
     return render(request, 'arrange_class.html', {'UserName': request.user.username.upper(), 'step_info': step_info,
                                                   'step_position': step_position})
 
@@ -188,7 +196,32 @@ def arrange_step_1(request):
     if search_result:
         pass
     else:
-        CurrentStepInfo.objects.create(arrange_class_status='start', s1_year_info=year)
+        CurrentStepInfo.objects.create(arrange_class_status='start', s1_year_info=year, s2_undergraduate='0', s2_postgraduate_1='0',
+                                       s2_postgraduate_2='0', s2_doctor='0')
     result = 'Pass'
+    result = json.dumps({'result': result})
+    return HttpResponse(result)
+
+
+@csrf_exempt
+def arrange_step_2(request):
+    button_id = request.POST['id']
+    search_result = CurrentStepInfo.objects.all()
+    result = 'Pass'
+    if len(search_result) == 1:
+        if button_id == 's2_r1_c1':
+            button_value = int(search_result[0].s2_undergraduate)
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_undergraduate=str(button_value+1))
+        elif button_id == 's2_r1_c2':
+            button_value = int(search_result[0].s2_postgraduate_1)
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_postgraduate_1=str(button_value+1))
+        elif button_id == 's2_r1_c3':
+            button_value = int(search_result[0].s2_postgraduate_2)
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_postgraduate_2=str(button_value+1))
+        elif button_id == 's2_r1_c4':
+            button_value = int(search_result[0].s2_doctor)
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_doctor=str(button_value+1))
+        else:
+            result = 'Fail'
     result = json.dumps({'result': result})
     return HttpResponse(result)

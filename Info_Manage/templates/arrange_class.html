@@ -155,22 +155,46 @@
                   </div>
                   <div class="col-md-3">
                     <div style="padding:10px">
-                      <a href="/class_manage/" target="_blank" class="btn btn-primary btn-lg active" role="button">输入课程信息</a>
+                      {% if step_info.1 == 1 %}
+                        <a target="_blank" class="btn btn-primary btn-lg active" role="button" id="s2_r1_c1" value="{{ step_info.1 }}" onclick="click_class('s2_r1_c1')">确认课程信息</a>
+                      {% elif step_info.1 == 2 %}
+                        <a target="_blank" disabled="disabled" class="btn btn-primary btn-lg active" role="button" id="s2_r1_c1" value="{{ step_info.1 }}" onclick="click_class('s2_r1_c1')">课程已确认</a>
+                      {% else %}
+                          <a href="/class_manage/" target="_blank" class="btn btn-primary btn-lg active" role="button" id="s2_r1_c1" value="{{ step_info.1 }}" onclick="click_class('s2_r1_c1')">输入课程信息</a>
+                      {% endif %}
                     </div>
                   </div>
                   <div class="col-md-3">
                     <div style="padding:10px">
-                      <a href="/class_manage/" target="_blank" class="btn btn-primary btn-lg active" role="button">输入课程信息</a>
+                      {% if step_info.2 == 1 %}
+                        <a target="_blank" class="btn btn-primary btn-lg active" role="button" id="s2_r1_c2" value="{{ step_info.2 }}" onclick="click_class('s2_r1_c2')">确认课程信息</a>
+                      {% elif step_info.2 == 2 %}
+                        <a target="_blank" disabled="disabled" class="btn btn-primary btn-lg active" role="button" id="s2_r1_c2" value="{{ step_info.2 }}" onclick="click_class('s2_r1_c2')">课程已确认</a>
+                      {% else %}
+                          <a href="/class_manage/" target="_blank" class="btn btn-primary btn-lg active" role="button" id="s2_r1_c2" value="{{ step_info.2 }}" onclick="click_class('s2_r1_c2')">输入课程信息</a>
+                      {% endif %}
                     </div>
                   </div>
                   <div class="col-md-3">
                     <div style="padding:10px">
-                      <a href="/class_manage/" target="_blank" class="btn btn-primary btn-lg active" role="button">输入课程信息</a>
+                      {% if step_info.3 == 1 %}
+                        <a target="_blank" class="btn btn-primary btn-lg active" role="button" id="s2_r1_c3" value="{{ step_info.3 }}" onclick="click_class('s2_r1_c3')">确认课程信息</a>
+                      {% elif step_info.3 == 2 %}
+                        <a target="_blank" disabled="disabled" class="btn btn-primary btn-lg active" role="button" id="s2_r1_c3" value="{{ step_info.3 }}" onclick="click_class('s2_r1_c3')">课程已确认</a>
+                      {% else %}
+                          <a href="/class_manage/" target="_blank" class="btn btn-primary btn-lg active" role="button" id="s2_r1_c3" value="{{ step_info.3 }}" onclick="click_class('s2_r1_c3')">输入课程信息</a>
+                      {% endif %}
                     </div>
                   </div>
                   <div class="col-md-3">
                     <div style="padding:10px">
-                      <a href="/class_manage/" target="_blank" class="btn btn-primary btn-lg active" role="button">输入课程信息</a>
+                      {% if step_info.4 == 1 %}
+                        <a target="_blank" class="btn btn-primary btn-lg active" role="button" id="s2_r1_c4" value="{{ step_info.4 }}" onclick="click_class('s2_r1_c4')">确认课程信息</a>
+                      {% elif step_info.4 == 2 %}
+                        <a target="_blank" disabled="disabled" class="btn btn-primary btn-lg active" role="button" id="s2_r1_c4" value="{{ step_info.4 }}" onclick="click_class('s2_r1_c4')">课程已确认</a>
+                      {% else %}
+                          <a href="/class_manage/" target="_blank" class="btn btn-primary btn-lg active" role="button" id="s2_r1_c4" value="{{ step_info.4 }}" onclick="click_class('s2_r1_c4')">输入课程信息</a>
+                      {% endif %}
                     </div>
                   </div>
                   <div class="col-md-12" style="padding:10px">
@@ -178,26 +202,26 @@
                   </div>
                   <div class="col-md-3">
                     <div style="padding:10px">
-                      <a href="/class_manage/" target="_blank" class="btn btn-primary btn-lg active" role="button">输入课程信息</a>
+                      <a href="/teacher_manage/" target="_blank" disabled="disabled" class="btn btn-primary btn-lg active" role="button">核对课程老师</a>
                     </div>
                   </div>
                   <div class="col-md-3">
                     <div style="padding:10px">
-                      <a href="/class_manage/" target="_blank" class="btn btn-primary btn-lg active" role="button">输入课程信息</a>
+                      <a href="/teacher_manage/" target="_blank" disabled="disabled" class="btn btn-primary btn-lg active" role="button">核对课程老师</a>
                     </div>
                   </div>
                   <div class="col-md-3">
                     <div style="padding:10px">
-                      <a href="/class_manage/" target="_blank" class="btn btn-primary btn-lg active" role="button">输入课程信息</a>
+                      <a href="/teacher_manage/" target="_blank" disabled="disabled" class="btn btn-primary btn-lg active" role="button">核对课程老师</a>
                     </div>
                   </div>
                   <div class="col-md-3">
                     <div style="padding:10px">
-                      <a href="/class_manage/" target="_blank" class="btn btn-primary btn-lg active" role="button">输入课程信息</a>
+                      <a href="/teacher_manage/" target="_blank" disabled="disabled" class="btn btn-primary btn-lg active" role="button">核对课程老师</a>
                     </div>
                   </div>
                   <div class="col-md-2 col-md-offset-10 text-center">
-                    <button id="activate-step-3" class="btn btn-primary btn-lg">确认</button>
+                    <button id="activate-step-3" class="btn btn-primary btn-bg">确认</button>
                   </div>
                 </div>
             </div>
