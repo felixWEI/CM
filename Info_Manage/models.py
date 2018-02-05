@@ -55,3 +55,16 @@ class CourseInfo(models.Model):
     class Meta:
         managed = False
         db_table = 'course_info'
+
+
+class CurrentStepInfo(models.Model):
+    arrange_class_status = models.CharField(db_column='arrange_class_status', max_length=45, blank=True, null=True)
+    s1_year_info = models.CharField(db_column='s1_year_info', max_length=45, blank=True, null=True)
+    s2_undergraduate = models.CharField(db_column='s2_undergraduate', max_length=45, blank=True, null=True)
+    s2_postgraduate_1 = models.CharField(db_column='s2_postgraduate_1', max_length=45, blank=True, null=True)
+    s2_postgraduate_2 = models.CharField(db_column='s2_postgraduate_2', max_length=45, blank=True, null=True)
+    s2_doctor = models.CharField(db_column='s2_doctor', max_length=45, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'current_step_info'

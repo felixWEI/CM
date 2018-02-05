@@ -93,10 +93,33 @@ a {
     /*height: 121px;*/
   }
 }
-.main .page-header {
-  margin-top: 0;
+
+.step-left {
+  padding: 20px;
+  width: 400px;
+}
+@media (min-width: 768px) {
+  .step-left {
+    padding-right: 40px;
+    padding-left: 40px;
+    position: fixed;
+    top: 121px;
+    /*height: 121px;*/
+  }
 }
 
+.step-main {
+  padding: 20px;
+  width: 1100px;
+}
+@media (min-width: 768px) {
+  .step-main {
+    padding-right: 40px;
+    position: fixed;
+    top: 121px;
+    /*height: 121px;*/
+  }
+}
 
 /*
  * Placeholder dashboard ideas
