@@ -71,8 +71,10 @@ def teacher_personal(request):
     expect_semester2 = '100'
     summary_table = [expect_semester1, expect_semester2]
 
-    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '次/周', '可选教师']
-    table_default = ['', '', ['本科', '法律硕士', '法学硕士', '博士'], ['17', '16', '15', '14'], '',
+    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '可选教师']
+    default_value_for_class = ['法学理论', '法律史', '宪法学', '民商法学', '诉讼法学', '经济法学', '环保法', '国际法学', '刑法学',
+                               '宪法学与行政法学', '环境与资源保护法', '国际法', '二专', '法学院本科', '跨校辅修']
+    table_default = ['', '', ['本科', '法律硕士', '法学硕士', '博士'], ['17', '16', '15', '14'], default_value_for_class,
                     ['一', '二', '三', '四', '五', '七', '八'], '', ['1', '2', '3', '4', '5'], ['必修', '选修'], '', '']
     return render(request, 'teacher_personal.html', {'UserName': request.user.username.upper(), 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
@@ -117,8 +119,10 @@ def class_manage(request):
             current_course_claim += 1
     summary_table = [current_course_count, current_hour_count, current_degree_count, current_course_claim]
 
-    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '次/周', '可选教师']
-    table_default = ['', '', ['本科', '法律硕士', '法学硕士', '博士'], ['17', '16', '15', '14'], '',
+    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '可选教师']
+    default_value_for_class = ['法学理论', '法律史', '宪法学', '民商法学', '诉讼法学', '经济法学', '环保法', '国际法学', '刑法学',
+                               '宪法学与行政法学', '环境与资源保护法', '国际法', '二专', '法学院本科', '跨校辅修']
+    table_default = ['', '', ['本科', '法律硕士', '法学硕士', '博士'], ['17', '16', '15', '14'], default_value_for_class,
                      ['一', '二', '三', '四', '五', '七', '八'], ['54', '36'], ['1', '2', '3', '4', '5'], ['必修', '选修'], '', '']
     return render(request, 'class_manage.html', {'UserName': request.user.username.upper(), 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,

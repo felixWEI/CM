@@ -9,6 +9,11 @@ $(document).ready(function () {
             }
         } ]
 	});
+	t_teacher_edit = $('#e_11').DataTable({
+	    dom: '<"top">rt<"bottom"><"clear">',
+	    "searching": false,
+        "ordering": false
+	});
 
     $('#table_course tbody').on( 'click', 'tr', function () {
         if ( $(this).hasClass('selected') ) {
@@ -117,7 +122,6 @@ function edit_course_info(){
     document.getElementById('e_8').value = t.row('.selected').data()[8];
     document.getElementById('e_9').value = t.row('.selected').data()[9];
     document.getElementById('e_10').value = t.row('.selected').data()[10];
-    document.getElementById('e_11').value = t.row('.selected').data()[11];
 
 }
 function submit_edit_info(){
