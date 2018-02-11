@@ -11,6 +11,7 @@ from django.http import HttpResponse
 from Info_Manage.models import TeacherInfo, CourseInfo, CurrentStepInfo
 # Create your views here.
 
+import xlrd
 import datetime
 
 
@@ -86,6 +87,20 @@ def teacher_request_course(request):
     course_id = request.POST['course_id']
     save_teacher_to_course_info(course_id, request.user.username.upper())
     # TODO: result part
+    result = 'Pass'
+    result = json.dumps({'result': result})
+    return HttpResponse(result)
+
+
+@csrf_exempt
+def teacher_table_upload(request):
+    input_file = request.FILES.get("file_data", None)
+    work_book = xlrd.open_workbook(filename=None, file_contents=input_file.read())
+    # TODO: result part
+    work_sheet = work_book.sheet_by_name('教师列表')
+    line_length = work_sheet.nrows
+    line_width = work_sheet.row_len(0)
+    for line_number in range(line_length)
     result = 'Pass'
     result = json.dumps({'result': result})
     return HttpResponse(result)
