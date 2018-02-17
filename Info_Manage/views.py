@@ -99,12 +99,25 @@ def teacher_table_upload(request):
     # TODO: result part
     work_sheet = work_book.sheet_by_name('教师列表')
     line_length = work_sheet.nrows
+    teacher_list = []
     line_width = work_sheet.row_len(0)
-    for line_number in range(line_length)
+    for line_number in range(line_length):
+        teacher_id, teacher_name = work_sheet.row(line_number)
+        if type(teacher_id.value) == float:
+            teacher_list.append([int(teacher_id.value), teacher_name.value])
+    insert_teacher_list_into_db(teacher_list)
     result = 'Pass'
     result = json.dumps({'result': result})
     return HttpResponse(result)
 
+
+def insert_teacher_list_into_db(teacher_list):
+    for eachTeacher in teacher_list:
+        searchResult = TeacherInfo.objects.all().filter(teacher_id=eachTeacher[0])
+        if searchResult:
+            TeacherInfo.objects.filter(teacher_id=eachTeacher[0]).update(teacher_name=eachTeacher[1])
+        else:
+            TeacherInfo.objects.create(teacher_id=eachTeacher[0], teacher_name=eachTeacher[1])
 
 def save_teacher_to_course_info(course_id, user_name):
     search_result = CourseInfo.objects.all().filter(course_id=course_id)
@@ -184,6 +197,47 @@ def delete_course_from_database(course_id):
         CourseInfo.objects.filter(course_id=course_id).delete()
     else:
         return False
+
+
+@csrf_exempt
+def class_table_upload(request):
+    input_file = request.FILES.get("file_data", None)
+    work_book = xlrd.open_workbook(filename=None, file_contents=input_file.read())
+    # TODO: result part
+    work_sheet = work_book.sheet_by_name('课程信息')
+    line_length = work_sheet.nrows
+    line_content = []
+    for line_number in range(line_length):
+        if line_number == 0:
+            continue
+        line_content.append(work_sheet.row(line_number))
+    class_info_to_save = []
+    for eachLine in line_content:
+
+        course_id = eachLine[7].value
+        course_name  = eachLine[8].value
+        student_type = eachLine[3].value
+        year = eachLine[1].value
+        class_name = eachLine[5].value
+        semester = eachLine[6].value
+        course_hour = eachLine[10].value
+        course_degree = eachLine[11].value
+        course_type = eachLine[12].value
+        allow_teachers = eachLine[14].value
+        times_every_week = eachLine[16].value
+        suit_teacher = eachLine[15].value
+        class_info_to_save.append([course_id, course_name, student_type, year, class_name, semester, course_hour,
+                                   course_degree, course_type, allow_teachers, times_every_week, suit_teacher])
+
+    save_course_table_into_database(class_info_to_save)
+    result = 'Pass'
+    result = json.dumps({'result': result})
+    return HttpResponse(result)
+
+
+def save_course_table_into_database(class_info_to_save):
+    for eachCourse in class_info_to_save:
+        save_course_into_database(eachCourse)
 
 
 @login_required()
