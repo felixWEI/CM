@@ -64,7 +64,7 @@ class CurrentStepInfo(models.Model):
     s2_postgraduate_1 = models.CharField(db_column='s2_postgraduate_1', max_length=45, blank=True, null=True)
     s2_postgraduate_2 = models.CharField(db_column='s2_postgraduate_2', max_length=45, blank=True, null=True)
     s2_doctor = models.CharField(db_column='s2_doctor', max_length=45, blank=True, null=True)
-
+    s2_start_request = models.CharField(db_column='s2_start_request', max_length=45, blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'current_step_info'

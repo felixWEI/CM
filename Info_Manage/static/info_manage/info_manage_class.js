@@ -66,7 +66,7 @@ $(document).ready(function () {
 
 	    })
 
-	})
+	});
     initFileInput("excelFile","/class_table_upload/")
 });
 function add_course_info(length){

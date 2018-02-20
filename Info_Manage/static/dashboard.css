@@ -96,7 +96,7 @@ a {
 
 .step-left {
   padding: 20px;
-  width: 400px;
+  width: 300px;
 }
 @media (min-width: 768px) {
   .step-left {
@@ -109,6 +109,7 @@ a {
 }
 
 .step-main {
+  margin-left: 40px;
   padding: 20px;
   width: 1100px;
 }

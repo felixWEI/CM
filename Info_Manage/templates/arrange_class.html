@@ -83,30 +83,30 @@
 
     <div class="container-fluid">
 	    <div class="row form-group step-left">
-            <div class="col-xs-12">
-                <ul class="nav nav-pills nav-stacked thumbnail setup-panel">
-                    <li class="{{ step_position.0 }}"><a href="#step-1">
-                        <h4 class="list-group-item-heading">Step 1</h4>
-                        <p class="list-group-item-text">First step description</p>
-                    </a></li>
-                    <li class="{{ step_position.1 }}"><a href="#step-2">
-                        <h4 class="list-group-item-heading">Step 2</h4>
-                        <p class="list-group-item-text">Second step description</p>
-                    </a></li>
-                    <li class="{{ step_position.2 }}"><a href="#step-3">
-                        <h4 class="list-group-item-heading">Step 3</h4>
-                        <p class="list-group-item-text">Third step description</p>
-                    </a></li>
-                    <li class="{{ step_position.3 }}"><a href="#step-4">
-                        <h4 class="list-group-item-heading">Step 4</h4>
-                        <p class="list-group-item-text">Second step description</p>
-                    </a></li>
-                    <li class="{{ step_position.4 }}"><a href="#step-5">
-                        <h4 class="list-group-item-heading">Step 5</h4>
-                        <p class="list-group-item-text">Second step description</p>
-                    </a></li>
-                </ul>
-            </div>
+        <div class="col-xs-12">
+          <ul class="nav nav-pills nav-stacked thumbnail setup-panel">
+            <li class="{{ step_position.0 }}"><a href="#step-1">
+                <h4 class="list-group-item-heading">Step 1</h4>
+                <p class="list-group-item-text">First step description</p>
+            </a></li>
+            <li class="{{ step_position.1 }}"><a href="#step-2">
+                <h4 class="list-group-item-heading">Step 2</h4>
+                <p class="list-group-item-text">Second step description</p>
+            </a></li>
+            <li class="{{ step_position.2 }}"><a href="#step-3">
+                <h4 class="list-group-item-heading">Step 3</h4>
+                <p class="list-group-item-text">Third step description</p>
+            </a></li>
+            <li class="{{ step_position.3 }}"><a href="#step-4">
+                <h4 class="list-group-item-heading">Step 4</h4>
+                <p class="list-group-item-text">Second step description</p>
+            </a></li>
+            <li class="{{ step_position.4 }}"><a href="#step-5">
+                <h4 class="list-group-item-heading">Step 5</h4>
+                <p class="list-group-item-text">Second step description</p>
+            </a></li>
+          </ul>
+        </div>
 	    </div>
     </div>
 
@@ -198,7 +198,11 @@
                     </div>
                   </div>
                   <div class="col-md-12" style="padding:10px">
-                    <button class="btn btn-lg btn-primary" disabled="disabled" style="width: 90%">教师申报课程</button>
+                    {% if step_info.5 == 1 %}
+                      <button class="btn btn-lg btn-primary" id="s2_r2_c1" style="width: 90%" onclick="start_request()" type="button">教师申报课程</button>
+                    {% else %}
+                      <button class="btn btn-lg btn-primary" disabled="disabled" id="s2_r2_c1" style="width: 90%" type="button">教师申报课程</button>
+                    {% endif %}
                   </div>
                   <div class="col-md-3">
                     <div style="padding:10px">
@@ -229,7 +233,6 @@
     </form>
 
     <form class="container">
-
         <div class="row setup-content step-main" id="step-3">
           <div class="col-xs-12">
             <div class="col-md-12 well text-center">

@@ -40,7 +40,7 @@ $(document).ready(function () {
         $('ul.setup-panel li a[href="#step-2"]').trigger('click');
         $(this).remove();
 
-    })
+    });
     var t_s2_r1_c2 = 0;
     var t_s2_r1_c3 = 0;
     var t_s2_r1_c4 = 0;
@@ -171,7 +171,9 @@ function click_class(button_id){
             data: {"id": button_id},
             dataType: "json",
             success: function(result){
-                alert('Yes');
+                if (result['result'] === 'start request'){
+                    document.getElementById('s2_r2_c1').removeAttribute('disabled');
+                }
             },
             error: function (){
                 alert('No');
@@ -181,4 +183,20 @@ function click_class(button_id){
     }else{
         button_value = 3;
     }
+}
+
+function start_request() {
+    document.getElementById('s2_r2_c1').innerText = '开始教师个人课程申请';
+    $.ajax({
+        type: 'POST',
+        url: '/arrange_step_2/',
+        data: {"id": 's2_r2_c1'},
+        dataType: "json",
+        success: function(result){
+            alert('Yes')
+        },
+        error: function (){
+            alert('No');
+        }
+        });
 }

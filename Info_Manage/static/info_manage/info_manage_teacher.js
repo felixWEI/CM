@@ -1,5 +1,4 @@
 $(document).ready(function () {
-
 	t = $('#table_teacher').DataTable({
         dom: 'Bfrtip',
         buttons: [ {
@@ -89,7 +88,7 @@ $(document).ready(function () {
 
 	    })
 
-	})
+	});
 
 //	$('#submit_file').click( function() {
 //	    file = document.getElementById('InputFile').value;

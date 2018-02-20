@@ -258,6 +258,8 @@ def arrange_class(request):
                 step_info.append(int(search_result[0].s2_postgraduate_2))
             if search_result[0].s2_doctor:
                 step_info.append(int(search_result[0].s2_doctor))
+            if search_result[0].s2_start_request:
+                step_info.append(int(search_result[0].s2_start_request))
     return render(request, 'arrange_class.html', {'UserName': request.user.username.upper(), 'step_info': step_info,
                                                   'step_position': step_position})
 
@@ -294,7 +296,15 @@ def arrange_step_2(request):
         elif button_id == 's2_r1_c4':
             button_value = int(search_result[0].s2_doctor)
             CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_doctor=str(button_value+1))
+        elif button_id == 's2_r2_c1':
+            button_value = int(search_result[0].s2_start_request)
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_start_request=str(button_value + 1))
         else:
             result = 'Fail'
+        tmp = CurrentStepInfo.objects.all().filter(id=search_result[0].id)
+        if len(tmp) == 1 and 's2_r1' in button_id:
+            if tmp[0].s2_undergraduate == '2' and tmp[0].s2_postgraduate_1 == '2' and tmp[0].s2_postgraduate_2 == '2' and tmp[0].s2_doctor == '2':
+                CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_start_request='1')
+                result = 'start request'
     result = json.dumps({'result': result})
     return HttpResponse(result)
