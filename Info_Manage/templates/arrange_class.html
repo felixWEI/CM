@@ -199,29 +199,73 @@
                   </div>
                   <div class="col-md-12" style="padding:10px">
                     {% if step_info.5 == 1 %}
-                      <button class="btn btn-lg btn-primary" id="s2_r2_c1" style="width: 90%" onclick="start_request()" type="button">教师申报课程</button>
+                      <button class="btn btn-lg btn-primary" id="s2_r2_c1" style="width: 90%" data-toggle="modal" data-target="#setTimeout" type="button">教师申报课程</button>
+                    {% elif step_info.5 == 2 %}
+                      <button class="btn btn-lg btn-primary" id="s2_r2_c1" style="width: 90%" data-toggle="modal" data-target="#setTimeout" value="{{ step_info.6 }}" type="button">距离申报课程截止时间还有<a id="timer"></a></button>
+                    {% elif step_info.5 == 3 %}
+                      <button class="btn btn-lg btn-primary" id="s2_r2_c1" style="width: 90%" onclick="" value="" type="button">申报课程时间已经截止</button>
                     {% else %}
                       <button class="btn btn-lg btn-primary" disabled="disabled" id="s2_r2_c1" style="width: 90%" type="button">教师申报课程</button>
                     {% endif %}
                   </div>
                   <div class="col-md-3">
                     <div style="padding:10px">
-                      <a href="/teacher_manage/" target="_blank" disabled="disabled" class="btn btn-primary btn-lg active" role="button">核对课程老师</a>
+                      {% if step_info.5 == 3 %}
+                        {% if step_info.7 == 1%}
+                          <a href="/teacher_manage/" target="_blank"  class="btn btn-primary btn-lg active" role="button" id="s2_r3_c1" value="{{ step_info.7 }}" onclick="click_teacher('s2_r3_c1')">确认课程老师</a>
+                        {% elif step_info.7 == 2 %}
+                          <a target="_blank" disabled="disabled"  class="btn btn-primary btn-lg active" role="button">老师以确认</a>
+                        {% else %}
+                          <a href="/teacher_manage/" target="_blank"  class="btn btn-primary btn-lg active" role="button" id="s2_r3_c1" value="{{ step_info.7 }}" onclick="click_teacher('s2_r3_c1')">核对课程老师</a>
+                        {% endif %}
+                      {% else %}
+                        <a href="/teacher_manage/" disabled="disabled" class="btn btn-primary btn-lg active" role="button">核对课程老师</a>
+                      {% endif %}
                     </div>
                   </div>
                   <div class="col-md-3">
                     <div style="padding:10px">
-                      <a href="/teacher_manage/" target="_blank" disabled="disabled" class="btn btn-primary btn-lg active" role="button">核对课程老师</a>
+                      {% if step_info.5 == 3 %}
+                        {% if step_info.8 == 1%}
+                          <a href="/teacher_manage/" target="_blank"  class="btn btn-primary btn-lg active" role="button" id="s2_r3_c2" value="{{ step_info.8 }}" onclick="click_teacher('s2_r3_c2')">确认课程老师</a>
+                        {% elif step_info.8 == 2 %}
+                          <a disabled="disabled" target="_blank"  class="btn btn-primary btn-lg active" role="button">老师以确认</a>
+                        {% else %}
+                          <a href="/teacher_manage/" target="_blank"  class="btn btn-primary btn-lg active" role="button" id="s2_r3_c2" value="{{ step_info.8 }}" onclick="click_teacher('s2_r3_c2')">核对课程老师</a>
+                        {% endif %}
+                      {% else %}
+                        <a href="/teacher_manage/" disabled="disabled" class="btn btn-primary btn-lg active" role="button">核对课程老师</a>
+                      {% endif %}
                     </div>
                   </div>
                   <div class="col-md-3">
                     <div style="padding:10px">
-                      <a href="/teacher_manage/" target="_blank" disabled="disabled" class="btn btn-primary btn-lg active" role="button">核对课程老师</a>
+                      {% if step_info.5 == 3 %}
+                        {% if step_info.9 == 1%}
+                          <a href="/teacher_manage/" target="_blank"  class="btn btn-primary btn-lg active" role="button" id="s2_r3_c3" value="{{ step_info.9 }}" onclick="click_teacher('s2_r3_c3')">确认课程老师</a>
+                        {% elif step_info.9 == 2 %}
+                          <a disabled="disabled" target="_blank"  class="btn btn-primary btn-lg active" role="button">老师以确认</a>
+                        {% else %}
+                          <a href="/teacher_manage/" target="_blank"  class="btn btn-primary btn-lg active" role="button" id="s2_r3_c3" value="{{ step_info.9 }}" onclick="click_teacher('s2_r3_c3')">核对课程老师</a>
+                        {% endif %}
+                      {% else %}
+                        <a href="/teacher_manage/" disabled="disabled" class="btn btn-primary btn-lg active" role="button">核对课程老师</a>
+                      {% endif %}
                     </div>
                   </div>
                   <div class="col-md-3">
                     <div style="padding:10px">
-                      <a href="/teacher_manage/" target="_blank" disabled="disabled" class="btn btn-primary btn-lg active" role="button">核对课程老师</a>
+                      {% if step_info.5 == 3 %}
+                        {% if step_info.10 == 1%}
+                          <a href="/teacher_manage/" target="_blank"  class="btn btn-primary btn-lg active" role="button" id="s2_r3_c4" value="{{ step_info.10 }}" onclick="click_teacher('s2_r3_c4')">确认课程老师</a>
+                        {% elif step_info.10 == 2 %}
+                          <a target="_blank"  disabled="disabled" class="btn btn-primary btn-lg active" role="button">老师以确认</a>
+                        {% else %}
+                          <a href="/teacher_manage/" target="_blank"  class="btn btn-primary btn-lg active" role="button" id="s2_r3_c4" value="{{ step_info.10 }}" onclick="click_teacher('s2_r3_c4')">核对课程老师</a>
+                        {% endif %}
+                      {% else %}
+                        <a href="/teacher_manage/" disabled="disabled" class="btn btn-primary btn-lg active" role="button">核对课程老师</a>
+                      {% endif %}
                     </div>
                   </div>
                   <div class="col-md-2 col-md-offset-10 text-center">
@@ -236,7 +280,7 @@
         <div class="row setup-content step-main" id="step-3">
           <div class="col-xs-12">
             <div class="col-md-12 well text-center">
-                <h4 class="text-left">本次排课目标学期为：2018-2019 学年</h4>
+                <h4 class="text-left">本次排课目标学期为：{{ step_info.0 }}学年</h4>
             </div>
             <div class="col-md-12 well text-center">
               <div class="col-md-3">
@@ -253,11 +297,13 @@
               </div>
             </div>
             <div class="col-md-12 well text-center">
-              <button id="activate-step-4" class="btn btn-primary btn-lg">分配授课老师</button>
+              <button class="btn btn-primary btn-lg" data-toggle="modal" data-target="#arrangeClass" type="button" onclick="arrange_start()">分配授课老师</button>
+              <div class="col-md-2 col-md-offset-10 text-center">
+                <button id="activate-step-4" class="btn btn-primary btn-bg">确认</button>
+              </div>
             </div>
           </div>
         </div>
-
     </form>
 
     <form class="container">
@@ -281,6 +327,130 @@
       </div>
     </form>
 
+
+    <!-- Modal -->
+    <div class="modal fade" id="setTimeout" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="">请设置教师申报截止日期</h4>
+          </div>
+          <div class="modal-body " id="">
+            <div class="row">
+              <div class="col-sm-3">
+                <div class="input-group">
+                  <select class="form-control" id="setYear">
+                    <option>2018</option>
+                  </select>
+                  <span class="input-group-addon">年</span>
+                </div>
+              </div>
+              <div class="col-sm-2 form-group">
+                <div class="input-group">
+                  <select class="form-control" id="setMonth">
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                    <option>6</option>
+                    <option>7</option>
+                    <option>8</option>
+                    <option>9</option>
+                    <option>10</option>
+                    <option>11</option>
+                    <option>12</option>
+                    <option>1</option>
+                    <option>2</option>
+                  </select>
+                  <span class="input-group-addon">月</span>
+                </div>
+              </div>
+              <div class="col-sm-2 form-group">
+                <div class="input-group">
+                  <select class="form-control" id="setDay">
+                    <option>1</option>
+                    <option>2</option>
+                    <option>22</option>
+                  </select>
+                  <span class="input-group-addon">日</span>
+                </div>
+              </div>
+              <div class="col-sm-2 form-group">
+                <div class="input-group">
+                  <select class="form-control" id="setHour">
+                    <option>10</option>
+                    <option>11</option>
+                    <option>12</option>
+                  </select>
+                  <span class="input-group-addon">时</span>
+                </div>
+              </div>
+              <div class="col-sm-2 form-group">
+                <div class="input-group">
+                  <select class="form-control" id="setMin">
+                    <option>40</option>
+                    <option>45</option>
+                    <option>50</option>
+                    <option>55</option>
+                  </select>
+                  <span class="input-group-addon">分</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="button" onclick="start_request()">确定</button>
+            <button type="button" class="button" data-dismiss="modal">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="arrangeClass" tabindex="-1" role="dialog">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="">统计信息</h4>
+          </div>
+          <div class="modal-body " id="">
+            <div>教师总人数: <strong id="teacher_count"></strong></div>
+            <div>有<strong id="teacher_with_expect"></strong>位教师有期望学时, 总计<strong id="total_hours_with_expect"></strong>学时</div>
+            <div>其余<strong id="teacher_without_expect"></strong>位教师, 预计平均分配学时为<strong id="ave_hours_without_expect"></strong></div>
+            <div class="row">
+              <div class="col-sm-6">预计平均课程难度</div>
+              <div class="col-sm-6">
+                <table>
+                  <tr>
+                    <td>1</td>
+                    <td>2</td>
+                  </tr>
+                  <tr>
+                    <td>3</td>
+                    <td>4</td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div>课程总数<a></a></div>
+            <table>
+              <tr>
+                <td>1</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <td>4</td>
+              </tr>
+            </table>
+          <div class="modal-footer">
+            <button type="button" class="button">确定</button>
+            <button type="button" class="button" data-dismiss="modal">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

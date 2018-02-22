@@ -12,7 +12,7 @@ from Info_Manage.models import TeacherInfo, CourseInfo, CurrentStepInfo
 # Create your views here.
 
 import xlrd
-import datetime
+from datetime import datetime
 
 
 @login_required()
@@ -20,8 +20,8 @@ def teacher_manage(request):
     teacher_table = TeacherInfo.objects.all()
     search_result = []
     for eachItem in teacher_table:
-        search_result.append([eachItem.teacher_id, eachItem.teacher_name, eachItem.first_semester,
-                              eachItem.second_semester, eachItem.first_semester_expect, eachItem.second_semester_expect])
+        search_result.append([eachItem.teacher_id, eachItem.teacher_name, eachItem.first_semester_expect, eachItem.second_semester_expect,
+                             eachItem.first_semester, eachItem.second_semester])
     current_teacher_count = len(search_result)
     expect_for_semester1 = 0
     expect_for_semester2 = 0
@@ -48,7 +48,7 @@ def teacher_save_and_config(request):
 
 
 def save_teacher_into_database(all_teacher):
-    now = datetime.datetime.now()
+    now = datetime.now()
     for eachItem in all_teacher:
         search_result = TeacherInfo.objects.all().filter(teacher_id=eachItem[0])
         if search_result:
@@ -117,7 +117,7 @@ def insert_teacher_list_into_db(teacher_list):
         if searchResult:
             TeacherInfo.objects.filter(teacher_id=eachTeacher[0]).update(teacher_name=eachTeacher[1])
         else:
-            TeacherInfo.objects.create(teacher_id=eachTeacher[0], teacher_name=eachTeacher[1])
+            TeacherInfo.objects.create(teacher_id=eachTeacher[0], teacher_name=eachTeacher[1], first_semester_expect=1.0, second_semester_expect=1.0)
 
 def save_teacher_to_course_info(course_id, user_name):
     search_result = CourseInfo.objects.all().filter(course_id=course_id)
@@ -167,18 +167,18 @@ def class_save_one_row(request):
 
 
 def save_course_into_database(course_info):
-    now = datetime.datetime.now()
+    now = datetime.now()
     search_result = CourseInfo.objects.all().filter(course_id=course_info[0])
     if search_result:
         CourseInfo.objects.filter(course_id=course_info[0]).update(course_id=course_info[0],course_name=course_info[1], student_type=course_info[2],
                                                                     year=course_info[3], class_name=course_info[4], semester=course_info[5],
                                                                     course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
-                                                                    allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], update_time=now)
+                                                                    allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12], update_time=now)
     else:
         CourseInfo.objects.create(course_id=course_info[0], course_name=course_info[1], student_type=course_info[2],
                                    year=course_info[3], class_name=course_info[4], semester=course_info[5],
                                    course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
-                                   allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], update_time=now)
+                                   allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12],update_time=now)
 
 
 @csrf_exempt
@@ -225,9 +225,10 @@ def class_table_upload(request):
         course_type = eachLine[12].value
         allow_teachers = eachLine[14].value
         times_every_week = eachLine[16].value
-        suit_teacher = eachLine[15].value
+        suit_teacher = eachLine[17].value
+        teacher_ordered = eachLine[17].value
         class_info_to_save.append([course_id, course_name, student_type, year, class_name, semester, course_hour,
-                                   course_degree, course_type, allow_teachers, times_every_week, suit_teacher])
+                                   course_degree, course_type, allow_teachers, times_every_week, suit_teacher, teacher_ordered])
 
     save_course_table_into_database(class_info_to_save)
     result = 'Pass'
@@ -248,7 +249,6 @@ def arrange_class(request):
     if len(search_result) == 1:
         if search_result[0].arrange_class_status == 'start':
             step_info.append(search_result[0].s1_year_info)
-            step_position[0] = 'disabled'
             step_position[1] = 'active'
             if search_result[0].s2_undergraduate:
                 step_info.append(int(search_result[0].s2_undergraduate))
@@ -259,7 +259,27 @@ def arrange_class(request):
             if search_result[0].s2_doctor:
                 step_info.append(int(search_result[0].s2_doctor))
             if search_result[0].s2_start_request:
-                step_info.append(int(search_result[0].s2_start_request))
+                s2_start_request = int(search_result[0].s2_start_request)
+                now = datetime.now().replace()
+                if search_result[0].s2_deadline:
+                    delta = (search_result[0].s2_deadline.replace(tzinfo=None) - now).total_seconds()
+                    if delta < 0.0:
+                        s2_start_request = 3
+                step_info.append(s2_start_request)
+            if search_result[0].s2_deadline:
+                deadline_string = search_result[0].s2_deadline.strftime('%Y %m %d %H %M')
+                step_info.append(deadline_string)
+            if search_result[0].s2_teacher_confirm_u:
+                step_info.append(int(search_result[0].s2_teacher_confirm_u))
+            if search_result[0].s2_teacher_confirm_p1:
+                step_info.append(int(search_result[0].s2_teacher_confirm_p1))
+            if search_result[0].s2_teacher_confirm_p2:
+                step_info.append(int(search_result[0].s2_teacher_confirm_p2))
+            if search_result[0].s2_teacher_confirm_d:
+                step_info.append(int(search_result[0].s2_teacher_confirm_d))
+
+        if search_result[0].s3_status_flag == 'start arrange':
+            step_position[2] = 'active'
     return render(request, 'arrange_class.html', {'UserName': request.user.username.upper(), 'step_info': step_info,
                                                   'step_position': step_position})
 
@@ -272,7 +292,7 @@ def arrange_step_1(request):
         pass
     else:
         CurrentStepInfo.objects.create(arrange_class_status='start', s1_year_info=year, s2_undergraduate='0', s2_postgraduate_1='0',
-                                       s2_postgraduate_2='0', s2_doctor='0')
+                                       s2_postgraduate_2='0', s2_doctor='0', s2_teacher_confirm_u='0',s2_teacher_confirm_p1='0',s2_teacher_confirm_p2='0',s2_teacher_confirm_d='0')
     result = 'Pass'
     result = json.dumps({'result': result})
     return HttpResponse(result)
@@ -298,7 +318,22 @@ def arrange_step_2(request):
             CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_doctor=str(button_value+1))
         elif button_id == 's2_r2_c1':
             button_value = int(search_result[0].s2_start_request)
-            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_start_request=str(button_value + 1))
+            deadline_string = request.POST['deadline']
+            year, month, day, hour, minute = deadline_string.split(' ')
+            deadline_time = datetime(int(year), int(month), int(day), int(hour), int(minute))
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_start_request='2', s2_deadline=deadline_time)
+        elif button_id == 's2_r3_c1':
+            button_value = int(search_result[0].s2_teacher_confirm_u)
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_teacher_confirm_u=str(button_value + 1))
+        elif button_id == 's2_r3_c2':
+            button_value = int(search_result[0].s2_teacher_confirm_p1)
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_teacher_confirm_p1=str(button_value + 1))
+        elif button_id == 's2_r3_c3':
+            button_value = int(search_result[0].s2_teacher_confirm_p2)
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_teacher_confirm_p2=str(button_value + 1))
+        elif button_id == 's2_r3_c4':
+            button_value = int(search_result[0].s2_teacher_confirm_d)
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_teacher_confirm_d=str(button_value + 1))
         else:
             result = 'Fail'
         tmp = CurrentStepInfo.objects.all().filter(id=search_result[0].id)
@@ -308,3 +343,63 @@ def arrange_step_2(request):
                 result = 'start request'
     result = json.dumps({'result': result})
     return HttpResponse(result)
+
+
+@csrf_exempt
+def arrange_step_3(request):
+    status = request.POST['status']
+    result = {}
+    result['status'] = 'Pass'
+    search_result = CurrentStepInfo.objects.all()
+    if len(search_result) == 1:
+        if status == 'start arrange':
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s3_status_flag=status)
+        elif status == 'init info':
+            result['info'] = start_arrange()
+        elif status == 'arrange main':
+            arrange_main()
+        else:
+            result['status'] = 'Fail'
+    result = json.dumps({'result': result})
+    return HttpResponse(result)
+
+
+def start_arrange():
+    search_result_course = CourseInfo.objects.all()
+    search_result_teacher = TeacherInfo.objects.all()
+    teacher_count = len(search_result_teacher)
+    teacher_with_expect = []
+    teacher_without_expect = []
+    expect_count = 0
+    total_count = 0
+    for eachTeacher in search_result_teacher:
+        if eachTeacher.first_semester_expect != 1.0 or eachTeacher.second_semester_expect != 1.0:
+            teacher_with_expect.append(eachTeacher.teacher_id)
+            expect_count += (eachTeacher.first_semester_expect + eachTeacher.second_semester_expect)
+        else:
+            teacher_without_expect.append(eachTeacher.teacher_id)
+        total_count += (eachTeacher.first_semester_expect + eachTeacher.second_semester_expect)
+    degree_count = [0]*10
+    total_hours = 0
+    for eachCourse in search_result_course:
+        degree_count[int(eachCourse.course_degree)-1] += 1
+        total_hours += eachCourse.course_hour
+
+    teacher_with_expect_count = len(teacher_with_expect)
+    total_hours_with_expect = (expect_count/total_count)*total_hours
+    teacher_without_expect_count = teacher_count - teacher_with_expect_count
+    ave_hours_without_expect = (total_hours - total_hours_with_expect)/teacher_without_expect_count
+    degree_count = [round(float(each)/teacher_count, 1) for each in degree_count]
+    return [teacher_count,teacher_with_expect_count, total_hours_with_expect, teacher_without_expect_count, round(ave_hours_without_expect, 2),
+            degree_count]
+
+
+def arrange_main():
+    search_result_course = CourseInfo.objects.all()
+    search_result_teacher = TeacherInfo.objects.all()
+    result_1 = []
+    for eachCourse in search_result_course:
+        teacher_list = eachCourse.suit_teacher.split(',')
+        if len(teacher_list) == int(eachCourse.allow_teachers):
+            result_1.append([eachCourse.course_id, teacher_list])
+    return result_1

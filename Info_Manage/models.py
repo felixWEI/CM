@@ -33,24 +33,8 @@ class CourseInfo(models.Model):
     allow_teachers = models.IntegerField(db_column='allow_teachers')
     times_every_week = models.IntegerField(db_column='times_every_week')
     suit_teacher = models.CharField(db_column='suit_teacher', max_length=200, blank=True, null=True)
+    teacher_ordered = models.CharField(db_column='teacher_ordered', max_length=200, blank=True, null=True)
     update_time = models.DateTimeField(db_column='update_time', blank=True, null=True)
-
-    def as_dict(self):
-        return {
-            "course_id": self.course_id,
-            "course_name": self.course_name,
-            "course_hour": self.course_hour,
-            "course_degree": self.course_degree,
-            "student_type": self.student_type,
-            "class_name": self.class_name,
-            "times_every_week": self.times_every_week,
-            "suit_teacher": self.suit_teacher,
-            "course_type": self.course_type,
-            "allow_teachers": self.allow_teachers,
-            "semester": self.semester,
-            "year": self.year,
-            "update_time": self.update_time,
-        }
 
     class Meta:
         managed = False
@@ -65,6 +49,12 @@ class CurrentStepInfo(models.Model):
     s2_postgraduate_2 = models.CharField(db_column='s2_postgraduate_2', max_length=45, blank=True, null=True)
     s2_doctor = models.CharField(db_column='s2_doctor', max_length=45, blank=True, null=True)
     s2_start_request = models.CharField(db_column='s2_start_request', max_length=45, blank=True, null=True)
+    s2_deadline = models.DateTimeField(db_column='s2_deadline', blank=True, null=True)
+    s2_teacher_confirm_u = models.CharField(db_column='s2_teacher_confirm_u', max_length=45, blank=True, null=True)
+    s2_teacher_confirm_p1 = models.CharField(db_column='s2_teacher_confirm_p1', max_length=45, blank=True, null=True)
+    s2_teacher_confirm_p2 = models.CharField(db_column='s2_teacher_confirm_p2', max_length=45, blank=True, null=True)
+    s2_teacher_confirm_d = models.CharField(db_column='s2_teacher_confirm_d', max_length=45, blank=True, null=True)
+    s3_status_flag = models.CharField(db_column='s3_status_flag', max_length=45, blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'current_step_info'
