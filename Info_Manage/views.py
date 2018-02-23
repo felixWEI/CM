@@ -380,18 +380,49 @@ def start_arrange():
             teacher_without_expect.append(eachTeacher.teacher_id)
         total_count += (eachTeacher.first_semester_expect + eachTeacher.second_semester_expect)
     degree_count = [0]*10
+    [degree_count_u, degree_count_p1, degree_count_p2, degree_count_d] = [[0]*10,[0]*10,[0]*10,[0]*10]
+    [hours_u, hours_p1, hours_p2, hours_d] = [[], [], [], []]
     total_hours = 0
+    total_courses = len(search_result_course)
     for eachCourse in search_result_course:
         degree_count[int(eachCourse.course_degree)-1] += 1
         total_hours += eachCourse.course_hour
-
+        if eachCourse.student_type == '博士':
+            degree_count_d[int(eachCourse.course_degree)-1] += 1
+            hours_d.append(eachCourse.course_hour)
+        elif eachCourse.student_type == '法律硕士':
+            degree_count_p2[int(eachCourse.course_degree)-1] += 1
+            hours_p2.append(eachCourse.course_hour)
+        elif eachCourse.student_type == '法学硕士':
+            degree_count_p1[int(eachCourse.course_degree) - 1] += 1
+            hours_p1.append(eachCourse.course_hour)
+        elif eachCourse.student_type == '本科':
+            degree_count_u[int(eachCourse.course_degree) - 1] += 1
+            hours_u.append(eachCourse.course_hour)
+        else:
+            continue
     teacher_with_expect_count = len(teacher_with_expect)
     total_hours_with_expect = (expect_count/total_count)*total_hours
     teacher_without_expect_count = teacher_count - teacher_with_expect_count
     ave_hours_without_expect = (total_hours - total_hours_with_expect)/teacher_without_expect_count
     degree_count = [round(float(each)/teacher_count, 1) for each in degree_count]
+    degree_count.reverse()
+    degree_count_u.reverse()
+    degree_count_p1.reverse()
+    degree_count_p2.reverse()
+    degree_count_d.reverse()
+    tmp_u,tmp_p1,tmp_p2,tmp_d = [0]*4,[0]*4,[0]*4,[0]*4
+    for index,item in enumerate([18,36,54,72]):
+        tmp_d[index] = hours_d.count(item)
+        tmp_p1[index] = hours_p1.count(item)
+        tmp_p2[index] = hours_p2.count(item)
+        tmp_u[index] = hours_u.count(item)
+    degree_count_u.extend(tmp_u)
+    degree_count_p1.extend(tmp_p1)
+    degree_count_p2.extend(tmp_p2)
+    degree_count_d.extend(tmp_d)
     return [teacher_count,teacher_with_expect_count, total_hours_with_expect, teacher_without_expect_count, round(ave_hours_without_expect, 2),
-            degree_count]
+            degree_count, total_courses, [degree_count_u, degree_count_p1, degree_count_p2, degree_count_d]]
 
 
 def arrange_main():

@@ -116,8 +116,25 @@ $(document).ready(function () {
                 alert('No');
             }
         });
-    })
-
+    });
+    $("#arrange_class_start").on('click', function () {
+        status = 'arrange main';
+        $.ajax({
+            type: 'POST',
+            url: '/arrange_step_3/',
+            data: {"status": status},
+            dataType: "json",
+            success: function(result){
+                alert('yes')
+            },
+            error: function (){
+                alert('No');
+            }
+        });
+    });
+    $("#close_arrange_class2").on('click', function () {
+        $('#arrangeClass2').modal('hide');
+    });
 });
 function click_class(button_id){
     button_value = Number(document.getElementById(button_id).getAttribute('value'));
@@ -250,4 +267,22 @@ function initialize_arrange_class(page_info) {
     document.getElementById('total_hours_with_expect').innerText = page_info[2];
     document.getElementById('teacher_without_expect').innerText = page_info[3];
     document.getElementById('ave_hours_without_expect').innerText = page_info[4];
+    course_degree_info = document.getElementById('course_degree_info');
+    str = '<tr><td>人均课程数</td>';
+    for(var index in page_info[5]){
+        str += '<td>'+page_info[5][index]+'</td>';
+    }
+    str += '</tr>';
+    course_degree_info.innerHTML = str;
+    document.getElementById('total_courses').innerText = page_info[6];
+    str2 = '';
+    head = ['本科', '法学硕士', '法律硕士','博士'];
+    for(var i in page_info[7]){
+        str2 += '<tr><td>'+head[i]+'</td>';
+        for(var j in page_info[7][i]){
+            str2 += '<td>'+page_info[7][i][j]+'</td>';
+        }
+        str2 += '</tr>';
+    }
+    document.getElementById('whole_info_present').innerHTML = str2;
 }

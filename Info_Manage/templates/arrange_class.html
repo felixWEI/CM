@@ -419,34 +419,53 @@
             <div>有<strong id="teacher_with_expect"></strong>位教师有期望学时, 总计<strong id="total_hours_with_expect"></strong>学时</div>
             <div>其余<strong id="teacher_without_expect"></strong>位教师, 预计平均分配学时为<strong id="ave_hours_without_expect"></strong></div>
             <div class="row">
-              <div class="col-sm-6">预计平均课程难度</div>
-              <div class="col-sm-6">
-                <table>
-                  <tr>
-                    <td>1</td>
-                    <td>2</td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td>4</td>
-                  </tr>
+              <div class="col-sm-3">预计平均课程难度</div>
+              <div class="col-sm-9">
+                <table class="table table-bordered" >
+                  <thead>
+                  <tr><th>课程难度</th><th>10</th><th>9</th><th>8</th><th>7</th><th>6</th><th>5</th><th>4</th><th>3</th><th>2</th><th>1</th></tr>
+                  </thead>
+                  <tbody id="course_degree_info">
+                  </tbody>
                 </table>
               </div>
             </div>
-            <div>课程总数<a></a></div>
-            <table>
-              <tr>
-                <td>1</td>
-                <td>2</td>
-              </tr>
-              <tr>
-                <td>3</td>
-                <td>4</td>
-              </tr>
+            <div>课程总数<strong id="total_courses"></strong></div>
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <td></td><td colspan="10">难度系数</td><td colspan="4">学时</td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td>10</td><td>9</td><td>8</td><td>7</td><td>6</td><td>5</td><td>4</td><td>3</td><td>2</td><td>1</td>
+                  <td>18</td><td>36</td><td>54</td><td>72</td>
+                </tr>
+              </thead>
+              <tbody id="whole_info_present">
+              </tbody>
             </table>
           <div class="modal-footer">
-            <button type="button" class="button">确定</button>
+            <button type="button" class="button" data-toggle="modal" data-target="#arrangeClass2" id="arrange_class_start">确定</button>
             <button type="button" class="button" data-dismiss="modal">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="arrangeClass2" tabindex="-1" role="dialog">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="">排课进行中......</h4>
+          </div>
+          <div class="modal-body " id="">
+
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="button" id="close_arrange_class2">关闭窗口</button>
           </div>
         </div>
       </div>
@@ -462,7 +481,7 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="../static/assets/js/ie10-viewport-bug-workaround.js"></script>
 
-    <script type="text/javascript" src="../static/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"></script>
+{#    <script type="text/javascript" src="../static/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"></script>#}
     <script type="text/javascript" src="../static/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="../static/info_manage/arrange_class.js"></script>
   </body>
