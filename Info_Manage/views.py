@@ -219,7 +219,7 @@ def class_table_upload(request):
         student_type = eachLine[3].value
         year = eachLine[1].value
         class_name = eachLine[5].value
-        semester = eachLine[6].value
+        semester = eachLine[2].value
         course_hour = eachLine[10].value
         course_degree = eachLine[11].value
         course_type = eachLine[12].value
@@ -428,9 +428,98 @@ def start_arrange():
 def arrange_main():
     search_result_course = CourseInfo.objects.all()
     search_result_teacher = TeacherInfo.objects.all()
-    result_1 = []
+    teacher_1 = {}
+    teacher_2 = {}
+    result_1 = {}
+    result_2 = []
+    for eachTeacher in search_result_teacher:
+        teacher_1[eachTeacher.teacher_name] = eachTeacher.teacher_id
+        teacher_2[eachTeacher.teacher_id] = eachTeacher.teacher_name
     for eachCourse in search_result_course:
+        tmp_dict = {'course_list': [], 'degree_list': [], 'total_hours': 0, 'expect_hours': 191}  #todo
         teacher_list = eachCourse.suit_teacher.split(',')
         if len(teacher_list) == int(eachCourse.allow_teachers):
-            result_1.append([eachCourse.course_id, teacher_list])
+            for eachTeacher in teacher_list:
+                if teacher_1[eachTeacher] in result_1.keys():
+                    result_1[teacher_1[eachTeacher]]['course_list'].append(eachCourse.course_id)
+                    result_1[teacher_1[eachTeacher]]['degree_list'].append(eachCourse.course_degree)
+                    result_1[teacher_1[eachTeacher]]['total_hours'] += int(eachCourse.course_hour)
+                else:
+                    tmp_dict['course_list'] = [eachCourse.course_id]
+                    tmp_dict['degree_list'] = [eachCourse.course_degree]
+                    tmp_dict['total_hours'] = int(eachCourse.course_hour)
+                    result_1[teacher_1[eachTeacher]] = tmp_dict
+        else:
+            result_2.append(eachCourse)
+    show_statistical(result_1, result_2)
+    result_2 = sorted(result_2, key=lambda x: x.course_degree, reverse=True)
+    for eachCourse in result_2:
+        tmp_dict = {'course_list': [], 'degree_list': [], 'total_hours': 0, 'expect_hours': 191}  # todo
+        teacher_list = eachCourse.suit_teacher.split(',')
+        allow_teacher = int(eachCourse.allow_teachers)
+        for eachTeacher in teacher_list:
+            if teacher_1[eachTeacher] not in result_1.keys():
+                tmp_dict['course_list'] = [eachCourse.course_id]
+                tmp_dict['degree_list'] = [eachCourse.course_degree]
+                tmp_dict['total_hours'] = int(eachCourse.course_hour)
+                result_1[teacher_1[eachTeacher]] = tmp_dict
+            else:
+                if result_1[teacher_1[eachTeacher]]['total_hours'] + eachCourse.course_hour < result_1[teacher_1[eachTeacher]]['expect_hours']:
+                    if eachCourse.course_degree not in result_1[teacher_1[eachTeacher]]['degree_list'] or eachCourse.course_degree < 8:
+                        result_1[teacher_1[eachTeacher]]['course_list'].append(eachCourse.course_id)
+                        result_1[teacher_1[eachTeacher]]['degree_list'].append(eachCourse.course_degree)
+                        result_1[teacher_1[eachTeacher]]['total_hours'] += int(eachCourse.course_hour)
+            allow_teacher -= 1
+            if allow_teacher == 0:
+                result_2.remove(eachCourse)
+                break
+    show_statistical(result_1, result_2)
+    for tmpKey in result_1.keys():
+        while result_1[tmpKey]['total_hours'] < result_1[tmpKey]['expect_hours']:
+            for eachCourse in result_2:
+                teacher_list = eachCourse.suit_teacher.split(',')
+                allow_teacher = int(eachCourse.allow_teachers)
+                if allow_teacher == 1:
+                    if teacher_2[tmpKey] not in teacher_list:
+                        continue
+                    else:
+                        if result_1[tmpKey]['total_hours']+int(eachCourse.course_hour) < result_1[tmpKey]['expect_hours']:
+                            result_1[tmpKey]['course_list'].append(eachCourse.course_id)
+                            result_1[tmpKey]['degree_list'].append(eachCourse.course_degree)
+                            result_1[tmpKey]['total_hours'] += int(eachCourse.course_hour)
+                            result_2.remove(eachCourse)
+                else:
+                    continue
+            break
+    show_statistical(result_1, result_2)
+    result_3 = {}
+    for tmpKey in result_1.keys():
+        for eachCourse in result_1[tmpKey]['course_list']:
+            if CourseInfo.objects.get(course_id=eachCourse).semester == '一':
+                TeacherInfo.objects.filter(teacher_id=tmpKey).update(first_semester=result_1[tmpKey]['total_hours'])
+            else:
+                TeacherInfo.objects.filter(teacher_id=tmpKey).update(second_semester=result_1[tmpKey]['total_hours'])
+            if eachCourse not in result_3.keys():
+                result_3[eachCourse] = [teacher_2[tmpKey]]
+            else:
+                result_3[eachCourse].append(teacher_2[tmpKey])
+    for tmpKey in result_3.keys():
+        tmp = ",".join(result_3[tmpKey])
+        CourseInfo.objects.filter(course_id=tmpKey).update(teacher_auto_pick=tmp)
+
     return result_1
+
+
+def show_statistical(result_1, result_2):
+    hours_larger = 0
+    for tmpKey in result_1.keys():
+        if result_1[tmpKey]['total_hours'] > result_1[tmpKey]['expect_hours']:
+            hours_larger += 1
+    print '######################'
+    print '## {}'.format(hours_larger)
+    print '######################'
+
+    course_left = len(result_2)
+    print '######################'
+    print '## {}'.format(course_left)
+    print '######################'

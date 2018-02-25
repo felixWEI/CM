@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.9, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
--- Host: localhost    Database: classmanagement
+-- Host: 127.0.0.1    Database: classmanagement
 -- ------------------------------------------------------
--- Server version	5.7.12-log
+-- Server version	5.7.20-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -36,7 +36,7 @@ CREATE TABLE `auth_user` (
   `date_joined` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ CREATE TABLE `auth_user` (
 
 LOCK TABLES `auth_user` WRITE;
 /*!40000 ALTER TABLE `auth_user` DISABLE KEYS */;
-INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$36000$vmEl6DRkn5Mc$HQb1MtfTrpbwsjknxEEw73iSCinVi1eAMdrrmKG3Bcw=','2018-02-21 07:37:28',1,'woodpecker','','','helloweifan@qq.com',1,1,'2018-02-12 06:19:33');
+INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$36000$E9qTDhbXG80u$p5uPL1kcKYIJ5gERU8m/nMjBkdw7m1M0BE3f/JK5xm4=','2018-02-25 12:28:05',1,'woodpecker','','','helloweifan@qq.com',1,1,'2017-12-16 15:04:05'),(2,'pbkdf2_sha256$36000$rCDVh8G0mxn5$u3mwfrjhlXLP1WQ9VItM6Ji3EDJeMY/3ftUIgJy6JqE=','2018-01-06 15:46:33',0,'felix','','','',0,1,'2018-01-06 15:46:09');
 /*!40000 ALTER TABLE `auth_user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -58,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-22 21:01:29
+-- Dump completed on 2018-02-25 22:07:39

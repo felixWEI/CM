@@ -3,7 +3,7 @@
 -- Host: 127.0.0.1    Database: classmanagement
 -- ------------------------------------------------------
 -- Server version	5.7.20-log
-use classmanagement;
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -30,8 +30,15 @@ CREATE TABLE `current_step_info` (
   `s2_postgraduate_1` varchar(45) DEFAULT NULL,
   `s2_postgraduate_2` varchar(45) DEFAULT NULL,
   `s2_doctor` varchar(45) DEFAULT NULL,
+  `s2_start_request` varchar(45) DEFAULT NULL,
+  `s2_deadline` datetime DEFAULT NULL,
+  `s2_teacher_confirm_u` varchar(45) DEFAULT NULL,
+  `s2_teacher_confirm_p1` varchar(45) DEFAULT NULL,
+  `s2_teacher_confirm_p2` varchar(45) DEFAULT NULL,
+  `s2_teacher_confirm_d` varchar(45) DEFAULT NULL,
+  `s3_status_flag` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +47,7 @@ CREATE TABLE `current_step_info` (
 
 LOCK TABLES `current_step_info` WRITE;
 /*!40000 ALTER TABLE `current_step_info` DISABLE KEYS */;
-INSERT INTO `current_step_info` VALUES (2,'start','2017-2018','2','2','2','2');
+INSERT INTO `current_step_info` VALUES (4,'start','2018-2019','2','2','2','2','2','2018-02-22 12:40:00','2','2','2','2','start arrange');
 /*!40000 ALTER TABLE `current_step_info` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,4 +60,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-06 17:28:34
+-- Dump completed on 2018-02-25 22:07:40

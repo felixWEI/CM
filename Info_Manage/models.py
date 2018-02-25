@@ -34,6 +34,8 @@ class CourseInfo(models.Model):
     times_every_week = models.IntegerField(db_column='times_every_week')
     suit_teacher = models.CharField(db_column='suit_teacher', max_length=200, blank=True, null=True)
     teacher_ordered = models.CharField(db_column='teacher_ordered', max_length=200, blank=True, null=True)
+    teacher_auto_pick = models.CharField(db_column='teacher_auto_pick', max_length=200, blank=True, null=True)
+    teacher_final_pick = models.CharField(db_column='teacher_final_pick', max_length=200, blank=True, null=True)
     update_time = models.DateTimeField(db_column='update_time', blank=True, null=True)
 
     class Meta:
