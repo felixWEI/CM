@@ -12,6 +12,7 @@ from Info_Manage.models import TeacherInfo, CourseInfo, CurrentStepInfo
 # Create your views here.
 
 import xlrd
+import math
 from datetime import datetime
 
 
@@ -432,11 +433,42 @@ def arrange_main():
     teacher_2 = {}
     result_1 = {}
     result_2 = []
+    # 权重值
+    total_weight = [0, 0]
     for eachTeacher in search_result_teacher:
-        teacher_1[eachTeacher.teacher_name] = eachTeacher.teacher_id
+        tmp_dict = {'id': eachTeacher.teacher_id, 'expect_1': eachTeacher.first_semester_expect,
+                    'expect_2': eachTeacher.second_semester_expect, 'total_1': 0, 'total_2': 0}
+        total_weight[0] += float(eachTeacher.first_semester_expect)
+        total_weight[1] += float(eachTeacher.second_semester_expect)
+        teacher_1[eachTeacher.teacher_name] = tmp_dict
         teacher_2[eachTeacher.teacher_id] = eachTeacher.teacher_name
+
+    total_hours = [0, 0]
+    total_degrees = [0, 0]
     for eachCourse in search_result_course:
-        tmp_dict = {'course_list': [], 'degree_list': [], 'total_hours': 0, 'expect_hours': 191}  #todo
+        if eachCourse.semester == '一':
+            total_hours[0] += eachCourse.course_hour
+            total_degrees[0] += eachCourse.course_degree
+        else:
+            total_hours[1] += eachCourse.course_hour
+            total_degrees[1] += eachCourse.course_degree
+    hours_ave_1 = total_hours[0]/total_weight[0]
+    hours_ave_2 = total_hours[1]/total_weight[1]
+    degree_ave_1 = total_degrees[0]/total_weight[0]
+    degree_ave_2 = total_degrees[1]/total_weight[1]
+    # # 关于一个学分取整
+    # hours_ave_1 = (hours_ave_1 / 18 + 1) * 18
+    # hours_ave_2 = (hours_ave_2 / 18 + 1) * 18
+    for eachTeacher in search_result_teacher:
+        expect_hours_1 = math.ceil(eachTeacher.first_semester_expect * hours_ave_1 / 18) * 18
+        expect_hours_2 = math.ceil(eachTeacher.first_semester_expect * hours_ave_2 / 18) * 18
+        expect_degree_1 = eachTeacher.first_semester_expect * degree_ave_1
+        expect_degree_2 = eachTeacher.first_semester_expect * degree_ave_2
+        tmp_dict = {'course_list': [], 'degree_list': [], 'total_hours_1': 0, 'expect_hours_1': expect_hours_1, 'total_hours_2': 0,
+                    'expect_hours_2': expect_hours_2, 'expect_degree_1': expect_degree_1, 'expect_degree_2': expect_degree_2}
+        result_1[eachTeacher.teacher_id] = tmp_dict
+
+    for eachCourse in search_result_course:
         teacher_list = eachCourse.suit_teacher.split(',')
         if len(teacher_list) == int(eachCourse.allow_teachers):
             for eachTeacher in teacher_list:
@@ -451,46 +483,46 @@ def arrange_main():
                     result_1[teacher_1[eachTeacher]] = tmp_dict
         else:
             result_2.append(eachCourse)
-    show_statistical(result_1, result_2)
-    result_2 = sorted(result_2, key=lambda x: x.course_degree, reverse=True)
-    for eachCourse in result_2:
-        tmp_dict = {'course_list': [], 'degree_list': [], 'total_hours': 0, 'expect_hours': 191}  # todo
-        teacher_list = eachCourse.suit_teacher.split(',')
-        allow_teacher = int(eachCourse.allow_teachers)
-        for eachTeacher in teacher_list:
-            if teacher_1[eachTeacher] not in result_1.keys():
-                tmp_dict['course_list'] = [eachCourse.course_id]
-                tmp_dict['degree_list'] = [eachCourse.course_degree]
-                tmp_dict['total_hours'] = int(eachCourse.course_hour)
-                result_1[teacher_1[eachTeacher]] = tmp_dict
-            else:
-                if result_1[teacher_1[eachTeacher]]['total_hours'] + eachCourse.course_hour < result_1[teacher_1[eachTeacher]]['expect_hours']:
-                    if eachCourse.course_degree not in result_1[teacher_1[eachTeacher]]['degree_list'] or eachCourse.course_degree < 8:
-                        result_1[teacher_1[eachTeacher]]['course_list'].append(eachCourse.course_id)
-                        result_1[teacher_1[eachTeacher]]['degree_list'].append(eachCourse.course_degree)
-                        result_1[teacher_1[eachTeacher]]['total_hours'] += int(eachCourse.course_hour)
-            allow_teacher -= 1
-            if allow_teacher == 0:
-                result_2.remove(eachCourse)
-                break
-    show_statistical(result_1, result_2)
-    for tmpKey in result_1.keys():
-        while result_1[tmpKey]['total_hours'] < result_1[tmpKey]['expect_hours']:
-            for eachCourse in result_2:
-                teacher_list = eachCourse.suit_teacher.split(',')
-                allow_teacher = int(eachCourse.allow_teachers)
-                if allow_teacher == 1:
-                    if teacher_2[tmpKey] not in teacher_list:
-                        continue
-                    else:
-                        if result_1[tmpKey]['total_hours']+int(eachCourse.course_hour) < result_1[tmpKey]['expect_hours']:
-                            result_1[tmpKey]['course_list'].append(eachCourse.course_id)
-                            result_1[tmpKey]['degree_list'].append(eachCourse.course_degree)
-                            result_1[tmpKey]['total_hours'] += int(eachCourse.course_hour)
-                            result_2.remove(eachCourse)
-                else:
-                    continue
-            break
+
+    # result_2 = sorted(result_2, key=lambda x: x.course_degree, reverse=True)
+    # for eachCourse in result_2:
+    #     tmp_dict = {'course_list': [], 'degree_list': [], 'total_hours': 0, 'expect_hours': 191}  # todo
+    #     teacher_list = eachCourse.suit_teacher.split(',')
+    #     allow_teacher = int(eachCourse.allow_teachers)
+    #     for eachTeacher in teacher_list:
+    #         if teacher_1[eachTeacher] not in result_1.keys():
+    #             tmp_dict['course_list'] = [eachCourse.course_id]
+    #             tmp_dict['degree_list'] = [eachCourse.course_degree]
+    #             tmp_dict['total_hours'] = int(eachCourse.course_hour)
+    #             result_1[teacher_1[eachTeacher]] = tmp_dict
+    #         else:
+    #             if result_1[teacher_1[eachTeacher]]['total_hours'] + eachCourse.course_hour < result_1[teacher_1[eachTeacher]]['expect_hours']:
+    #                 if eachCourse.course_degree not in result_1[teacher_1[eachTeacher]]['degree_list'] or eachCourse.course_degree < 8:
+    #                     result_1[teacher_1[eachTeacher]]['course_list'].append(eachCourse.course_id)
+    #                     result_1[teacher_1[eachTeacher]]['degree_list'].append(eachCourse.course_degree)
+    #                     result_1[teacher_1[eachTeacher]]['total_hours'] += int(eachCourse.course_hour)
+    #         allow_teacher -= 1
+    #         if allow_teacher == 0:
+    #             result_2.remove(eachCourse)
+    #             break
+    # show_statistical(result_1, result_2)
+    # for tmpKey in result_1.keys():
+    #     while result_1[tmpKey]['total_hours'] < result_1[tmpKey]['expect_hours']:
+    #         for eachCourse in result_2:
+    #             teacher_list = eachCourse.suit_teacher.split(',')
+    #             allow_teacher = int(eachCourse.allow_teachers)
+    #             if allow_teacher == 1:
+    #                 if teacher_2[tmpKey] not in teacher_list:
+    #                     continue
+    #                 else:
+    #                     if result_1[tmpKey]['total_hours']+int(eachCourse.course_hour) < result_1[tmpKey]['expect_hours']:
+    #                         result_1[tmpKey]['course_list'].append(eachCourse.course_id)
+    #                         result_1[tmpKey]['degree_list'].append(eachCourse.course_degree)
+    #                         result_1[tmpKey]['total_hours'] += int(eachCourse.course_hour)
+    #                         result_2.remove(eachCourse)
+    #             else:
+    #                 continue
+    #         break
     show_statistical(result_1, result_2)
     result_3 = {}
     for tmpKey in result_1.keys():
@@ -523,3 +555,7 @@ def show_statistical(result_1, result_2):
     print '######################'
     print '## {}'.format(course_left)
     print '######################'
+
+
+def balance_for_high_degree():
+    pass
