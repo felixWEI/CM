@@ -465,25 +465,28 @@ def arrange_main():
         expect_degree_1 = eachTeacher.first_semester_expect * degree_ave_1
         expect_degree_2 = eachTeacher.first_semester_expect * degree_ave_2
         tmp_dict = {'course_list': [], 'degree_list': [], 'total_hours_1': 0, 'expect_hours_1': expect_hours_1, 'total_hours_2': 0,
-                    'expect_hours_2': expect_hours_2, 'expect_degree_1': expect_degree_1, 'expect_degree_2': expect_degree_2}
+                    'expect_hours_2': expect_hours_2, 'expect_degree_1': expect_degree_1, 'expect_degree_2': expect_degree_2,
+                    'total_degree_1': 0, 'total_degree_2': 0}
         result_1[eachTeacher.teacher_id] = tmp_dict
 
     for eachCourse in search_result_course:
         teacher_list = eachCourse.suit_teacher.split(',')
         if len(teacher_list) == int(eachCourse.allow_teachers):
             for eachTeacher in teacher_list:
-                if teacher_1[eachTeacher] in result_1.keys():
-                    result_1[teacher_1[eachTeacher]]['course_list'].append(eachCourse.course_id)
-                    result_1[teacher_1[eachTeacher]]['degree_list'].append(eachCourse.course_degree)
-                    result_1[teacher_1[eachTeacher]]['total_hours'] += int(eachCourse.course_hour)
+                result_1[teacher_1[eachTeacher]['id']]['course_list'].append(eachCourse.course_id)
+                result_1[teacher_1[eachTeacher]['id']]['degree_list'].append(eachCourse.course_degree)
+                if eachCourse.semester == '一':
+                    tmp_str1 = 'total_hours_1'
+                    tmp_str2 = 'total_degree_1'
                 else:
-                    tmp_dict['course_list'] = [eachCourse.course_id]
-                    tmp_dict['degree_list'] = [eachCourse.course_degree]
-                    tmp_dict['total_hours'] = int(eachCourse.course_hour)
-                    result_1[teacher_1[eachTeacher]] = tmp_dict
+                    tmp_str1 = 'total_hours_2'
+                    tmp_str2 = 'total_degree_2'
+                result_1[teacher_1[eachTeacher]['id']][tmp_str1] += int(eachCourse.course_hour)
+                result_1[teacher_1[eachTeacher]['id']][tmp_str2] += int(eachCourse.course_degree)
         else:
             result_2.append(eachCourse)
 
+    balance_for_high_degree(result_1, result_2, teacher_1)
     # result_2 = sorted(result_2, key=lambda x: x.course_degree, reverse=True)
     # for eachCourse in result_2:
     #     tmp_dict = {'course_list': [], 'degree_list': [], 'total_hours': 0, 'expect_hours': 191}  # todo
@@ -557,5 +560,104 @@ def show_statistical(result_1, result_2):
     print '######################'
 
 
-def balance_for_high_degree():
-    pass
+def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_info):
+    high_degree_course_10 = []
+    high_degree_course_9 = []
+    high_degree_course_8 = []
+    result_left_courses = sorted(result_left_courses, key=lambda x: x.course_degree, reverse=True)
+    tmp_teacher_in_high_degree_course = []
+    for eachCourse in result_left_courses:
+        if int(eachCourse.course_degree) == 10:
+            high_degree_course_10.append(eachCourse)
+        elif int(eachCourse.course_degree) == 9:
+            high_degree_course_9.append(eachCourse)
+        elif int(eachCourse.course_degree) == 8:
+            high_degree_course_8.append(eachCourse)
+        else:
+            break
+        result_left_courses.remove(eachCourse)
+    high_degree_course_10 = sorted(high_degree_course_10, key=lambda x: len(x.suit_teacher.split(',')))
+    high_degree_course_9 = sorted(high_degree_course_9, key=lambda x: len(x.suit_teacher.split(',')))
+    high_degree_course_8 = sorted(high_degree_course_8, key=lambda x: len(x.suit_teacher.split(',')))
+    high_degree_course = [high_degree_course_10, high_degree_course_9, high_degree_course_8]
+    for eachDegree in high_degree_course:
+        for eachCourse in eachDegree:
+            print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+            print eachCourse.course_id
+            course_arranged = False
+            teacher_list = eachCourse.suit_teacher.split(',')
+            all_teachers = int(eachCourse.allow_teachers)
+            teacher_without_high_degree = []
+            teacher_with_high_degree = []
+            if eachCourse.semester == '一':
+                tmp_str1 = 'total_hours_1'
+                tmp_str2 = 'expect_hours_1'
+                tmp_str3 = 'total_degree_1'
+            else:
+                tmp_str1 = 'total_hours_2'
+                tmp_str2 = 'expect_hours_2'
+                tmp_str3 = 'total_degree_2'
+            for eachTeacher in teacher_list:
+                print teacher_info[eachTeacher]['id']
+                if not result_all_teachers[teacher_info[eachTeacher]['id']]['degree_list'] or \
+                        max(result_all_teachers[teacher_info[eachTeacher]['id']]['degree_list']) < 8:
+                    teacher_without_high_degree.append(teacher_info[eachTeacher]['id'])
+                else:
+                    teacher_with_high_degree.append(teacher_info[eachTeacher]['id'])
+                    if teacher_info[eachTeacher]['id'] not in tmp_teacher_in_high_degree_course:
+                        tmp_teacher_in_high_degree_course.append(teacher_info[eachTeacher]['id'])
+            if len(teacher_without_high_degree) > 1:
+                teacher_without_high_degree = sorted(teacher_without_high_degree, key=lambda x: result_all_teachers[x][tmp_str1])
+            if len(teacher_with_high_degree) > 1:
+                teacher_with_high_degree = sorted(teacher_with_high_degree, key=lambda x: result_all_teachers[x][tmp_str1])
+            print 'course without high degree {}'.format(teacher_without_high_degree)
+            print 'course with high degree {}'.format(teacher_with_high_degree)
+            for eachTeacher in teacher_without_high_degree:
+                print 'teacher {}'.format(eachTeacher)
+                print 'total hours {}'.format(result_all_teachers[eachTeacher][tmp_str1])
+                print 'degree list {}'.format(result_all_teachers[eachTeacher]['degree_list'])
+                if result_all_teachers[eachTeacher][tmp_str1] + eachCourse.course_hour <= result_all_teachers[eachTeacher][tmp_str2]:
+                    result_all_teachers[eachTeacher]['course_list'].append(eachCourse.course_id)
+                    result_all_teachers[eachTeacher]['degree_list'].append(eachCourse.course_degree)
+                    result_all_teachers[eachTeacher][tmp_str1] += eachCourse.course_hour
+                    result_all_teachers[eachTeacher][tmp_str3] += eachCourse.course_degree
+                    all_teachers -= 1
+                    print 'new total hours {}'.format(result_all_teachers[eachTeacher][tmp_str1])
+                    print 'new degree list {}'.format(result_all_teachers[eachTeacher]['degree_list'])
+                if all_teachers == 0:
+                    course_arranged = True
+                    break
+            if not course_arranged:
+                print '<Bad situation 1>'
+                print 'Will choose teachers with high degree to assign'
+                for eachTeacher in teacher_with_high_degree:
+                    print 'teacher {}'.format(eachTeacher)
+                    print 'total hours {}'.format(result_all_teachers[eachTeacher][tmp_str1])
+                    print 'degree list {}'.format(result_all_teachers[eachTeacher]['degree_list'])
+                    if result_all_teachers[eachTeacher][tmp_str1] + eachCourse.course_hour <= \
+                            result_all_teachers[eachTeacher][tmp_str2]:
+                        result_all_teachers[eachTeacher]['course_list'].append(eachCourse.course_id)
+                        result_all_teachers[eachTeacher]['degree_list'].append(eachCourse.course_degree)
+                        result_all_teachers[eachTeacher][tmp_str1] += eachCourse.course_hour
+                        result_all_teachers[eachTeacher][tmp_str3] += eachCourse.course_degree
+                        all_teachers -= 1
+                        print 'new total hours {}'.format(result_all_teachers[eachTeacher][tmp_str1])
+                        print 'new degree list {}'.format(result_all_teachers[eachTeacher]['degree_list'])
+                        if all_teachers == 0:
+                            course_arranged = True
+                            break
+                if all_teachers != 0:
+                    print '<Bad situation 2>'
+                    print 'Will assign the class to teacher with high degree and high course hour'
+                    print 'teacher {}'.format(teacher_with_high_degree[0])
+                    result_all_teachers[teacher_with_high_degree[0]]['course_list'].append(eachCourse.course_id)
+                    result_all_teachers[teacher_with_high_degree[0]]['degree_list'].append(eachCourse.course_degree)
+                    result_all_teachers[teacher_with_high_degree[0]][tmp_str1] += eachCourse.course_hour
+                    result_all_teachers[teacher_with_high_degree[0]][tmp_str3] += eachCourse.course_degree
+                    print 'new total hours {}'.format(result_all_teachers[teacher_with_high_degree[0]][tmp_str1])
+                    print 'new degree list {}'.format(result_all_teachers[teacher_with_high_degree[0]]['degree_list'])
+
+            print '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
+    for eachItem in tmp_teacher_in_high_degree_course:
+        print '{} {}'.format(eachItem, result_all_teachers[eachItem]['degree_list'])
+    return result_all_teachers, result_left_courses
