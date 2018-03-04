@@ -69,8 +69,10 @@ def teacher_personal(request):
                               eachItem.year, eachItem.class_name, eachItem.semester,
                               eachItem.course_hour, eachItem.course_degree, eachItem.student_type,
                               eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher])
-    expect_semester1 = '100'
-    expect_semester2 = '100'
+    search_result_teacher = TeacherInfo.objects.filter(teacher_id=request.user.username)
+    if search_result_teacher:
+        expect_semester1 = str(search_result_teacher[0].first_semester_expect*100)
+        expect_semester2 = str(search_result_teacher[0].second_semester_expect*100)
     summary_table = [expect_semester1, expect_semester2]
 
     table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '可选教师']
@@ -86,10 +88,27 @@ def teacher_personal(request):
 @csrf_exempt
 def teacher_request_course(request):
     course_id = request.POST['course_id']
-    save_teacher_to_course_info(course_id, request.user.username.upper())
+    searchResult = TeacherInfo.objects.filter(teacher_id=request.user.username)
+    if searchResult:
+        teacher_name = searchResult[0].teacher_name
+    save_teacher_to_course_info(course_id, teacher_name)
     # TODO: result part
     result = 'Pass'
     result = json.dumps({'result': result})
+    return HttpResponse(result)
+
+
+@csrf_exempt
+def teacher_change_expect(request):
+    modify_0 = request.POST['modify_0']
+    modify_1 = request.POST['modify_1']
+    modify_0 = float(modify_0) / 100.0
+    modify_1 = float(modify_1) / 100.0
+    searchResult = TeacherInfo.objects.filter(teacher_id=request.user.username)
+    result = 'fail'
+    if searchResult:
+        TeacherInfo.objects.filter(teacher_id=request.user.username).update(first_semester_expect=modify_0, second_semester_expect=modify_1)
+        result = 'pass'
     return HttpResponse(result)
 
 
@@ -120,10 +139,12 @@ def insert_teacher_list_into_db(teacher_list):
         else:
             TeacherInfo.objects.create(teacher_id=eachTeacher[0], teacher_name=eachTeacher[1], first_semester_expect=1.0, second_semester_expect=1.0)
 
+
 def save_teacher_to_course_info(course_id, user_name):
     search_result = CourseInfo.objects.all().filter(course_id=course_id)
     if search_result:
-        CourseInfo.objects.filter(course_id=course_id).update(suit_teacher=user_name)
+        teacher_list = search_result[0].suit_teacher+',{}'.format(user_name)
+        CourseInfo.objects.filter(course_id=course_id).update(suit_teacher=teacher_list)
     else:
         return False
 
@@ -503,7 +524,7 @@ def arrange_main():
         tmp = ",".join(result_3[tmpKey])
         CourseInfo.objects.filter(course_id=tmpKey).update(teacher_auto_pick=tmp)
 
-    return result_1
+    HttpResponse('Pass')
 
 
 def show_statistical(result_1, result_2):

@@ -125,7 +125,9 @@ $(document).ready(function () {
             data: {"status": status},
             dataType: "json",
             success: function(result){
-                alert('yes')
+                document.getElementById('titleDuringArrange').setAttribute('hidden', 'hidden');
+                document.getElementById('titleAfterArrange').removeAttribute('hidden');
+                document.getElementById('contentAfterArrange').removeAttribute('hidden');
             },
             error: function (){
                 alert('No');
@@ -135,6 +137,7 @@ $(document).ready(function () {
     $("#close_arrange_class2").on('click', function () {
         $('#arrangeClass2').modal('hide');
     });
+
 });
 function click_class(button_id){
     button_value = Number(document.getElementById(button_id).getAttribute('value'));

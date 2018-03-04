@@ -67,6 +67,22 @@ $(document).ready(function () {
 	    })
 
 	});
+    $("#submit_semester_expect").click( function () {
+        modify_0 = document.getElementById('modify_0').value;
+        modify_1 = document.getElementById('modify_1').value;
+        $.ajax({
+            type: 'POST',
+            url: '/teacher_change_expect/',
+            data: {"modify_0": modify_0, 'modify_1':modify_1},
+            dataType: "json",
+            success: function(result){
+                alert('Yes')
+            },
+            error: function (){
+                alert('No');
+            }
+        });
+    });
     initFileInput("excelFile","/class_table_upload/")
 });
 function add_course_info(length){
