@@ -19,19 +19,38 @@ from datetime import datetime
 @login_required()
 def teacher_manage(request):
     teacher_table = TeacherInfo.objects.all()
+    course_table = CourseInfo.objects.all()
     search_result = []
+    weight_total_1 = 0
+    weight_total_2 = 0
     for eachItem in teacher_table:
-        search_result.append([eachItem.teacher_id, eachItem.teacher_name, eachItem.first_semester_expect, eachItem.second_semester_expect,
-                             eachItem.first_semester, eachItem.second_semester])
+        search_result.append([eachItem.teacher_id, eachItem.teacher_name, eachItem.first_semester_expect*100, eachItem.second_semester_expect*100,
+                             eachItem.first_semester_hours, eachItem.second_semester_hours, eachItem.first_semester_degree, eachItem.second_semester_degree])
+        weight_total_1 += eachItem.first_semester_expect
+        weight_total_2 += eachItem.second_semester_expect
     current_teacher_count = len(search_result)
-    expect_for_semester1 = 0
-    expect_for_semester2 = 0
-    others_semester1 = 0
-    others_semester2 = 0
-    summary_table = [current_teacher_count, expect_for_semester1, expect_for_semester2, others_semester1, others_semester2]
-    table_head = ['教师代码', '教师姓名', '期望学时1', '期望学时2', '估算学时1', '估算学时2']
+    total_hours_1 = 0
+    total_hours_2 = 0
+    total_degree_1 = 0
+    total_degree_2 = 0
+    for eachItem in course_table:
+        if eachItem.semester == '一':
+            total_hours_1 += eachItem.course_hour
+            total_degree_1 += eachItem.course_degree
+        else:
+            total_hours_2 += eachItem.course_hour
+            total_degree_2 += eachItem.course_degree
+    expect_hours_for_semester1 = math.ceil((total_hours_1/weight_total_1)/18)*18
+    expect_hours_for_semester2 = math.ceil((total_hours_2/weight_total_2)/18)*18
+    expect_degree_for_semester1 = round(total_degree_1/weight_total_1, 2)
+    expect_degree_for_semester2 = round(total_degree_2/weight_total_2, 2)
+
+    summary_table = [current_teacher_count, expect_hours_for_semester1, expect_hours_for_semester2,
+                     expect_degree_for_semester1, expect_degree_for_semester2]
+    table_head = ['教师代码', '教师姓名', '期望学时1', '期望学时2', '学时1', '学时2','难度1', '难度2']
     return render(request, 'teacher_manage.html', {'UserName': request.user.username.upper(),
-                                                   'teacher_table': search_result, 'summary_table': summary_table, 'table_head': table_head})
+                                                   'teacher_table': search_result, 'summary_table': summary_table,
+                                                   'table_head': table_head})
 
 
 @csrf_exempt
@@ -64,18 +83,24 @@ def save_teacher_into_database(all_teacher):
 def teacher_personal(request):
     course_table = CourseInfo.objects.all()
     search_result = []
+    tmp = ''
     for eachItem in course_table:
+        if request.user.first_name+request.user.last_name in eachItem.teacher_ordered.split(','):
+            tmp = '已申报'
+        else:
+            tmp = ''
         search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
                               eachItem.year, eachItem.class_name, eachItem.semester,
                               eachItem.course_hour, eachItem.course_degree, eachItem.student_type,
-                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher])
+                              eachItem.allow_teachers, eachItem.times_every_week, tmp])
+
     search_result_teacher = TeacherInfo.objects.filter(teacher_id=request.user.username)
     if search_result_teacher:
         expect_semester1 = str(search_result_teacher[0].first_semester_expect*100)
         expect_semester2 = str(search_result_teacher[0].second_semester_expect*100)
     summary_table = [expect_semester1, expect_semester2]
 
-    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '可选教师']
+    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '课程状态']
     default_value_for_class = ['法学理论', '法律史', '宪法学', '民商法学', '诉讼法学', '经济法学', '环保法', '国际法学', '刑法学',
                                '宪法学与行政法学', '环境与资源保护法', '国际法', '二专', '法学院本科', '跨校辅修']
     table_default = ['', '', ['本科', '法律硕士', '法学硕士', '博士'], ['17', '16', '15', '14'], default_value_for_class,
@@ -157,7 +182,7 @@ def class_manage(request):
         search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
                               eachItem.year, eachItem.class_name, eachItem.semester,
                               eachItem.course_hour, eachItem.course_degree, eachItem.student_type,
-                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher])
+                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.teacher_auto_pick])
     current_course_count = len(search_result)
     current_hour_count = 0
     current_degree_count = 0
@@ -443,7 +468,7 @@ def start_arrange():
     degree_count_p1.extend(tmp_p1)
     degree_count_p2.extend(tmp_p2)
     degree_count_d.extend(tmp_d)
-    return [teacher_count,teacher_with_expect_count, total_hours_with_expect, teacher_without_expect_count, round(ave_hours_without_expect, 2),
+    return [teacher_count, teacher_with_expect_count, total_hours_with_expect, teacher_without_expect_count, round(ave_hours_without_expect, 2),
             degree_count, total_courses, [degree_count_u, degree_count_p1, degree_count_p2, degree_count_d]]
 
 
@@ -506,16 +531,18 @@ def arrange_main():
                 result_1[teacher_1[eachTeacher]['id']][tmp_str2] += int(eachCourse.course_degree)
         else:
             result_2.append(eachCourse)
-
+    show_statistical(result_1)
     result_1, result_2 = balance_for_high_degree(result_1, result_2, teacher_1)
+    show_statistical(result_1)
     result_1, result_2 = balance_for_course_hour(result_1, result_2, teacher_1)
+    show_statistical(result_1)
     result_3 = {}
     for tmpKey in result_1.keys():
         for eachCourse in result_1[tmpKey]['course_list']:
             if CourseInfo.objects.get(course_id=eachCourse).semester == '一':
-                TeacherInfo.objects.filter(teacher_id=tmpKey).update(first_semester=result_1[tmpKey]['total_hours_1'])
+                TeacherInfo.objects.filter(teacher_id=tmpKey).update(first_semester_hours=result_1[tmpKey]['total_hours_1'])
             else:
-                TeacherInfo.objects.filter(teacher_id=tmpKey).update(second_semester=result_1[tmpKey]['total_hours_2'])
+                TeacherInfo.objects.filter(teacher_id=tmpKey).update(second_semester_hours=result_1[tmpKey]['total_hours_2'])
             if eachCourse not in result_3.keys():
                 result_3[eachCourse] = [teacher_2[tmpKey]]
             else:
@@ -527,19 +554,56 @@ def arrange_main():
     HttpResponse('Pass')
 
 
-def show_statistical(result_1, result_2):
-    hours_larger = 0
+def show_statistical(result_1):
+    print '##########################################################'
+    print 'showing available information'
     for tmpKey in result_1.keys():
-        if result_1[tmpKey]['total_hours'] > result_1[tmpKey]['expect_hours']:
-            hours_larger += 1
-    print '######################'
-    print '## {}'.format(hours_larger)
-    print '######################'
+        avail_hours_1 = result_1[tmpKey]['expect_hours_1'] - result_1[tmpKey]['total_hours_1']
+        avail_hours_2 = result_1[tmpKey]['expect_hours_2'] - result_1[tmpKey]['total_hours_2']
+        avail_degree_1 = result_1[tmpKey]['expect_degree_1'] - result_1[tmpKey]['total_degree_1']
+        avail_degree_2 = result_1[tmpKey]['expect_degree_2'] - result_1[tmpKey]['total_degree_2']
+        print 'teacher id: {} available hours {} {} available degree {} {}'.format(tmpKey, avail_hours_1, avail_hours_2,
+                                                                                   avail_degree_1, avail_degree_2)
+    print '##########################################################'
 
-    course_left = len(result_2)
-    print '######################'
-    print '## {}'.format(course_left)
-    print '######################'
+
+# 先学时大小再老师个数
+def sort_new_1(result_list):
+    result_list = sorted(result_list, key=lambda x: x.course_hour, reverse=True)
+    result_list_tmp = []
+    key_value = []
+    for eachItem in result_list:
+        if eachItem.course_hour in key_value:
+            result_list_tmp[key_value.index(eachItem.course_hour)].append(eachItem)
+        else:
+            key_value.append(eachItem.course_hour)
+            result_list_tmp.append([eachItem])
+    result_list = []
+    for eachItem in result_list_tmp:
+        if len(eachItem) > 1:
+            tmp = sorted(eachItem, key=lambda x: len(x.suit_teacher.split(',')))
+            result_list.extend(tmp)
+        else:
+            result_list.append(eachItem[0])
+    # for eachItem in result_list:
+    #     print eachItem.course_hour
+    #     print len(eachItem.suit_teacher.split(','))
+    return result_list
+
+
+# 先available学时 再 available难度
+def sort_new_2(result_list, key_value_1, key_value_2):
+    result_list = sorted(result_list, key=lambda x: x.course_hour)
+    result_list_tmp = []
+    key_value = []
+    for eachItem in result_list:
+        if eachItem.course_hour in key_value:
+            result_list_tmp[key_value.index(eachItem.course_hour)].append(eachItem)
+        else:
+            result_list_tmp.append([eachItem])
+    for eachItem in result_list_tmp:
+        pass
+    return result_list
 
 
 def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_info):
@@ -559,9 +623,9 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
             high_degree_course_8.append(eachCourse)
         else:
             continue
-    high_degree_course_10 = sorted(high_degree_course_10, key=lambda x: len(x.suit_teacher.split(',')))
-    high_degree_course_9 = sorted(high_degree_course_9, key=lambda x: len(x.suit_teacher.split(',')))
-    high_degree_course_8 = sorted(high_degree_course_8, key=lambda x: len(x.suit_teacher.split(',')))
+    high_degree_course_10 = sort_new_1(high_degree_course_10)
+    high_degree_course_9 = sort_new_1(high_degree_course_9)
+    high_degree_course_8 = sort_new_1(high_degree_course_8)
     high_degree_course = [high_degree_course_10, high_degree_course_9, high_degree_course_8]
     for eachDegree in high_degree_course:
         for eachCourse in eachDegree:

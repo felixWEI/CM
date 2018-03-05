@@ -11,8 +11,10 @@ class TeacherInfo(models.Model):
     teacher_name = models.CharField(db_column='teacher_name', max_length=45, blank=True, null=True)
     first_semester_expect = models.FloatField(db_column='first_semester_expect', blank=True, null=True)
     second_semester_expect = models.FloatField(db_column='second_semester_expect', blank=True, null=True)
-    first_semester = models.FloatField(db_column='first_semester', blank=True, null=True)
-    second_semester = models.FloatField(db_column='second_semester', blank=True, null=True)
+    first_semester_hours = models.FloatField(db_column='first_semester_hours', blank=True, null=True)
+    second_semester_hours = models.FloatField(db_column='second_semester_hours', blank=True, null=True)
+    first_semester_degree = models.FloatField(db_column='first_semester_degree', blank=True, null=True)
+    second_semester_degree = models.FloatField(db_column='second_semester_degree', blank=True, null=True)
     update_time = models.DateTimeField(db_column='update_time', blank=True, null=True)
 
     class Meta:

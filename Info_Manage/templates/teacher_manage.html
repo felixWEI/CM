@@ -167,13 +167,13 @@
             </div>
             <div class="col-sm-2">
                 <div class="placeholders2">
-                  <span class="">其余平均学时1</span>
+                  <span class="">期望难度总数1</span>
                   <div>{{ summary_table.3 }}</div>
                 </div>
             </div>
             <div class="col-sm-2">
                 <div class="placeholders2">
-                  <span class="">其余平均学时2</span>
+                  <span class="">期望难度总数2</span>
                   <div>{{ summary_table.3 }}</div>
                 </div>
             </div>
@@ -188,12 +188,9 @@
             <table class="table table-striped" id="table_teacher">
               <thead>
                 <tr>
-                  <th>教师代码</th>
-                  <th>教师姓名</th>
-                  <th>期望学时1</th>
-                  <th>期望学时2</th>
-                  <th>估算学时1</th>
-                  <th>估算学时2</th>
+                {% for row in table_head %}
+                  <th>{{ row }}</th>
+                {% endfor %}
                 </tr>
               </thead>
               <tbody>
@@ -249,7 +246,11 @@
                 {% for row in table_head %}
                   <div class="row form-group">
                     <label for={{forloop.counter0}} class="col-sm-2 control-label">{{ row }}</label>
-                    <div class="col-sm-10"><input id="{{forloop.counter0}}"  class="form-control" type="text" placeholder="{{ row }} "></div>
+                    {% if forloop.counter0 < 4 and forloop.counter0 > 1 %}
+                      <div class="col-sm-10"><input id="{{forloop.counter0}}"  class="form-control" type="text" placeholder="{{ row }} "></div>
+                    {% else %}
+                      <div class="col-sm-10"><input id="{{forloop.counter0}}" class="form-control" type="text" disabled="disabled" placeholder="{{ row }} "></div>
+                    {% endif %}
                   </div>
                 {% endfor %}
               </form>

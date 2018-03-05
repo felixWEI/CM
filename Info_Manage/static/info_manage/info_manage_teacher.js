@@ -48,12 +48,28 @@ $(document).ready(function () {
 	});
 
     $('#edit_teacher_info').click( function(){
-        teacher_code = document.getElementById('teacher_code_2').value
-        teacher_name = document.getElementById('teacher_name_2').value
-        time_first_season = document.getElementById('time_first_season_2').value
-        time_second_season = document.getElementById('time_second_season_2').value
-        class_order = document.getElementById('class_order_2').value
-        t.row('.selected').data([teacher_code, teacher_name, time_first_season, time_second_season, class_order]).draw();
+        teacher_code = document.getElementById('0').value
+        teacher_name = document.getElementById('1').value
+        first_semester_expect = document.getElementById('2').value
+        second_semester_expect = document.getElementById('3').value
+        hours_semester_1 = document.getElementById('4').value
+        hours_semester_2 = document.getElementById('5').value
+        degree_semester_1 = document.getElementById('6').value
+        degree_semester_2 = document.getElementById('7').value
+        t.row('.selected').data([teacher_code, teacher_name, first_semester_expect, second_semester_expect, hours_semester_1,hours_semester_2,
+        degree_semester_1, degree_semester_2]).draw();
+        $.ajax({
+            type: 'POST',
+            url: '/teacher_change_expect/',
+            data: {"modify_0": first_semester_expect, 'modify_1':second_semester_expect},
+            dataType: "json",
+            success: function(result){
+                console.log('Yes');
+            },
+            error: function (){
+                console.log('No');
+            }
+        });
     });
 
 	$('#add_teacher_info').on('click',function(){
