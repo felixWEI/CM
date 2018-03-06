@@ -219,7 +219,7 @@ function initFileInput(ctrlName, uploadUrl) {
 
 $("#excelFile").on("fileuploaded", function (event, data, previewId, index) {
     console.log(data);
-    if(data.response.success == true)
+    if(data.response.result == 'Pass')
     {
         alert(data.files[index].name + "上传成功!");
     //关闭
