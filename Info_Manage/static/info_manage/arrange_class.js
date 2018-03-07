@@ -101,6 +101,19 @@ $(document).ready(function () {
         $('ul.setup-panel li:eq(3)').removeClass('disabled');
         $('ul.setup-panel li a[href="#step-4"]').trigger('click');
         $(this).remove();
+        status = 'arrange over';
+        $.ajax({
+            type: 'POST',
+            url: '/arrange_step_3/',
+            data: {"status": status},
+            dataType: "json",
+            success: function(result){
+                alert('Yes');
+            },
+            error: function (){
+                alert('No');
+            }
+        });
     });
     $("#arrange_class_with_teacher").on('click', function () {
         status = 'arrange main';
@@ -137,7 +150,6 @@ $(document).ready(function () {
     $("#close_arrange_class2").on('click', function () {
         $('#arrangeClass2').modal('hide');
     });
-
 });
 function click_class(button_id){
     button_value = Number(document.getElementById(button_id).getAttribute('value'));
@@ -288,4 +300,8 @@ function initialize_arrange_class(page_info) {
         str2 += '</tr>';
     }
     document.getElementById('whole_info_present').innerHTML = str2;
+}
+function get_course_report(){
+    var post_url = '/arrange_export_report/';
+    location.replace(post_url);
 }

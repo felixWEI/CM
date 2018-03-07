@@ -11,13 +11,19 @@ from django.http import HttpResponse
 from Info_Manage.models import TeacherInfo, CourseInfo, CurrentStepInfo
 # Create your views here.
 
+import os
 import xlrd
 import math
 from datetime import datetime
+import xlwt
+from io import StringIO, BytesIO
 
 
 @login_required()
 def teacher_manage(request):
+    search_result = CurrentStepInfo.objects.all()
+    if search_result:
+        year = search_result[0].s1_year_info
     teacher_table = TeacherInfo.objects.all()
     course_table = CourseInfo.objects.all()
     search_result = []
@@ -48,9 +54,9 @@ def teacher_manage(request):
     summary_table = [current_teacher_count, expect_hours_for_semester1, expect_hours_for_semester2,
                      expect_degree_for_semester1, expect_degree_for_semester2]
     table_head = ['教师代码', '教师姓名', '期望学时1', '期望学时2', '学时1', '学时2','难度1', '难度2']
-    return render(request, 'teacher_manage.html', {'UserName': request.user.username.upper(),
+    return render(request, 'teacher_manage.html', {'UserName': request.user.first_name+request.user.last_name+request.user.username,
                                                    'teacher_table': search_result, 'summary_table': summary_table,
-                                                   'table_head': table_head})
+                                                   'table_head': table_head, 'year': year})
 
 
 @csrf_exempt
@@ -81,6 +87,9 @@ def save_teacher_into_database(all_teacher):
 
 @login_required()
 def teacher_personal(request):
+    search_result = CurrentStepInfo.objects.all()
+    if search_result:
+        year = search_result[0].s1_year_info
     course_table = CourseInfo.objects.all()
     search_result = []
     tmp = ''
@@ -105,9 +114,9 @@ def teacher_personal(request):
                                '宪法学与行政法学', '环境与资源保护法', '国际法', '二专', '法学院本科', '跨校辅修']
     table_default = ['', '', ['本科', '法律硕士', '法学硕士', '博士'], ['17', '16', '15', '14'], default_value_for_class,
                     ['一', '二', '三', '四', '五', '七', '八'], '', ['1', '2', '3', '4', '5'], ['必修', '选修'], '', '']
-    return render(request, 'teacher_personal.html', {'UserName': request.user.username.upper(), 'class_table': search_result,
+    return render(request, 'teacher_personal.html', {'UserName': request.user.first_name+request.user.last_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
-                                                 'summary_table': summary_table})
+                                                 'summary_table': summary_table, 'year': year})
 
 
 @csrf_exempt
@@ -174,13 +183,28 @@ def save_teacher_to_course_info(course_id, user_name):
 
 @login_required()
 def class_manage(request):
+    search_result = CurrentStepInfo.objects.all()
+    if search_result:
+        current_year = search_result[0].s1_year_info
     course_table = CourseInfo.objects.all()
     search_result = []
+    class_name = set()
+    student_type = set()
+    year = set()
+    semester = set()
+    course_hour = set()
+    course_degree = set()
     for eachItem in course_table:
         search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
                               eachItem.year, eachItem.class_name, eachItem.semester,
-                              eachItem.course_hour, eachItem.course_degree, eachItem.student_type,
-                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.teacher_auto_pick])
+                              eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
+                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher])
+        class_name.add(eachItem.course_name)
+        student_type.add(eachItem.student_type)
+        year.add(eachItem.year)
+        semester.add(eachItem.semester)
+        course_hour.add(eachItem.course_hour)
+        course_degree.add(eachItem.course_degree)
     current_course_count = len(search_result)
     current_hour_count = 0
     current_degree_count = 0
@@ -193,13 +217,11 @@ def class_manage(request):
     summary_table = [current_course_count, current_hour_count, current_degree_count, current_course_claim]
 
     table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '可选教师']
-    default_value_for_class = ['法学理论', '法律史', '宪法学', '民商法学', '诉讼法学', '经济法学', '环保法', '国际法学', '刑法学',
-                               '宪法学与行政法学', '环境与资源保护法', '国际法', '二专', '法学院本科', '跨校辅修']
-    table_default = ['', '', ['本科', '法律硕士', '法学硕士', '博士'], ['17', '16', '15', '14'], default_value_for_class,
-                     ['一', '二', '三', '四', '五', '七', '八'], ['54', '36'], ['1', '2', '3', '4', '5'], ['必修', '选修'], '', '']
-    return render(request, 'class_manage.html', {'UserName': request.user.username.upper(), 'class_table': search_result,
+    table_default = ['', '', student_type, year, class_name,
+                     semester, course_hour, course_degree, ['必修', '选修'], '', '']
+    return render(request, 'class_manage.html', {'UserName': request.user.first_name+request.user.last_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
-                                                 'summary_table': summary_table})
+                                                 'summary_table': summary_table, 'year': current_year})
 
 
 @csrf_exempt
@@ -325,7 +347,12 @@ def arrange_class(request):
 
         if search_result[0].s3_status_flag == 'start arrange':
             step_position[2] = 'active'
-    return render(request, 'arrange_class.html', {'UserName': request.user.username.upper(), 'step_info': step_info,
+        elif search_result[0].s3_status_flag == 'arrange over':
+            step_position[2] = 'active'
+            step_position[3] = 'active'
+        else:
+            pass
+    return render(request, 'arrange_class.html', {'UserName': request.user.first_name+request.user.last_name+request.user.username, 'step_info': step_info,
                                                   'step_position': step_position})
 
 
@@ -403,6 +430,8 @@ def arrange_step_3(request):
             result['info'] = start_arrange()
         elif status == 'arrange main':
             arrange_main()
+        elif status == 'arrange over':
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s3_status_flag=status)
         else:
             result['status'] = 'Fail'
     result = json.dumps({'result': result})
@@ -774,3 +803,37 @@ def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_in
             print 'new degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
 
     return result_all_teachers, result_left_courses
+
+
+@csrf_exempt
+def arrange_export_report(request):
+    now = datetime.now().strftime("%Y-%m-%d %H-%M")
+    ws = xlwt.Workbook(encoding='utf-8')
+    w = ws.add_sheet(u"排课结果")
+    course_table = CourseInfo.objects.all()
+    search_result = []
+    for eachItem in course_table:
+        search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
+                              eachItem.year, eachItem.class_name, eachItem.semester,
+                              eachItem.course_hour, eachItem.course_degree, eachItem.student_type,
+                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.teacher_auto_pick])
+
+    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '上课老师']
+    for col, eachTitle in enumerate(table_head):
+        w.write(0, col, eachTitle)
+    for row, eachRow in enumerate(search_result):
+        for col, eachCol in enumerate(eachRow):
+            w.write(row+1, col, eachCol)
+    exist_file = os.path.exists("last_report.xls")
+    if exist_file:
+        os.remove(r"last_report.xls")
+    ws.save("last_report.xls")
+    sio = BytesIO()
+    ws.save(sio)
+    sio.seek(0)
+    response = HttpResponse(sio.getvalue(), content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename={}_{}.xlsx'.format('arrange_result', now)
+    response.write(sio.getvalue())
+    return response
+
+

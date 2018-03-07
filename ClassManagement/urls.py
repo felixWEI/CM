@@ -19,7 +19,7 @@ from django.contrib.auth.views import login
 from Home.views import home_page, logout_view
 from Info_Manage.views import teacher_manage, teacher_personal, class_manage, teacher_change_expect, teacher_request_course,\
                         arrange_class, teacher_save_and_config, teacher_table_upload, class_save_one_row, class_delete_one_row, \
-                        class_table_upload, arrange_step_1, arrange_step_2, arrange_step_3
+                        class_table_upload, arrange_step_1, arrange_step_2, arrange_step_3, arrange_export_report
 from Info_Search.views import info_search_main
 
 urlpatterns = [
@@ -41,5 +41,6 @@ urlpatterns = [
     url(r'^arrange_step_1/', arrange_step_1),
     url(r'^arrange_step_2/', arrange_step_2),
     url(r'^arrange_step_3/', arrange_step_3),
+    url(r'^arrange_export_report/', arrange_export_report),
     url(r'^info_search/', info_search_main),
 ]
