@@ -19,6 +19,15 @@ $(document).ready(function () {
             $(this).addClass('selected');
         }
     } );
+    $('#e_11 tbody').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    } );
 
     $('#delete').click( function () {
         course_id = t.row('.selected').data()[0];
@@ -28,6 +37,25 @@ $(document).ready(function () {
             type: 'POST',
             url: '/class_delete_one_row/',
             data: {'course_id': course_id},
+            dataType: 'json',
+            success: function(result){
+                alert('Pass');
+            },
+            error: function(){
+                alert('Delete fail');
+            }
+        })
+
+    } );
+
+    $('#delete_e_11').click( function () {
+        teacher_id = t.row('.selected').data()[0];
+        teacher_name = t.row('.selected').data()[1];
+        t.row('.selected').remove().draw( false );
+        $.ajax({
+            type: 'POST',
+            url: '/class_delete_one_teacher/',
+            data: {'course_id': teacher_id, 'teacher_name': teacher_name},
             dataType: 'json',
             success: function(result){
                 alert('Pass');
@@ -134,12 +162,30 @@ function edit_course_info(){
     document.getElementById('e_8').value = t.row('.selected').data()[8];
     document.getElementById('e_9').value = t.row('.selected').data()[9];
     document.getElementById('e_10').value = t.row('.selected').data()[10];
-	t_teacher_edit = $('#e_11').DataTable({
-	    dom: '<"top">rt<"bottom"><"clear">',
-	    "searching": false,
-        "ordering": false,
-        "data": [[t.row('.selected').data()[11]]]
-	});
+	$.ajax({
+	    type: 'POST',
+        url:'/class_get_suit_teacher/',
+        data: {"course_id": t.row('.selected').data()[0]},
+        dataType: "json",
+        success: function (result) {
+            var teacher_list = result['result_list'];
+            console.log(teacher_list)
+            $('#e_11').DataTable({
+                dom: '<"top">rt<"bottom"><"clear">',
+                "searching": false,
+                "ordering": false,
+                "data": teacher_list,
+                "column":[
+                    {title: '工号'},
+                    {title: '姓名'}
+                ]
+            });
+        },
+        error: function () {
+            alert('fail');
+        }
+
+	})
 
 }
 function submit_edit_info(){
@@ -159,15 +205,15 @@ function submit_edit_info(){
     var row_str = JSON.stringify(row_data);
     $.ajax({
         type: 'POST',
-            url:'/class_save_one_row/',
-            data: {"row_data": row_str},
-            dataType: "json",
-            success: function (result) {
-                alert('success');
-            },
-            error: function () {
-                alert('fail');
-            }
+        url:'/class_save_one_row/',
+        data: {"row_data": row_str},
+        dataType: "json",
+        success: function (result) {
+            alert('success');
+        },
+        error: function () {
+            alert('fail');
+        }
 
     })
 

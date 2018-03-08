@@ -267,6 +267,22 @@ def delete_course_from_database(course_id):
 
 
 @csrf_exempt
+def class_get_suit_teacher(request):
+    course_id = request.POST['course_id']
+    search_result = CourseInfo.objects.filter(course_id=course_id)
+    if search_result:
+        teacher_list = search_result[0].suit_teacher.split(',')
+    result_list = []
+    for eachTeacher in teacher_list:
+        search_result = TeacherInfo.objects.filter(teacher_name=eachTeacher)
+        if search_result:
+            tmp = [search_result[0].teacher_id, eachTeacher]
+            result_list.append(tmp)
+    result = json.dumps({'result_list': result_list})
+    return HttpResponse(result)
+
+
+@csrf_exempt
 def class_table_upload(request):
     input_file = request.FILES.get("file_data", None)
     work_book = xlrd.open_workbook(filename=None, file_contents=input_file.read())
@@ -282,7 +298,7 @@ def class_table_upload(request):
     for eachLine in line_content:
 
         course_id = eachLine[7].value
-        course_name  = eachLine[8].value
+        course_name = eachLine[8].value
         student_type = eachLine[3].value
         year = eachLine[1].value
         class_name = eachLine[5].value
@@ -832,7 +848,7 @@ def arrange_export_report(request):
     ws.save(sio)
     sio.seek(0)
     response = HttpResponse(sio.getvalue(), content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename={}_{}.xlsx'.format('arrange_result', now)
+    response['Content-Disposition'] = 'attachment; filename={}_{}.xls'.format('arrange_result', now)
     response.write(sio.getvalue())
     return response
 
