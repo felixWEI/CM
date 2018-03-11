@@ -98,10 +98,11 @@ def teacher_personal(request):
             tmp = '已申报'
         else:
             tmp = ''
-        search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
-                              eachItem.year, eachItem.class_name, eachItem.semester,
-                              eachItem.course_hour, eachItem.course_degree, eachItem.student_type,
-                              eachItem.allow_teachers, eachItem.times_every_week, tmp])
+        for eachClass in eachItem.class_name.split(' '):
+            search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
+                                  eachItem.year, eachClass.split('-')[-1], eachItem.semester,
+                                  eachItem.course_hour, eachItem.course_degree, eachItem.student_type,
+                                  eachItem.allow_teachers, eachItem.times_every_week, tmp])
 
     search_result_teacher = TeacherInfo.objects.filter(teacher_id=request.user.username)
     if search_result_teacher:
@@ -195,11 +196,12 @@ def class_manage(request):
     course_hour = set()
     course_degree = set()
     for eachItem in course_table:
-        search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
-                              eachItem.year, eachItem.class_name, eachItem.semester,
-                              eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
-                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher])
-        class_name.add(eachItem.course_name)
+        for eachClass in eachItem.class_name.split(' '):
+            search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
+                                  eachItem.year, eachClass.split('-')[-1], eachItem.semester,
+                                  eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
+                                  eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher])
+            class_name.add(eachClass.split('-')[-1])
         student_type.add(eachItem.student_type)
         year.add(eachItem.year)
         semester.add(eachItem.semester)
@@ -216,12 +218,28 @@ def class_manage(request):
             current_course_claim += 1
     summary_table = [current_course_count, current_hour_count, current_degree_count, current_course_claim]
 
-    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '可选教师']
+    table_head = ['代码', '名称', '学位', '学年', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '可选教师']
     table_default = ['', '', student_type, year, class_name,
                      semester, course_hour, course_degree, ['必修', '选修'], '', '']
     return render(request, 'class_manage.html', {'UserName': request.user.first_name+request.user.last_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
                                                  'summary_table': summary_table, 'year': current_year})
+
+@csrf_exempt
+def class_filter_by_submit(request):
+    student_type = request.POST['type'].strip().split(' ')
+    semester = request.POST['semester'].strip().split(' ')
+    course_table = CourseInfo.objects.all()
+    search_result = []
+    for eachItem in course_table:
+        if eachItem.semester in semester and eachItem.student_type in student_type:
+            for eachClass in eachItem.class_name.split(' '):
+                search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
+                                      eachItem.year, eachClass.split('-')[-1], eachItem.semester,
+                                      eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
+                                      eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher])
+    result = json.dumps({'result': search_result})
+    return HttpResponse(result)
 
 
 @csrf_exempt
@@ -301,7 +319,7 @@ def class_table_upload(request):
         course_name = eachLine[8].value
         student_type = eachLine[3].value
         year = eachLine[1].value
-        class_name = eachLine[5].value
+        class_name = '{}-{}_{}'.format(student_type, int(eachLine[4].value) if eachLine[4].value else '', eachLine[5].value)
         semester = eachLine[2].value
         course_hour = eachLine[10].value
         course_degree = eachLine[11].value
@@ -320,8 +338,34 @@ def class_table_upload(request):
 
 
 def save_course_table_into_database(class_info_to_save):
+    course_dict = {}
+    output = ""
     for eachCourse in class_info_to_save:
-        save_course_into_database(eachCourse)
+        if eachCourse[0] not in course_dict.keys():
+            course_dict[eachCourse[0]] = eachCourse
+        else:
+            if course_dict[eachCourse[0]][5] != eachCourse[5]:
+                output += "{}, 学期信息与相同课程号发生冲突\n".format(eachCourse)
+            elif eachCourse[4].split('_')[0] not in course_dict[eachCourse[0]][4]:
+                output += "{}, 班级信息与相同课程号发生冲突\n".format(eachCourse)
+            else:
+                course_dict[eachCourse[0]][4] += ' {}'.format(eachCourse[4])
+
+    for tmpKey in course_dict.keys():
+        each_course = course_dict[tmpKey]
+        save_course_into_database(each_course)
+    return output
+
+
+@csrf_exempt
+def class_get_teacher_name(request):
+    teacher_id = request.POST['teacher_id']
+    search_result = TeacherInfo.objects.all().filter(teacher_id=teacher_id)
+    teacher_name = '没有找到与工号相对应的老师'
+    if search_result:
+        teacher_name = search_result[0].teacher_name
+    result = json.dumps({'teacher_name': teacher_name})
+    return HttpResponse(result)
 
 
 @login_required()

@@ -49,22 +49,9 @@ $(document).ready(function () {
     } );
 
     $('#delete_e_11').click( function () {
-        teacher_id = t.row('.selected').data()[0];
-        teacher_name = t.row('.selected').data()[1];
-        t.row('.selected').remove().draw( false );
-        $.ajax({
-            type: 'POST',
-            url: '/class_delete_one_teacher/',
-            data: {'course_id': teacher_id, 'teacher_name': teacher_name},
-            dataType: 'json',
-            success: function(result){
-                alert('Pass');
-            },
-            error: function(){
-                alert('Delete fail');
-            }
-        })
-
+        teacher_id = $('#e_11').DataTable().row('.selected').data()[0];
+        teacher_name = $('#e_11').DataTable().row('.selected').data()[1];
+        $('#e_11').DataTable().row('.selected').remove().draw( false );
     } );
 
     $('#edit_teacher_info').click( function(){
@@ -111,8 +98,82 @@ $(document).ready(function () {
             }
         });
     });
+//    $("#add_e_11").click( function(){
+//        $.ajax({
+//            type: 'POST',
+//            url: '/class_get_all_teacher/',
+//            dataType: "json",
+//            success: function(result){
+//                alert('Yes')
+//            },
+//            error: function (){
+//                alert('No');
+//            }
+//        });
+//    })
+    $("#search_teacher_id").click( function(){
+        teacher_id = document.getElementById('e_11_teacher_id').value;
+        console.log(teacher_id);
+        $.ajax({
+            type: 'POST',
+            url: '/class_get_teacher_name/',
+            data: {'teacher_id': teacher_id},
+            dataType: "json",
+            success: function(result){
+                document.getElementById('helpBlock').innerHTML = result['teacher_name'];
+            },
+            error: function (){
+                alert('No');
+            }
+        });
+    })
+    $("#add_teacher_id").click( function(){
+        teacher_id = document.getElementById('e_11_teacher_id').value;
+        teacher_name = document.getElementById('helpBlock').innerText;
+        $("#e_11").DataTable().row.add([teacher_id, teacher_name]).draw();
+        $('#add_teacher_e_11').modal('hide');
+    })
     initFileInput("excelFile","/class_table_upload/")
 });
+function submit_checkbox_info(){
+    str1 = "";
+    if (document.getElementById('c_student_type_1').checked == true){
+        str1 += "本科 ";
+    }
+    if (document.getElementById('c_student_type_2').checked == true){
+        str1 += "法学硕士 ";
+    }
+    if (document.getElementById('c_student_type_3').checked == true){
+        str1 += "法律硕士 ";
+    }
+    if (document.getElementById('c_student_type_4').checked == true){
+        str1 += "博士 ";
+    }
+    str2 = "";
+    if (document.getElementById('c_semester_1').checked == true){
+        str2 += "一 ";
+    }
+    if (document.getElementById('c_semester_2').checked == true){
+        str2 += "二 ";
+    }
+    $.ajax({
+        type: 'POST',
+        url: '/class_filter_by_submit/',
+        data: {'type': str1, 'semester':str2},
+        dataType: "json",
+        success: function(result){
+            console.log(result['result'])
+            $('#table_course').DataTable().clear();
+            for (var i = 0; i < result['result'].length; i++){
+                $('#table_course').DataTable().row.add(result['result'][i])
+            }
+            $('#table_course').DataTable().draw();
+        },
+        error: function (){
+            alert('No');
+        }
+    });
+}
 function add_course_info(length){
     if (String(document.getElementById('a_0').value) in t.column(0).data()){
         alert('Teacher Id already exist!!');
@@ -155,7 +216,7 @@ function edit_course_info(){
 
     document.getElementById('e_2').innerHTML = '<option>'+t.row('.selected').data()[2]+'</option>'+document.getElementById('e_2').innerHTML;
     document.getElementById('e_3').innerHTML = '<option>'+t.row('.selected').data()[3]+'</option>'+document.getElementById('e_3').innerHTML;
-    document.getElementById('e_4').value = t.row('.selected').data()[4];
+    document.getElementById('e_4').innerHTML = '<option>'+t.row('.selected').data()[4]+'</option>'+document.getElementById('e_4').innerHTML;
     document.getElementById('e_5').innerHTML = '<option>'+t.row('.selected').data()[5]+'</option>'+document.getElementById('e_5').innerHTML;
     document.getElementById('e_6').innerHTML = '<option>'+t.row('.selected').data()[6]+'</option>'+document.getElementById('e_6').innerHTML;
     document.getElementById('e_7').innerHTML = '<option>'+t.row('.selected').data()[7]+'</option>'+document.getElementById('e_7').innerHTML;
@@ -169,11 +230,11 @@ function edit_course_info(){
         dataType: "json",
         success: function (result) {
             var teacher_list = result['result_list'];
-            console.log(teacher_list)
             $('#e_11').DataTable({
                 dom: '<"top">rt<"bottom"><"clear">',
                 "searching": false,
                 "ordering": false,
+                 "retrieve": true,
                 "data": teacher_list,
                 "column":[
                     {title: '工号'},
@@ -201,7 +262,16 @@ function submit_edit_info(){
         }
 //        console.log(document.getElementById(i).value);
     }
+    str = "";
+    for (var j=0; j < $("#e_11").DataTable().rows().data().length; j++){
+        str += $("#e_11").DataTable().rows(j).data()[0][1];
+        if( j <  $("#e_11").DataTable().rows().data().length-1){
+            str += ',';
+        }
+    }
+    row_data[11] = str;
     t.row('.selected').data(row_data).draw();
+    console.log(row_data);
     var row_str = JSON.stringify(row_data);
     $.ajax({
         type: 'POST',
@@ -222,15 +292,15 @@ function submit_request(){
     course_id = document.getElementById('e_0').value;
     $.ajax({
         type: 'POST',
-            url:'/teacher_request_course/',
-            data: {"course_id": course_id},
-            dataType: "json",
-            success: function (result) {
-                alert('success');
-            },
-            error: function () {
-                alert('fail');
-            }
+        url:'/teacher_request_course/',
+        data: {"course_id": course_id},
+        dataType: "json",
+        success: function (result) {
+            alert('success');
+        },
+        error: function () {
+            alert('fail');
+        }
 
     })
 }
@@ -279,4 +349,4 @@ $("#excelFile").on("fileuploaded", function (event, data, previewId, index) {
     $('#excelFile').fileinput('refresh');
     $('#excelFile').fileinput('enable');
     }
-});
+})

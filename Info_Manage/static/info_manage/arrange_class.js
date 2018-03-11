@@ -140,7 +140,8 @@ $(document).ready(function () {
             success: function(result){
                 document.getElementById('titleDuringArrange').setAttribute('hidden', 'hidden');
                 document.getElementById('titleAfterArrange').removeAttribute('hidden');
-                document.getElementById('contentAfterArrange').removeAttribute('hidden');
+                document.getElementById('export_course_report_1').removeAttribute('disabled');
+                document.getElementById('analysis_course_report_1').removeAttribute('disabled');
             },
             error: function (){
                 alert('No');

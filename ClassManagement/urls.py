@@ -20,7 +20,7 @@ from Home.views import home_page, logout_view
 from Info_Manage.views import teacher_manage, teacher_personal, class_manage, teacher_change_expect, teacher_request_course,\
                         arrange_class, teacher_save_and_config, teacher_table_upload, class_save_one_row, class_delete_one_row, \
                         class_get_suit_teacher, class_table_upload, arrange_step_1, arrange_step_2, arrange_step_3, \
-                        arrange_export_report
+                        arrange_export_report, class_get_teacher_name,class_filter_by_submit
 from Info_Search.views import info_search_main
 
 urlpatterns = [
@@ -39,6 +39,8 @@ urlpatterns = [
     url(r'^class_delete_one_row/', class_delete_one_row),
     url(r'^class_get_suit_teacher/', class_get_suit_teacher),
     url(r'^class_table_upload/', class_table_upload),
+    url(r'^class_get_teacher_name', class_get_teacher_name),
+    url(r'^class_filter_by_submit/', class_filter_by_submit),
     url(r'^arrange_class/', arrange_class),
     url(r'^arrange_step_1/', arrange_step_1),
     url(r'^arrange_step_2/', arrange_step_2),
