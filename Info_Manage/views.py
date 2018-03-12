@@ -412,6 +412,11 @@ def arrange_class(request):
             step_position[3] = 'active'
         else:
             pass
+        if search_result[0].s4_status_flag:
+            step_info.append(int(search_result[0].s4_teacher_confirm_u))
+            step_info.append(int(search_result[0].s4_teacher_confirm_p1))
+            step_info.append(int(search_result[0].s4_teacher_confirm_p2))
+            step_info.append(int(search_result[0].s4_teacher_confirm_d))
     return render(request, 'arrange_class.html', {'UserName': request.user.first_name+request.user.last_name+request.user.username, 'step_info': step_info,
                                                   'step_position': step_position})
 
@@ -491,7 +496,8 @@ def arrange_step_3(request):
         elif status == 'arrange main':
             arrange_main()
         elif status == 'arrange over':
-            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s3_status_flag=status)
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s3_status_flag=status,
+                                                                          s4_status_flag='adjustment start')
         else:
             result['status'] = 'Fail'
     result = json.dumps({'result': result})
@@ -896,4 +902,66 @@ def arrange_export_report(request):
     response.write(sio.getvalue())
     return response
 
+
+@csrf_exempt
+def arrange_search_by_course_id(request):
+    course_id = request.POST['course_id']
+    search_result = CourseInfo.objects.filter(course_id=course_id)
+    if search_result:
+        course_name = search_result[0].course_name
+        student_type = search_result[0].student_type
+        semester = search_result[0].semester
+        class_name = search_result[0].class_name
+        course_degree = search_result[0].course_degree
+        course_hour = search_result[0].course_hour
+        times_every_week = search_result[0].times_every_week
+        allow_teachers = search_result[0].allow_teachers
+        teacher_pick = search_result[0].teacher_auto_pick
+        result = [course_name, student_type, semester, class_name, course_degree, course_hour, times_every_week,
+                  allow_teachers, teacher_pick]
+        status = 'Success'
+    else:
+        status = '找不到该课程号码对应的课程'
+
+    result = json.dumps({'course': result, 'status': status})
+    return HttpResponse(result)
+
+
+@csrf_exempt
+def arrange_change_by_course_id(request):
+    course_id = request.POST['course_id']
+    to_change_teacher = request.POST['to_change_teacher']
+    try:
+        CourseInfo.objects.filter(course_id=course_id).update(teacher_final_pick=to_change_teacher)
+        status = 'Success'
+    except Exception, e:
+        print e
+        status = '修改失败 错误信息{}'.format(e)
+    result = json.dumps({'status': status})
+    return HttpResponse(result)
+
+
+@csrf_exempt
+def arrange_change_button_status(request):
+    button_id = request.POST['button_id']
+    status = '确认微调过程失败'
+    search_result = CurrentStepInfo.objects.all()
+    if len(search_result) == 1:
+        if button_id == 'adj_1':
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s4_teacher_confirm_u=1)
+            status = 'Success'
+        elif button_id == 'adj_2':
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s4_teacher_confirm_p1=1)
+            status = 'Success'
+        elif button_id == 'adj_3':
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s4_teacher_confirm_p2=1)
+            status = 'Success'
+        elif button_id == 'adj_4':
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s4_teacher_confirm_d=1)
+            status = 'Success'
+        else:
+            pass
+
+    result = json.dumps({'status': status})
+    return HttpResponse(result)
 

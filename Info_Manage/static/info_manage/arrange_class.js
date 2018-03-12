@@ -306,3 +306,63 @@ function get_course_report(){
     var post_url = '/arrange_export_report/';
     location.replace(post_url);
 }
+
+function change_assign_teacher(){
+    to_change_teacher = document.getElementById('e_10').value;
+    course_id = document.getElementById('e_0').value;
+    $.ajax({
+        type: 'POST',
+        url: '/arrange_change_by_course_id/',
+        data: {"course_id": course_id, 'to_change_teacher': to_change_teacher},
+        dataType: "json",
+        success: function(result){
+            if (result['status'] == 'Success'){
+                alert('修改成功')
+            }
+        },
+        error: function (){
+            alert('修改失败');
+        }
+    });
+}
+
+function search_course_by_id(){
+    course_id = document.getElementById('e_0').value;
+    $.ajax({
+        type: 'POST',
+        url: '/arrange_search_by_course_id/',
+        data: {"course_id": course_id},
+        dataType: "json",
+        success: function(result){
+            if (result['status'] == 'Success'){
+                course_content = result['course'];
+                console.log(course_content);
+                for (var i=0; i < course_content.length; i++){
+                    document.getElementById('e_'+String(i+1)).value = course_content[i]
+                }
+            }
+        },
+        error: function (){
+            alert('No');
+        }
+    });
+}
+
+function disable_adjustment_button(type){
+    type.setAttribute('disabled', 'disabled');
+    button_id = type.id
+    $.ajax({
+        type: 'POST',
+        url: '/arrange_change_button_status/',
+        data: {"button_id": button_id},
+        dataType: "json",
+        success: function(result){
+            if (result['status'] == 'Success'){
+
+            }
+        },
+        error: function (){
+            alert('No');
+        }
+    });
+}
