@@ -45,7 +45,7 @@ CREATE TABLE `auth_user` (
 
 LOCK TABLES `auth_user` WRITE;
 /*!40000 ALTER TABLE `auth_user` DISABLE KEYS */;
-INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$36000$E9qTDhbXG80u$p5uPL1kcKYIJ5gERU8m/nMjBkdw7m1M0BE3f/JK5xm4=','2018-02-25 12:28:05',1,'woodpecker','','','helloweifan@qq.com',1,1,'2017-12-16 15:04:05'),(2,'pbkdf2_sha256$36000$rCDVh8G0mxn5$u3mwfrjhlXLP1WQ9VItM6Ji3EDJeMY/3ftUIgJy6JqE=','2018-01-06 15:46:33',0,'felix','','','',0,1,'2018-01-06 15:46:09');
+INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$36000$E9qTDhbXG80u$p5uPL1kcKYIJ5gERU8m/nMjBkdw7m1M0BE3f/JK5xm4=','2018-02-05 10:40:20',1,'woodpecker','','','helloweifan@qq.com',1,1,'2017-12-16 15:04:05'),(2,'pbkdf2_sha256$36000$rCDVh8G0mxn5$u3mwfrjhlXLP1WQ9VItM6Ji3EDJeMY/3ftUIgJy6JqE=','2018-01-06 15:46:33',0,'felix','','','',0,1,'2018-01-06 15:46:09');
 /*!40000 ALTER TABLE `auth_user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -58,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-02-25 22:07:39
+-- Dump completed on 2018-03-13 21:38:26
