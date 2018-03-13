@@ -86,24 +86,24 @@
         <div class="col-xs-12">
           <ul class="nav nav-pills nav-stacked thumbnail setup-panel">
             <li class="{{ step_position.0 }}"><a href="#step-1">
-                <h4 class="list-group-item-heading">Step 1</h4>
-                <p class="list-group-item-text">First step description</p>
+                <h4 class="list-group-item-heading">步骤一</h4>
+                <p class="list-group-item-text"></p>
             </a></li>
             <li class="{{ step_position.1 }}"><a href="#step-2">
-                <h4 class="list-group-item-heading">Step 2</h4>
-                <p class="list-group-item-text">Second step description</p>
+                <h4 class="list-group-item-heading">步骤二</h4>
+                <p class="list-group-item-text"></p>
             </a></li>
             <li class="{{ step_position.2 }}"><a href="#step-3">
-                <h4 class="list-group-item-heading">Step 3</h4>
-                <p class="list-group-item-text">Third step description</p>
+                <h4 class="list-group-item-heading">步骤三</h4>
+                <p class="list-group-item-text"></p>
             </a></li>
             <li class="{{ step_position.3 }}"><a href="#step-4">
-                <h4 class="list-group-item-heading">Step 4</h4>
-                <p class="list-group-item-text">Second step description</p>
+                <h4 class="list-group-item-heading">步骤四</h4>
+                <p class="list-group-item-text"></p>
             </a></li>
             <li class="{{ step_position.4 }}"><a href="#step-5">
-                <h4 class="list-group-item-heading">Step 5</h4>
-                <p class="list-group-item-text">Second step description</p>
+                <h4 class="list-group-item-heading">步骤五</h4>
+                <p class="list-group-item-text"></p>
             </a></li>
           </ul>
         </div>
@@ -424,11 +424,85 @@
 
     <form class="container">
       <div class="row setup-content step-main" id="step-5">
-          <div class="col-xs-12">
-              <div class="col-md-12 well text-center">
-                  <h1 class="text-center"> STEP 5</h1>
-              </div>
+        <div class="col-xs-12">
+          <div class="col-md-12 well text-center">
+              <h4 class="text-left">本次排课目标学期为：{{ step_info.0 }}学年</h4>
           </div>
+          <div class="col-md-12 well text-center">
+            <div class="col-md-3">
+              本科
+            </div>
+            <div class="col-md-3">
+              法学硕士
+            </div>
+            <div class="col-md-3">
+              法律硕士
+            </div>
+            <div class="col-md-3">
+              博士
+            </div>
+          </div>
+          <div class="col-md-12 well text-center">
+            <div class="col-md-4">
+              <button class="btn btn-primary btn-md" type="button" onclick="get_course_report()">统计信息导出</button>
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-primary btn-md" type="button" onclick="get_course_report()">提示信息导出</button>
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-primary btn-md" type="button" onclick="get_course_report()">获得排课结果</button>
+            </div>
+          </div>
+          <div class="col-md-12 well text-center">
+            <div class="col-md-3">
+              本科
+            </div>
+            <div class="col-md-3">
+              法学硕士
+            </div>
+            <div class="col-md-3">
+              法律硕士
+            </div>
+            <div class="col-md-3">
+              博士
+            </div>
+            <div class="col-md-3" style="padding: 10px">
+              <button class="btn btn-primary btn-md btn-block" type="button">统计信息</button>
+            </div>
+            <div class="col-md-3" style="padding: 10px">
+              <button class="btn btn-primary btn-md btn-block" type="button">统计信息</button>
+            </div>
+            <div class="col-md-3" style="padding: 10px">
+              <button class="btn btn-primary btn-md btn-block" type="button">统计信息</button>
+            </div>
+            <div class="col-md-3" style="padding: 10px">
+              <button class="btn btn-primary btn-md btn-block" type="button">统计信息</button>
+            </div>
+            <div class="col-md-3" style="padding: 10px">
+              <button class="btn btn-primary btn-md btn-block" type="button">结果导出</button>
+            </div>
+            <div class="col-md-3" style="padding: 10px">
+              <button class="btn btn-primary btn-md btn-block" type="button">结果导出</button>
+            </div>
+            <div class="col-md-3" style="padding: 10px">
+              <button class="btn btn-primary btn-md btn-block" type="button">结果导出</button>
+            </div>
+            <div class="col-md-3" style="padding: 10px">
+              <button class="btn btn-primary btn-md btn-block" type="button">结果导出</button>
+            </div>
+          </div>
+          <div class="col-md-12 well text-center">
+            <div class="col-md-4">
+              <button class="btn btn-primary btn-lg btn-block" type="button" disabled=disabled onclick="()">已锁定</button>
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-primary btn-lg btn-block" type="button" onclick="get_course_report()">排课结果导出</button>
+            </div>
+            <div class="col-md-4">
+              <button class="btn btn-primary btn-lg btn-block" type="button" onclick="()">重新解锁</button>
+            </div>
+          </div>
+        </div>
       </div>
     </form>
 

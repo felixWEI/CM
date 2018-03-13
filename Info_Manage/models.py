@@ -64,6 +64,7 @@ class CurrentStepInfo(models.Model):
     s4_teacher_confirm_p1 = models.CharField(db_column='s4_teacher_confirm_p1', max_length=45, blank=True, null=True)
     s4_teacher_confirm_p2 = models.CharField(db_column='s4_teacher_confirm_p2', max_length=45, blank=True, null=True)
     s4_teacher_confirm_d = models.CharField(db_column='s4_teacher_confirm_d', max_length=45, blank=True, null=True)
+    s5_status_flag = models.CharField(db_column='s5_status_flag', max_length=45, blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'current_step_info'

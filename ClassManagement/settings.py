@@ -139,5 +139,5 @@ STATICFILES_DIRS =[
     os.path.join(BASE_DIR, 'Home/static'),
     os.path.join(BASE_DIR, 'Info_Search/static'),
 ]
-LOGIN_REDIRECT_URL = "/teacher_manage/"
+LOGIN_REDIRECT_URL = "/teacher_personal/"
 LOGOUT_URL = "/"

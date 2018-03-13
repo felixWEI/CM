@@ -115,6 +115,28 @@ $(document).ready(function () {
             }
         });
     });
+    $('#activate-step-5').on('click', function(e) {
+        $('ul.setup-panel li:eq(4)').removeClass('disabled');
+        $('ul.setup-panel li a[href="#step-5"]').trigger('click');
+        $(this).remove();
+        status = 'lock start';
+        $.ajax({
+            type: 'POST',
+            url: '/arrange_step_5/',
+            data: {"status": status},
+            dataType: "json",
+            success: function(result){
+                if (result['status'] == 'Success'){
+                    console.log(result)
+                }else{
+                    alert(result['status'])
+                }
+            },
+            error: function (){
+                alert('No');
+            }
+        });
+    });
     $("#arrange_class_with_teacher").on('click', function () {
         status = 'arrange main';
         $.ajax({

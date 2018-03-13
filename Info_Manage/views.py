@@ -108,6 +108,9 @@ def teacher_personal(request):
     if search_result_teacher:
         expect_semester1 = str(search_result_teacher[0].first_semester_expect*100)
         expect_semester2 = str(search_result_teacher[0].second_semester_expect*100)
+    else:
+        expect_semester1 = 0
+        expect_semester2 = 0
     summary_table = [expect_semester1, expect_semester2]
 
     table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '课程状态']
@@ -417,6 +420,10 @@ def arrange_class(request):
             step_info.append(int(search_result[0].s4_teacher_confirm_p1))
             step_info.append(int(search_result[0].s4_teacher_confirm_p2))
             step_info.append(int(search_result[0].s4_teacher_confirm_d))
+
+        if search_result[0].s5_status_flag:
+            step_position[4] = 'active'
+
     return render(request, 'arrange_class.html', {'UserName': request.user.first_name+request.user.last_name+request.user.username, 'step_info': step_info,
                                                   'step_position': step_position})
 
@@ -633,9 +640,9 @@ def arrange_main():
     for tmpKey in result_1.keys():
         for eachCourse in result_1[tmpKey]['course_list']:
             if CourseInfo.objects.get(course_id=eachCourse).semester == '一':
-                TeacherInfo.objects.filter(teacher_id=tmpKey).update(first_semester_hours=result_1[tmpKey]['total_hours_1'])
+                TeacherInfo.objects.filter(teacher_id=tmpKey).update(first_semester_hours=result_1[tmpKey]['total_hours_1'], first_semester_degree=result_1[tmpKey]['total_degree_1'])
             else:
-                TeacherInfo.objects.filter(teacher_id=tmpKey).update(second_semester_hours=result_1[tmpKey]['total_hours_2'])
+                TeacherInfo.objects.filter(teacher_id=tmpKey).update(second_semester_hours=result_1[tmpKey]['total_hours_2'], second_semester_degree=result_1[tmpKey]['total_degree_2'])
             if eachCourse not in result_3.keys():
                 result_3[eachCourse] = [teacher_2[tmpKey]]
             else:
@@ -964,4 +971,18 @@ def arrange_change_button_status(request):
 
     result = json.dumps({'status': status})
     return HttpResponse(result)
+
+
+@csrf_exempt
+def arrange_step_5(request):
+    operation_status = request.POST['status']
+    search_result = CurrentStepInfo.objects.all()
+    status = '切换至最后一步失败'
+    if operation_status == 'lock start':
+        if len(search_result) == 1:
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s5_status_flag=operation_status)
+            status = 'Success'
+    result = json.dumps({'status': status})
+    return HttpResponse(result)
+
 
