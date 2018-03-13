@@ -1,9 +1,8 @@
 -- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
--- Host: localhost    Database: classmanagement
+-- Host: 127.0.0.1    Database: classmanagement
 -- ------------------------------------------------------
 -- Server version	5.7.20-log
-use classmanagement;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -17,27 +16,32 @@ use classmanagement;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `auth_group`
+-- Table structure for table `auth_group_permissions`
 --
 
-DROP TABLE IF EXISTS `auth_group`;
+DROP TABLE IF EXISTS `auth_group_permissions`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `auth_group` (
+CREATE TABLE `auth_group_permissions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `name` varchar(80) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  `permission_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `name` (`name`)
+  UNIQUE KEY `group_id` (`group_id`,`permission_id`),
+  KEY `auth_group_permissions_0e939a4f` (`group_id`),
+  KEY `auth_group_permissions_8373b171` (`permission_id`),
+  CONSTRAINT `auth_group_permissi_permission_id_23962d04_fk_auth_permission_id` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`),
+  CONSTRAINT `auth_group_permissions_group_id_58c48ba9_fk_auth_group_id` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `auth_group`
+-- Dumping data for table `auth_group_permissions`
 --
 
-LOCK TABLES `auth_group` WRITE;
-/*!40000 ALTER TABLE `auth_group` DISABLE KEYS */;
-/*!40000 ALTER TABLE `auth_group` ENABLE KEYS */;
+LOCK TABLES `auth_group_permissions` WRITE;
+/*!40000 ALTER TABLE `auth_group_permissions` DISABLE KEYS */;
+/*!40000 ALTER TABLE `auth_group_permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -49,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-01-09 19:37:08
+-- Dump completed on 2018-02-25 22:07:38

@@ -14,6 +14,7 @@
     <!-- Bootstrap core CSS -->
     <link href="../static/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../static/DataTables/DataTables-1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
+    <link href="../static/dist/css/fileinput.css" rel="stylesheet">
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <link href="../static/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
@@ -55,7 +56,7 @@
             <li class="nav-item"><a href="#">分配上课时间</a></li>
             <li class="nav-item"><a href="/class_manage/">课程信息管理</a></li>
             <li class="nav-item"><a class="nav-active" href="/teacher_personal/">教师信息管理</a></li>
-            <li class="nav-item"><a href="/info_search/">排课结果查询</a></li>
+            <li class="nav-item"><a href="#">排课结果查询</a></li>
           </ul>
           <ul class="nav navbar-nav navbar-right">
               <li class="nav-item">
@@ -92,59 +93,10 @@
               <a href="\teacher_personal\" style="color: black">教师个人</a>
             </li>
           </ul>
-          <ul class="nav nav-sidebar">
-              <li>
-                  <div class="checkbox" style="padding-left:20px">
-                      <label>
-                          <input type="checkbox" checked="checked"> 本科
-                      </label>
-                  </div>
-              </li>
-              <li>
-                  <div class="checkbox" style="padding-left:20px">
-                      <label>
-                          <input type="checkbox" checked="checked"> 法律硕士
-                      </label>
-                  </div>
-              </li>
-              <li>
-                  <div class="checkbox" style="padding-left:20px">
-                      <label>
-                          <input type="checkbox" checked="checked"> 法学硕士
-                      </label>
-                  </div>
-              </li>
-              <li>
-                  <div class="checkbox" style="padding-left:20px">
-                      <label>
-                          <input type="checkbox" checked="checked"> 博士
-                      </label>
-                  </div>
-              </li>
-          </ul>
-          <ul class="nav nav-sidebar">
-              <li>
-                  <div class="checkbox" style="padding-left:20px">
-                      <label>
-                          <input type="checkbox" checked="checked"> 第一学期
-                      </label>
-                  </div>
-              </li>
-              <li>
-                  <div class="checkbox" style="padding-left:20px">
-                      <label>
-                          <input type="checkbox" checked="checked"> 第二学期
-                      </label>
-                  </div>
-              </li>
-              <li>
-                  <button type="submit" class="btn btn-default center-block">提交</button>
-              </li>
-          </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">统计信息</h1>
-          <div><p class="bg-info">当前在排课中：目标学期为2018-2019学年第一学期</p></div>
+          <div><p class="bg-info">当前在排课中：目标学期为{{ year }}学年第一学期</p></div>
           <div class="row">
             <div class="col-sm-2">
                 <div class="placeholders2">
@@ -166,13 +118,13 @@
             </div>
             <div class="col-sm-2">
                 <div class="placeholders2">
-                  <span class="">其余平均学时1</span>
+                  <span class="">期望难度总数1</span>
                   <div>{{ summary_table.3 }}</div>
                 </div>
             </div>
             <div class="col-sm-2">
                 <div class="placeholders2">
-                  <span class="">其余平均学时2</span>
+                  <span class="">期望难度总数2</span>
                   <div>{{ summary_table.3 }}</div>
                 </div>
             </div>
@@ -180,19 +132,16 @@
           <h2 class="sub-header">教师信息</h2>
           <div class="table-responsive">
              <div class="pull-right" style="margin-top: 10px;">
-                  <button id="import" class="btn btn-primary">导入</button>
+                  <button id="import" class="btn btn-primary" data-toggle="modal" data-target="#importModal">导入</button>
                   <button id="delete" class="btn btn-danger">删除该行</button>
                   <button id="edit_table" class="btn btn-primary" data-toggle="modal" data-target="#editModal">编辑教师信息</button>
             </div>
             <table class="table table-striped" id="table_teacher">
               <thead>
                 <tr>
-                  <th>教师代码</th>
-                  <th>教师姓名</th>
-                  <th>期望学时1</th>
-                  <th>期望学时2</th>
-                  <th>估算学时1</th>
-                  <th>估算学时2</th>
+                {% for row in table_head %}
+                  <th>{{ row }}</th>
+                {% endfor %}
                 </tr>
               </thead>
               <tbody>
@@ -211,6 +160,31 @@
       </div>
 
       <!-- Modal -->
+      <div class="modal fade" id="importModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myImportModalLabel">编辑教师信息</h4>
+            </div>
+            <div class="modal-body " id="import_modal_body">
+              <form id="importFile" name="importFile">
+               <div class="form-group">
+                  <label for="excelFile">导入文件</label>
+                  <input type="file" id="excelFile" class="file-loading" multiple accept=".xls,.xlsx,.txt">
+                  <p class="help-block">说明</p>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="button" id="">上传</button>
+                <button type="button" class="button" data-dismiss="modal">关闭</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+      <!-- Modal -->
       <div class="modal fade" id="editModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
         <div class="modal-dialog" role="document">
           <div class="modal-content">
@@ -223,7 +197,11 @@
                 {% for row in table_head %}
                   <div class="row form-group">
                     <label for={{forloop.counter0}} class="col-sm-2 control-label">{{ row }}</label>
-                    <div class="col-sm-10"><input id="{{forloop.counter0}}"  class="form-control" type="text" placeholder="{{ row }} "></div>
+                    {% if forloop.counter0 < 4 and forloop.counter0 > 1 %}
+                      <div class="col-sm-10"><input id="{{forloop.counter0}}"  class="form-control" type="text" placeholder="{{ row }} "></div>
+                    {% else %}
+                      <div class="col-sm-10"><input id="{{forloop.counter0}}" class="form-control" type="text" disabled="disabled" placeholder="{{ row }} "></div>
+                    {% endif %}
                   </div>
                 {% endfor %}
               </form>
@@ -252,6 +230,8 @@
     <script type="text/javascript" src="../static/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="../static/DataTables/Buttons-1.5.1/js/dataTables.buttons.min.js"></script>
     <script type="text/javascript" src="../static/dist/js/jszip.min.js"></script>
+    <script type="text/javascript" src="../static/dist/js/fileinput.js"></script>
+    <script type="text/javascript" src="../static/dist/js/zh.js"></script>
     <script type="text/javascript" src="../static/DataTables/Buttons-1.5.1/js/buttons.html5.min.js"></script>
     <script type="text/javascript" src="../static/info_manage/info_manage_teacher.js"></script>
   </body>

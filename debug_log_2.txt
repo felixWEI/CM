@@ -1,0 +1,1227 @@
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130013.01
+10166
+10109
+course without high degree [10109L]
+course with high degree [10166L]
+teacher 10109
+total hours 0
+degree list [5.0]
+new total hours 36.0
+new degree list [5.0, 10.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130017.01
+10166
+10109
+course without high degree []
+course with high degree [10166L, 10109L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10166
+total hours 36
+degree list [4.0, 9.0]
+new total hours 90.0
+new degree list [4.0, 9.0, 10.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130016.01
+10166
+10109
+course without high degree []
+course with high degree [10109L, 10166L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10109
+total hours 54
+degree list [5.0, 10.0]
+new total hours 108.0
+new degree list [5.0, 10.0, 10.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130007.01
+10165
+10114
+10157
+course without high degree [10114L, 10157L, 10165L]
+course with high degree []
+teacher 10114
+total hours 0
+degree list [5.0]
+new total hours 54.0
+new degree list [5.0, 10.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS160006
+10163
+10123
+10127
+course without high degree [10123L]
+course with high degree [10163L, 10127L]
+teacher 10123
+total hours 0
+degree list []
+new total hours 54.0
+new degree list [10.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130050.01
+10122
+10147
+10128
+10156
+course without high degree [10147L, 10156L, 10122L]
+course with high degree [10128L]
+teacher 10147
+total hours 0
+degree list []
+new total hours 54.0
+new degree list [10.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS160008
+10115
+10152
+10168
+10164
+10109
+course without high degree [10115L]
+course with high degree [10152L, 10168L, 10109L, 10164L]
+teacher 10115
+total hours 0
+degree list []
+new total hours 54.0
+new degree list [10.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS160005.01
+10148
+10120
+10140
+10142
+10108
+10107
+course without high degree [10120L, 10140L, 10142L, 10108L, 10107L]
+course with high degree [10148L]
+teacher 10120
+total hours 0
+degree list []
+new total hours 54.0
+new degree list [10.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130008.01
+10138
+10096
+10118
+10140
+10134
+10104
+10143
+10126
+course without high degree [10138L, 10096L, 10118L, 10140L, 10134L, 10143L, 10126L]
+course with high degree [10104L]
+teacher 10138
+total hours 0
+degree list []
+new total hours 72.0
+new degree list [10.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS160002.01
+10138
+10096
+10118
+10140
+10134
+10104
+10143
+10126
+course without high degree [10096L, 10118L, 10140L, 10134L, 10143L, 10126L]
+course with high degree [10138L, 10104L]
+teacher 10096
+total hours 0
+degree list [4.0]
+new total hours 54.0
+new degree list [4.0, 10.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620019.01
+10150
+10135
+course without high degree [10135L]
+course with high degree [10150L]
+teacher 10135
+total hours 0
+degree list [4.0]
+new total hours 36.0
+new degree list [4.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+MAST610019.02
+10101
+10116
+course without high degree [10101L, 10116L]
+course with high degree []
+teacher 10101
+total hours 0
+degree list []
+new total hours 36.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130034.01
+10127
+10165
+course without high degree [10165L]
+course with high degree [10127L]
+teacher 10165
+total hours 54
+degree list [5.0, 5.0]
+new total hours 90.0
+new degree list [5.0, 5.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130044.01
+10151
+10135
+course without high degree []
+course with high degree [10151L, 10135L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10151
+total hours 36
+degree list [4.0, 4.0, 9.0]
+new total hours 72.0
+new degree list [4.0, 4.0, 9.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130051.01
+10123
+10127
+course without high degree []
+course with high degree [10123L, 10127L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10123
+total hours 0
+degree list [10.0]
+new total hours 36.0
+new degree list [10.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130030.01
+10155
+10093
+course without high degree [10093L]
+course with high degree [10155L]
+teacher 10093
+total hours 36
+degree list [4.0, 4.0]
+new total hours 90.0
+new degree list [4.0, 4.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130025.01
+10139
+10120
+course without high degree []
+course with high degree [10120L, 10139L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10120
+total hours 0
+degree list [10.0]
+new total hours 36.0
+new degree list [10.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130049.02
+10150
+10135
+course without high degree []
+course with high degree [10150L, 10135L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10150
+total hours 90
+degree list [4.0, 5.0, 8.0]
+new total hours 144.0
+new degree list [4.0, 5.0, 8.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620023
+10113
+10160
+10119
+course without high degree []
+course with high degree [10113L, 10160L, 10119L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10113
+total hours 36
+degree list [5.0, 10.0]
+new total hours 72.0
+new degree list [5.0, 10.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620021
+10124
+10146
+10098
+course without high degree [10124L, 10146L, 10098L]
+course with high degree []
+teacher 10124
+total hours 0
+degree list []
+new total hours 36.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620013.02
+10125
+10154
+10103
+course without high degree [10103L]
+course with high degree [10125L, 10154L]
+teacher 10103
+total hours 36
+degree list [4.0]
+new total hours 72.0
+new degree list [4.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+MAST611007.01
+10111
+10099
+10161
+course without high degree [10111L, 10099L, 10161L]
+course with high degree []
+teacher 10111
+total hours 0
+degree list []
+new total hours 72.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620006.02
+10165
+10114
+10157
+course without high degree [10157L]
+course with high degree [10114L, 10165L]
+teacher 10157
+total hours 0
+degree list []
+new total hours 36.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620021.01
+10124
+10146
+10098
+course without high degree [10146L, 10098L]
+course with high degree [10124L]
+teacher 10146
+total hours 0
+degree list []
+new total hours 36.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130014.02
+10093
+10125
+10109
+course without high degree []
+course with high degree [10125L, 10109L, 10093L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10125
+total hours 0
+degree list [8.0]
+new total hours 54.0
+new degree list [8.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130009.01
+10163
+10123
+10127
+course without high degree []
+course with high degree [10163L, 10127L, 10123L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10163
+total hours 54
+degree list [5.0, 4.0, 5.0, 10.0]
+new total hours 108.0
+new degree list [5.0, 4.0, 5.0, 10.0, 9.0]
+teacher 10127
+total hours 72
+degree list [4.0, 4.0, 10.0]
+new total hours 126.0
+new degree list [4.0, 4.0, 10.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130015.01
+10153
+10091
+10133
+course without high degree [10153L, 10091L, 10133L]
+course with high degree []
+teacher 10153
+total hours 0
+degree list []
+new total hours 54.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130035.01
+10129
+10130
+10097
+course without high degree [10129L, 10130L, 10097L]
+course with high degree []
+teacher 10129
+total hours 0
+degree list []
+new total hours 36.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130004.01
+10106
+10151
+10162
+10135
+course without high degree [10106L, 10162L]
+course with high degree [10135L, 10151L]
+teacher 10106
+total hours 0
+degree list []
+new total hours 54.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM630014
+10107
+10163
+10127
+10167
+course without high degree [10107L, 10167L]
+course with high degree [10163L, 10127L]
+teacher 10107
+total hours 0
+degree list [4.0]
+new total hours 72.0
+new degree list [4.0, 9.0]
+teacher 10167
+total hours 0
+degree list []
+new total hours 72.0
+new degree list [4.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620010.01
+10106
+10151
+10162
+10135
+course without high degree [10162L]
+course with high degree [10135L, 10106L, 10151L]
+teacher 10162
+total hours 0
+degree list []
+new total hours 36.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620004.01
+10122
+10147
+10128
+10156
+course without high degree [10156L, 10122L]
+course with high degree [10147L, 10128L]
+teacher 10156
+total hours 0
+degree list []
+new total hours 72.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130005.02
+10121
+10097
+10129
+10117
+course without high degree [10121L, 10097L, 10117L]
+course with high degree [10129L]
+teacher 10121
+total hours 0
+degree list []
+new total hours 36.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130022.01
+10143
+10145
+10134
+10118
+course without high degree [10143L, 10145L, 10134L, 10118L]
+course with high degree []
+teacher 10143
+total hours 0
+degree list []
+new total hours 54.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130062.02
+10122
+10147
+10128
+10156
+course without high degree [10122L]
+course with high degree [10147L, 10156L, 10128L]
+teacher 10122
+total hours 36
+degree list [5.0, 5.0]
+new total hours 90.0
+new degree list [5.0, 5.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130001.02
+10121
+10097
+10129
+10117
+course without high degree [10097L, 10117L]
+course with high degree [10121L, 10129L]
+teacher 10097
+total hours 36
+degree list [5.0, 4.0]
+new total hours 90.0
+new degree list [5.0, 4.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620009.01
+10115
+10152
+10168
+10164
+10109
+course without high degree []
+course with high degree [10152L, 10168L, 10115L, 10109L, 10164L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10152
+total hours 54
+degree list [4.0, 9.0]
+new total hours 90.0
+new degree list [4.0, 9.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620009.02
+10115
+10152
+10168
+10164
+10109
+course without high degree []
+course with high degree [10168L, 10115L, 10109L, 10152L, 10164L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10168
+total hours 54
+degree list [9.0]
+new total hours 90.0
+new degree list [9.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+SOSC120015.01
+10129
+10137
+10130
+10144
+10097
+course without high degree [10130L, 10144L]
+course with high degree [10137L, 10129L, 10097L]
+teacher 10130
+total hours 0
+degree list []
+new total hours 54.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620020
+10148
+10120
+10140
+10142
+10108
+10107
+course without high degree [10140L, 10142L, 10108L]
+course with high degree [10107L, 10148L, 10120L]
+teacher 10140
+total hours 0
+degree list []
+new total hours 54.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620001.02
+10094
+10110
+10100
+10102
+10105
+10124
+course without high degree [10100L, 10094L, 10105L]
+course with high degree [10124L, 10110L, 10102L]
+teacher 10100
+total hours 36
+degree list [5.0, 4.0]
+new total hours 90.0
+new degree list [5.0, 4.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+SOSC120003.02
+10094
+10110
+10100
+10102
+10105
+10124
+course without high degree [10094L, 10105L]
+course with high degree [10100L, 10110L, 10124L, 10102L]
+teacher 10094
+total hours 0
+degree list [5.0]
+new total hours 54.0
+new degree list [5.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620016.01
+10138
+10096
+10118
+10140
+10134
+10104
+10143
+10126
+course without high degree [10118L, 10134L, 10126L]
+course with high degree [10138L, 10140L, 10104L, 10096L, 10143L]
+teacher 10118
+total hours 0
+degree list []
+new total hours 72.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130002.01
+10138
+10096
+10118
+10140
+10134
+10104
+10143
+10126
+course without high degree [10134L, 10126L]
+course with high degree [10138L, 10140L, 10104L, 10096L, 10118L, 10143L]
+teacher 10134
+total hours 0
+degree list []
+new total hours 54.0
+new degree list [9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+SOSC120016.02
+10138
+10159
+10119
+10143
+10142
+10112
+10140
+10133
+10107
+course without high degree [10133L, 10142L, 10112L]
+course with high degree [10138L, 10140L, 10159L, 10143L, 10107L, 10119L]
+teacher 10133
+total hours 36
+degree list [4.0]
+new total hours 90.0
+new degree list [4.0, 9.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620014
+10127
+10165
+course without high degree []
+course with high degree [10127L, 10165L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10127
+total hours 54
+degree list [4.0, 4.0, 10.0, 9.0]
+new total hours 90.0
+new degree list [4.0, 4.0, 10.0, 9.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS110013.01
+10118
+10104
+course without high degree []
+course with high degree [10104L, 10118L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10104
+total hours 0
+degree list [8.0, 9.0]
+new total hours 36.0
+new degree list [8.0, 9.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS119010.02
+10130
+10094
+course without high degree []
+course with high degree [10130L, 10094L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10130
+total hours 54.0
+degree list [9.0]
+new total hours 90.0
+new degree list [9.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130036.02
+10103
+10125
+course without high degree []
+course with high degree [10125L, 10103L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10125
+total hours 36
+degree list [8.0, 9.0]
+new total hours 90.0
+new degree list [8.0, 9.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620005
+10163
+10123
+10127
+course without high degree []
+course with high degree [10123L, 10163L, 10127L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10123
+total hours 54.0
+degree list [10.0, 9.0]
+new total hours 90.0
+new degree list [10.0, 9.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620012
+10093
+10125
+10109
+course without high degree []
+course with high degree [10093L, 10109L, 10125L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10093
+total hours 36
+degree list [4.0, 4.0, 9.0]
+new total hours 72.0
+new degree list [4.0, 4.0, 9.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+MAST611007
+10111
+10099
+10161
+course without high degree [10099L, 10161L]
+course with high degree [10111L]
+teacher 10099
+total hours 0
+degree list []
+new total hours 72.0
+new degree list [8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620005.01
+10163
+10123
+10127
+course without high degree []
+course with high degree [10123L, 10127L, 10163L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10123
+total hours 36.0
+degree list [10.0, 9.0, 8.0]
+new total hours 72.0
+new degree list [10.0, 9.0, 8.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620005.02
+10163
+10123
+10127
+course without high degree []
+course with high degree [10123L, 10127L, 10163L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10123
+total hours 72.0
+degree list [10.0, 9.0, 8.0, 8.0]
+new total hours 108.0
+new degree list [10.0, 9.0, 8.0, 8.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+MAST611013
+10111
+10099
+10161
+course without high degree [10161L]
+course with high degree [10099L, 10111L]
+teacher 10161
+total hours 0
+degree list []
+new total hours 54.0
+new degree list [8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620013
+10125
+10154
+10103
+course without high degree []
+course with high degree [10154L, 10103L, 10125L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10154
+total hours 0
+degree list [4.0, 9.0]
+new total hours 36.0
+new degree list [4.0, 9.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+927.007.1.01
+10163
+10123
+10127
+course without high degree []
+course with high degree [10127L, 10163L, 10123L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10127
+total hours 90.0
+degree list [4.0, 4.0, 10.0, 9.0, 8.0]
+new total hours 144.0
+new degree list [4.0, 4.0, 10.0, 9.0, 8.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS110004.01
+10153
+10091
+10133
+course without high degree [10091L]
+course with high degree [10153L, 10133L]
+teacher 10091
+total hours 0
+degree list []
+new total hours 36.0
+new degree list [8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS110022.01
+10113
+10160
+10119
+course without high degree []
+course with high degree [10160L, 10113L, 10119L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10160
+total hours 90
+degree list [4.0, 10.0]
+new total hours 126.0
+new degree list [4.0, 10.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM630015.01
+10168
+10131
+10149
+10092
+course without high degree [10149L, 10092L]
+course with high degree [10168L, 10131L]
+teacher 10149
+total hours 0
+degree list []
+new total hours 36.0
+new degree list [8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM630009
+10143
+10145
+10134
+10118
+course without high degree [10145L]
+course with high degree [10143L, 10134L, 10118L]
+teacher 10145
+total hours 0
+degree list []
+new total hours 36.0
+new degree list [8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620010
+10106
+10151
+10162
+10135
+course without high degree []
+course with high degree [10135L, 10106L, 10162L, 10151L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10135
+total hours 36
+degree list [4.0, 9.0]
+new total hours 72.0
+new degree list [4.0, 9.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+927.010.1.01
+10122
+10147
+10128
+10156
+course without high degree []
+course with high degree [10122L, 10156L, 10147L, 10128L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10122
+total hours 54
+degree list [5.0, 5.0, 9.0]
+new total hours 90.0
+new degree list [5.0, 5.0, 9.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+927.014.1.01
+10106
+10151
+10162
+10135
+course without high degree []
+course with high degree [10106L, 10162L, 10135L, 10151L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10106
+total hours 54.0
+degree list [9.0]
+new total hours 108.0
+new degree list [9.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130061.01
+10115
+10152
+10168
+10164
+10109
+course without high degree []
+course with high degree [10115L, 10168L, 10152L, 10109L, 10164L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10115
+total hours 0
+degree list [10.0]
+new total hours 54.0
+new degree list [10.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620027
+10129
+10137
+10130
+10144
+10097
+course without high degree [10144L]
+course with high degree [10129L, 10137L, 10130L, 10097L]
+teacher 10144
+total hours 0
+degree list [4.0]
+new total hours 36.0
+new degree list [4.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620009.03
+10115
+10152
+10168
+10164
+10109
+course without high degree []
+course with high degree [10115L, 10109L, 10152L, 10168L, 10164L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10115
+total hours 54.0
+degree list [10.0, 8.0]
+new total hours 90.0
+new degree list [10.0, 8.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+LAWS130061.02
+10115
+10152
+10168
+10164
+10109
+course without high degree []
+course with high degree [10168L, 10152L, 10115L, 10109L, 10164L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10168
+total hours 0
+degree list [9.0, 9.0]
+new total hours 54.0
+new degree list [9.0, 9.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620024
+10094
+10110
+10100
+10102
+10105
+10124
+course without high degree [10105L]
+course with high degree [10124L, 10094L, 10110L, 10100L, 10102L]
+teacher 10105
+total hours 54
+degree list [5.0, 4.0]
+new total hours 90.0
+new degree list [5.0, 4.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620020.01
+10148
+10120
+10140
+10142
+10108
+10107
+course without high degree [10142L, 10108L]
+course with high degree [10107L, 10148L, 10140L, 10120L]
+teacher 10142
+total hours 0
+degree list [5.0]
+new total hours 54.0
+new degree list [5.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620008
+10138
+10159
+10119
+10143
+10142
+10112
+10140
+10133
+10107
+course without high degree [10112L]
+course with high degree [10138L, 10140L, 10142L, 10159L, 10143L, 10107L, 10133L, 10119L]
+teacher 10112
+total hours 90
+degree list [5.0, 4.0, 5.0]
+new total hours 126.0
+new degree list [5.0, 4.0, 5.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620018.01
+10138
+10159
+10119
+10143
+10142
+10112
+10140
+10133
+10107
+course without high degree []
+course with high degree [10159L, 10119L, 10143L, 10133L, 10107L, 10112L, 10142L, 10140L, 10138L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10159
+total hours 0
+degree list [9.0]
+new total hours 54.0
+new degree list [9.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+JM620018.02
+10138
+10159
+10119
+10143
+10142
+10112
+10140
+10133
+10107
+course without high degree []
+course with high degree [10119L, 10143L, 10133L, 10107L, 10112L, 10159L, 10142L, 10140L, 10138L]
+<Bad situation 1>
+Will choose teachers with high degree to assign
+teacher 10119
+total hours 0
+degree list [10.0, 10.0]
+new total hours 54.0
+new degree list [10.0, 10.0, 8.0]
+<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+10166 [4.0, 9.0, 10.0]
+10109 [5.0, 10.0, 10.0]
+10163 [5.0, 4.0, 5.0, 10.0, 9.0]
+10127 [4.0, 4.0, 10.0, 9.0, 8.0, 8.0]
+10128 [5.0, 5.0, 5.0, 5.0, 8.0, 9.0]
+10152 [4.0, 9.0, 9.0]
+10168 [9.0, 9.0, 8.0]
+10164 [5.0, 4.0, 4.0, 8.0, 8.0, 8.0]
+10148 [4.0, 9.0]
+10104 [8.0, 9.0, 8.0]
+10138 [10.0]
+10150 [4.0, 5.0, 8.0, 9.0]
+10151 [4.0, 4.0, 9.0, 9.0]
+10135 [4.0, 9.0, 8.0]
+10123 [10.0, 9.0, 8.0, 8.0, 8.0]
+10155 [4.0, 9.0]
+10139 [4.0, 8.0, 9.0, 8.0]
+10120 [10.0, 9.0]
+10113 [5.0, 10.0, 9.0]
+10160 [4.0, 10.0, 8.0]
+10119 [10.0, 10.0, 8.0]
+10125 [8.0, 9.0, 8.0]
+10154 [4.0, 9.0, 8.0]
+10165 [5.0, 5.0, 9.0]
+10114 [5.0, 10.0]
+10124 [9.0]
+10093 [4.0, 4.0, 9.0, 8.0]
+10106 [9.0, 8.0]
+10147 [10.0]
+10129 [9.0]
+10156 [9.0]
+10121 [9.0]
+10115 [10.0, 8.0, 8.0]
+10137 [8.0]
+10097 [5.0, 4.0, 9.0]
+10107 [4.0, 9.0]
+10110 [5.0, 8.0]
+10102 [8.0, 8.0, 8.0, 8.0, 8.0, 8.0]
+10100 [5.0, 4.0, 9.0]
+10096 [4.0, 10.0]
+10140 [9.0]
+10143 [9.0]
+10118 [9.0]
+10159 [9.0, 8.0]
+10130 [9.0, 8.0]
+10094 [5.0, 9.0]
+10103 [4.0, 9.0]
+10111 [9.0]
+10099 [8.0]
+10153 [9.0]
+10133 [4.0, 9.0]
+10131 [8.0]
+10134 [9.0]
+10162 [9.0]
+10122 [5.0, 5.0, 9.0, 8.0]
+10142 [5.0, 8.0]
+10112 [5.0, 4.0, 5.0, 8.0]
+
+10112 [9.0, 8.0, 8.0, 8.0]
+10113 [9.0, 8.0]
+10114 [10.0, 9.0]
+10115 [10.0, 9.0, 9.0, 8.0, 8.0, 8.0]
+10116 [9.0]
+10117 [9.0, 9.0]
+10118 [10.0, 10.0, 9.0, 9.0, 9.0, 8.0, 8.0]
+10119 [9.0, 9.0, 8.0, 8.0, 8.0, 8.0]
+10120 [10.0, 9.0, 9.0, 8.0]
+10121 [9.0, 9.0]
+10122 [10.0, 9.0, 9.0, 8.0]
+10123 [10.0, 9.0, 9.0, 8.0, 8.0, 8.0, 8.0]
+10124 [9.0, 9.0, 9.0, 9.0, 8.0]
+10125 [9.0, 9.0, 8.0, 8.0, 8.0]
+10126 [10.0, 10.0, 9.0, 9.0]
+10127 [10.0, 9.0, 9.0, 9.0, 9.0, 8.0, 8.0, 8.0, 8.0, 8.0]
+10128 [10.0, 9.0, 9.0, 8.0]
+10129 [9.0, 9.0, 9.0, 9.0, 8.0]
+10130 [9.0, 9.0, 8.0, 8.0]
+10131 [8.0]
+10133 [9.0, 9.0, 8.0, 8.0, 8.0, 8.0]
+10134 [10.0, 10.0, 9.0, 9.0, 9.0, 8.0]
+10135 [9.0, 9.0, 9.0, 9.0, 9.0, 8.0, 8.0]
+10137 [9.0, 8.0]
+10138 [10.0, 10.0, 9.0, 9.0, 9.0, 8.0, 8.0, 8.0]
+10139 [9.0]
+10140 [10.0, 10.0, 10.0, 9.0, 9.0, 9.0, 9.0, 8.0, 8.0, 8.0, 8.0]
+10142 [10.0, 9.0, 9.0, 8.0, 8.0, 8.0, 8.0]
+10143 [10.0, 10.0, 9.0, 9.0, 9.0, 9.0, 8.0, 8.0, 8.0, 8.0]
+10144 [9.0, 8.0]
+10145 [9.0, 8.0]
+10146 [9.0, 9.0]
+10147 [10.0, 9.0, 9.0, 8.0]
+10148 [10.0, 9.0, 8.0]
+10149 [8.0]
+10150 [9.0, 9.0]
+10151 [9.0, 9.0, 9.0, 8.0, 8.0]
+10152 [10.0, 9.0, 9.0, 8.0, 8.0, 8.0]
+10153 [9.0, 8.0]
+10154 [9.0, 8.0]
+10155 [9.0]
+10156 [10.0, 9.0, 9.0, 8.0]
+10157 [10.0, 9.0]
+10159 [9.0, 8.0, 8.0, 8.0]
+10160 [9.0, 8.0]
+10161 [9.0, 8.0, 8.0]
+10162 [9.0, 9.0, 8.0, 8.0]
+10163 [10.0, 9.0, 9.0, 8.0, 8.0, 8.0, 8.0]
+10164 [10.0, 9.0, 9.0, 8.0, 8.0, 8.0]
+10165 [10.0, 9.0, 9.0, 8.0]
+10166 [10.0, 10.0, 10.0]
+10167 [9.0]
+10168 [10.0, 9.0, 9.0, 8.0, 8.0, 8.0, 8.0]
+10091 [9.0, 8.0]
+10092 [8.0]
+10093 [9.0, 9.0, 8.0]
+10094 [9.0, 9.0, 8.0, 8.0]
+10096 [10.0, 10.0, 9.0, 9.0]
+10097 [9.0, 9.0, 9.0, 9.0, 8.0]
+10098 [9.0, 9.0]
+10099 [9.0, 8.0, 8.0]
+10100 [9.0, 9.0, 8.0]
+10101 [9.0]
+10102 [9.0, 9.0, 8.0]
+10103 [9.0, 8.0, 8.0]
+10104 [10.0, 10.0, 9.0, 9.0, 8.0]
+10105 [9.0, 9.0, 8.0]
+10106 [9.0, 9.0, 8.0, 8.0]
+10107 [10.0, 9.0, 9.0, 9.0, 8.0, 8.0, 8.0, 8.0]
+10108 [10.0, 9.0, 8.0]
+10109 [10.0, 10.0, 10.0, 10.0, 9.0, 9.0, 9.0, 8.0, 8.0, 8.0, 8.0]
+10110 [9.0, 9.0, 8.0]
+10111 [9.0, 8.0, 8.0]

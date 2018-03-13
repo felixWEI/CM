@@ -1,9 +1,9 @@
 -- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
--- Host: localhost    Database: classmanagement
+-- Host: 127.0.0.1    Database: classmanagement
 -- ------------------------------------------------------
 -- Server version	5.7.20-log
-use classmanagement;
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -16,32 +16,37 @@ use classmanagement;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `auth_user_user_permissions`
+-- Table structure for table `auth_user`
 --
 
-DROP TABLE IF EXISTS `auth_user_user_permissions`;
+DROP TABLE IF EXISTS `auth_user`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `auth_user_user_permissions` (
+CREATE TABLE `auth_user` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) NOT NULL,
-  `permission_id` int(11) NOT NULL,
+  `password` varchar(128) NOT NULL,
+  `last_login` datetime DEFAULT NULL,
+  `is_superuser` tinyint(1) NOT NULL,
+  `username` varchar(150) NOT NULL,
+  `first_name` varchar(30) NOT NULL,
+  `last_name` varchar(30) NOT NULL,
+  `email` varchar(254) NOT NULL,
+  `is_staff` tinyint(1) NOT NULL,
+  `is_active` tinyint(1) NOT NULL,
+  `date_joined` datetime NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `user_id` (`user_id`,`permission_id`),
-  KEY `auth_user_user_permissions_e8701ad4` (`user_id`),
-  KEY `auth_user_user_permissions_8373b171` (`permission_id`),
-  CONSTRAINT `auth_user_user_perm_permission_id_3d7071f0_fk_auth_permission_id` FOREIGN KEY (`permission_id`) REFERENCES `auth_permission` (`id`),
-  CONSTRAINT `auth_user_user_permissions_user_id_7cd7acb6_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  UNIQUE KEY `username` (`username`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `auth_user_user_permissions`
+-- Dumping data for table `auth_user`
 --
 
-LOCK TABLES `auth_user_user_permissions` WRITE;
-/*!40000 ALTER TABLE `auth_user_user_permissions` DISABLE KEYS */;
-/*!40000 ALTER TABLE `auth_user_user_permissions` ENABLE KEYS */;
+LOCK TABLES `auth_user` WRITE;
+/*!40000 ALTER TABLE `auth_user` DISABLE KEYS */;
+INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$36000$E9qTDhbXG80u$p5uPL1kcKYIJ5gERU8m/nMjBkdw7m1M0BE3f/JK5xm4=','2018-02-25 12:28:05',1,'woodpecker','','','helloweifan@qq.com',1,1,'2017-12-16 15:04:05'),(2,'pbkdf2_sha256$36000$rCDVh8G0mxn5$u3mwfrjhlXLP1WQ9VItM6Ji3EDJeMY/3ftUIgJy6JqE=','2018-01-06 15:46:33',0,'felix','','','',0,1,'2018-01-06 15:46:09');
+/*!40000 ALTER TABLE `auth_user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -53,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-01-09 19:37:08
+-- Dump completed on 2018-02-25 22:07:39

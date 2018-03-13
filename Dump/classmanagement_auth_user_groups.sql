@@ -1,9 +1,9 @@
 -- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
--- Host: localhost    Database: classmanagement
+-- Host: 127.0.0.1    Database: classmanagement
 -- ------------------------------------------------------
 -- Server version	5.7.20-log
-use classmanagement;
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -16,29 +16,32 @@ use classmanagement;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `user_table`
+-- Table structure for table `auth_user_groups`
 --
 
-DROP TABLE IF EXISTS `user_table`;
+DROP TABLE IF EXISTS `auth_user_groups`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `user_table` (
-  `user_name` varchar(100) DEFAULT NULL,
-  `user_right` int(11) DEFAULT NULL,
-  `ID` int(11) NOT NULL AUTO_INCREMENT,
-  `user_type` varchar(45) DEFAULT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE KEY `ID_UNIQUE` (`ID`)
+CREATE TABLE `auth_user_groups` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `group_id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `user_id` (`user_id`,`group_id`),
+  KEY `auth_user_groups_e8701ad4` (`user_id`),
+  KEY `auth_user_groups_0e939a4f` (`group_id`),
+  CONSTRAINT `auth_user_groups_group_id_30a071c9_fk_auth_group_id` FOREIGN KEY (`group_id`) REFERENCES `auth_group` (`id`),
+  CONSTRAINT `auth_user_groups_user_id_24702650_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `user_table`
+-- Dumping data for table `auth_user_groups`
 --
 
-LOCK TABLES `user_table` WRITE;
-/*!40000 ALTER TABLE `user_table` DISABLE KEYS */;
-/*!40000 ALTER TABLE `user_table` ENABLE KEYS */;
+LOCK TABLES `auth_user_groups` WRITE;
+/*!40000 ALTER TABLE `auth_user_groups` DISABLE KEYS */;
+/*!40000 ALTER TABLE `auth_user_groups` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -50,4 +53,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-01-09 19:37:09
+-- Dump completed on 2018-02-25 22:07:38

@@ -19,6 +19,15 @@ $(document).ready(function () {
             $(this).addClass('selected');
         }
     } );
+    $('#e_11 tbody').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            t.$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    } );
 
     $('#delete').click( function () {
         course_id = t.row('.selected').data()[0];
@@ -37,6 +46,12 @@ $(document).ready(function () {
             }
         })
 
+    } );
+
+    $('#delete_e_11').click( function () {
+        teacher_id = $('#e_11').DataTable().row('.selected').data()[0];
+        teacher_name = $('#e_11').DataTable().row('.selected').data()[1];
+        $('#e_11').DataTable().row('.selected').remove().draw( false );
     } );
 
     $('#edit_teacher_info').click( function(){
@@ -66,8 +81,99 @@ $(document).ready(function () {
 
 	    })
 
-	})
+	});
+    $("#submit_semester_expect").click( function () {
+        modify_0 = document.getElementById('modify_0').value;
+        modify_1 = document.getElementById('modify_1').value;
+        $.ajax({
+            type: 'POST',
+            url: '/teacher_change_expect/',
+            data: {"modify_0": modify_0, 'modify_1':modify_1},
+            dataType: "json",
+            success: function(result){
+                alert('Yes')
+            },
+            error: function (){
+                alert('No');
+            }
+        });
+    });
+//    $("#add_e_11").click( function(){
+//        $.ajax({
+//            type: 'POST',
+//            url: '/class_get_all_teacher/',
+//            dataType: "json",
+//            success: function(result){
+//                alert('Yes')
+//            },
+//            error: function (){
+//                alert('No');
+//            }
+//        });
+//    })
+    $("#search_teacher_id").click( function(){
+        teacher_id = document.getElementById('e_11_teacher_id').value;
+        console.log(teacher_id);
+        $.ajax({
+            type: 'POST',
+            url: '/class_get_teacher_name/',
+            data: {'teacher_id': teacher_id},
+            dataType: "json",
+            success: function(result){
+                document.getElementById('helpBlock').innerHTML = result['teacher_name'];
+            },
+            error: function (){
+                alert('No');
+            }
+        });
+    })
+    $("#add_teacher_id").click( function(){
+        teacher_id = document.getElementById('e_11_teacher_id').value;
+        teacher_name = document.getElementById('helpBlock').innerText;
+        $("#e_11").DataTable().row.add([teacher_id, teacher_name]).draw();
+        $('#add_teacher_e_11').modal('hide');
+    })
+    initFileInput("excelFile","/class_table_upload/")
 });
+function submit_checkbox_info(){
+    str1 = "";
+    if (document.getElementById('c_student_type_1').checked == true){
+        str1 += "本科 ";
+    }
+    if (document.getElementById('c_student_type_2').checked == true){
+        str1 += "法学硕士 ";
+    }
+    if (document.getElementById('c_student_type_3').checked == true){
+        str1 += "法律硕士 ";
+    }
+    if (document.getElementById('c_student_type_4').checked == true){
+        str1 += "博士 ";
+    }
+    str2 = "";
+    if (document.getElementById('c_semester_1').checked == true){
+        str2 += "一 ";
+    }
+    if (document.getElementById('c_semester_2').checked == true){
+        str2 += "二 ";
+    }
+    $.ajax({
+        type: 'POST',
+        url: '/class_filter_by_submit/',
+        data: {'type': str1, 'semester':str2},
+        dataType: "json",
+        success: function(result){
+            console.log(result['result'])
+            $('#table_course').DataTable().clear();
+            for (var i = 0; i < result['result'].length; i++){
+                $('#table_course').DataTable().row.add(result['result'][i])
+            }
+            $('#table_course').DataTable().draw();
+        },
+        error: function (){
+            alert('No');
+        }
+    });
+}
 function add_course_info(length){
     if (String(document.getElementById('a_0').value) in t.column(0).data()){
         alert('Teacher Id already exist!!');
@@ -110,14 +216,37 @@ function edit_course_info(){
 
     document.getElementById('e_2').innerHTML = '<option>'+t.row('.selected').data()[2]+'</option>'+document.getElementById('e_2').innerHTML;
     document.getElementById('e_3').innerHTML = '<option>'+t.row('.selected').data()[3]+'</option>'+document.getElementById('e_3').innerHTML;
-    document.getElementById('e_4').value = t.row('.selected').data()[4];
+    document.getElementById('e_4').innerHTML = '<option>'+t.row('.selected').data()[4]+'</option>'+document.getElementById('e_4').innerHTML;
     document.getElementById('e_5').innerHTML = '<option>'+t.row('.selected').data()[5]+'</option>'+document.getElementById('e_5').innerHTML;
     document.getElementById('e_6').innerHTML = '<option>'+t.row('.selected').data()[6]+'</option>'+document.getElementById('e_6').innerHTML;
     document.getElementById('e_7').innerHTML = '<option>'+t.row('.selected').data()[7]+'</option>'+document.getElementById('e_7').innerHTML;
     document.getElementById('e_8').value = t.row('.selected').data()[8];
     document.getElementById('e_9').value = t.row('.selected').data()[9];
     document.getElementById('e_10').value = t.row('.selected').data()[10];
-    document.getElementById('e_11').value = t.row('.selected').data()[11];
+	$.ajax({
+	    type: 'POST',
+        url:'/class_get_suit_teacher/',
+        data: {"course_id": t.row('.selected').data()[0]},
+        dataType: "json",
+        success: function (result) {
+            var teacher_list = result['result_list'];
+            $('#e_11').DataTable({
+                dom: '<"top">rt<"bottom"><"clear">',
+                "searching": false,
+                "ordering": false,
+                 "retrieve": true,
+                "data": teacher_list,
+                "column":[
+                    {title: '工号'},
+                    {title: '姓名'}
+                ]
+            });
+        },
+        error: function () {
+            alert('fail');
+        }
+
+	})
 
 }
 function submit_edit_info(){
@@ -133,19 +262,28 @@ function submit_edit_info(){
         }
 //        console.log(document.getElementById(i).value);
     }
+    str = "";
+    for (var j=0; j < $("#e_11").DataTable().rows().data().length; j++){
+        str += $("#e_11").DataTable().rows(j).data()[0][1];
+        if( j <  $("#e_11").DataTable().rows().data().length-1){
+            str += ',';
+        }
+    }
+    row_data[11] = str;
     t.row('.selected').data(row_data).draw();
+    console.log(row_data);
     var row_str = JSON.stringify(row_data);
     $.ajax({
         type: 'POST',
-            url:'/class_save_one_row/',
-            data: {"row_data": row_str},
-            dataType: "json",
-            success: function (result) {
-                alert('success');
-            },
-            error: function () {
-                alert('fail');
-            }
+        url:'/class_save_one_row/',
+        data: {"row_data": row_str},
+        dataType: "json",
+        success: function (result) {
+            alert('success');
+        },
+        error: function () {
+            alert('fail');
+        }
 
     })
 
@@ -154,16 +292,61 @@ function submit_request(){
     course_id = document.getElementById('e_0').value;
     $.ajax({
         type: 'POST',
-            url:'/teacher_request_course/',
-            data: {"course_id": course_id},
-            dataType: "json",
-            success: function (result) {
-                alert('success');
-            },
-            error: function () {
-                alert('fail');
-            }
+        url:'/teacher_request_course/',
+        data: {"course_id": course_id},
+        dataType: "json",
+        success: function (result) {
+            alert('success');
+        },
+        error: function () {
+            alert('fail');
+        }
 
     })
-
 }
+function initFileInput(ctrlName, uploadUrl) {
+    var control = $('#' + ctrlName);
+    control.fileinput({
+        language: 'zh', //设置语言
+        uploadUrl: uploadUrl, //上传的地址
+        uploadAsync: true, //默认异步上传
+        showCaption: true,//是否显示标题
+        showUpload: true, //是否显示上传按钮
+        browseClass: "btn btn-primary", //按钮样式
+        allowedFileExtensions: ["xls", "xlsx", 'txt'], //接收的文件后缀
+        maxFileCount: 1,//最大上传文件数限制
+        previewFileIcon: '<i class="glyphicon glyphicon-file"></i>',
+        showPreview: true, //是否显示预览
+        previewFileIconSettings: {
+            'docx': '<i ass="fa fa-file-word-o text-primary"></i>',
+            'xlsx': '<i class="fa fa-file-excel-o text-success"></i>',
+            'xls': '<i class="fa fa-file-excel-o text-success"></i>',
+            'pptx': '<i class="fa fa-file-powerpoint-o text-danger"></i>',
+            'jpg': '<i class="fa fa-file-photo-o text-warning"></i>',
+            'pdf': '<i class="fa fa-file-archive-o text-muted"></i>',
+            'zip': '<i class="fa fa-file-archive-o text-muted"></i>',
+        },
+        uploadExtraData: function () {
+            var extraValue = "test";
+            return {"excelType": extraValue};
+        }
+    });
+}
+
+$("#excelFile").on("fileuploaded", function (event, data, previewId, index) {
+    console.log(data);
+    if(data.response.result == 'Pass')
+    {
+        alert(data.files[index].name + "上传成功!");
+    //关闭
+        $(".close").click();
+    }
+    else{
+        alert(data.files[index].name + "上传失败!" + data.response.message);
+    //重置
+    $("#excelFile").fileinput("clear");
+    $("#excelFile").fileinput("reset");
+    $('#excelFile').fileinput('refresh');
+    $('#excelFile').fileinput('enable');
+    }
+})

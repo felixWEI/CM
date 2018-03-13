@@ -1,9 +1,9 @@
 -- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
--- Host: localhost    Database: classmanagement
+-- Host: 127.0.0.1    Database: classmanagement
 -- ------------------------------------------------------
 -- Server version	5.7.20-log
-use classmanagement;
+
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
@@ -16,37 +16,37 @@ use classmanagement;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `auth_user`
+-- Table structure for table `django_admin_log`
 --
 
-DROP TABLE IF EXISTS `auth_user`;
+DROP TABLE IF EXISTS `django_admin_log`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `auth_user` (
+CREATE TABLE `django_admin_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `password` varchar(128) NOT NULL,
-  `last_login` datetime DEFAULT NULL,
-  `is_superuser` tinyint(1) NOT NULL,
-  `username` varchar(150) NOT NULL,
-  `first_name` varchar(30) NOT NULL,
-  `last_name` varchar(30) NOT NULL,
-  `email` varchar(254) NOT NULL,
-  `is_staff` tinyint(1) NOT NULL,
-  `is_active` tinyint(1) NOT NULL,
-  `date_joined` datetime NOT NULL,
+  `action_time` datetime NOT NULL,
+  `object_id` longtext,
+  `object_repr` varchar(200) NOT NULL,
+  `action_flag` smallint(5) unsigned NOT NULL,
+  `change_message` longtext NOT NULL,
+  `content_type_id` int(11) DEFAULT NULL,
+  `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+  KEY `django_admin_log_417f1b1c` (`content_type_id`),
+  KEY `django_admin_log_e8701ad4` (`user_id`),
+  CONSTRAINT `django_admin__content_type_id_5151027a_fk_django_content_type_id` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
+  CONSTRAINT `django_admin_log_user_id_1c5f563_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `auth_user`
+-- Dumping data for table `django_admin_log`
 --
 
-LOCK TABLES `auth_user` WRITE;
-/*!40000 ALTER TABLE `auth_user` DISABLE KEYS */;
-INSERT INTO `auth_user` VALUES (1,'pbkdf2_sha256$36000$E9qTDhbXG80u$p5uPL1kcKYIJ5gERU8m/nMjBkdw7m1M0BE3f/JK5xm4=','2018-01-08 15:07:35',1,'woodpecker','','','helloweifan@qq.com',1,1,'2017-12-16 15:04:05'),(2,'pbkdf2_sha256$36000$rCDVh8G0mxn5$u3mwfrjhlXLP1WQ9VItM6Ji3EDJeMY/3ftUIgJy6JqE=','2018-01-06 15:46:33',0,'felix','','','',0,1,'2018-01-06 15:46:09');
-/*!40000 ALTER TABLE `auth_user` ENABLE KEYS */;
+LOCK TABLES `django_admin_log` WRITE;
+/*!40000 ALTER TABLE `django_admin_log` DISABLE KEYS */;
+INSERT INTO `django_admin_log` VALUES (1,'2018-01-06 15:46:09','2','felix',1,'[{\"added\": {}}]',4,1);
+/*!40000 ALTER TABLE `django_admin_log` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -58,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-01-09 19:37:09
+-- Dump completed on 2018-02-25 22:07:38
