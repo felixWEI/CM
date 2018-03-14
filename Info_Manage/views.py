@@ -24,6 +24,8 @@ def teacher_manage(request):
     search_result = CurrentStepInfo.objects.all()
     if search_result:
         year = search_result[0].s1_year_info
+    else:
+        year = '2018-2019'
     teacher_table = TeacherInfo.objects.all()
     course_table = CourseInfo.objects.all()
     search_result = []
@@ -90,6 +92,8 @@ def teacher_personal(request):
     search_result = CurrentStepInfo.objects.all()
     if search_result:
         year = search_result[0].s1_year_info
+    else:
+        year = '2018-2019'
     course_table = CourseInfo.objects.all()
     search_result = []
     tmp = ''
@@ -129,6 +133,8 @@ def teacher_request_course(request):
     searchResult = TeacherInfo.objects.filter(teacher_id=request.user.username)
     if searchResult:
         teacher_name = searchResult[0].teacher_name
+    else:
+        teacher_name = '教务员'
     save_teacher_to_course_info(course_id, teacher_name)
     # TODO: result part
     result = 'Pass'
@@ -190,6 +196,8 @@ def class_manage(request):
     search_result = CurrentStepInfo.objects.all()
     if search_result:
         current_year = search_result[0].s1_year_info
+    else:
+        current_year = '2018-2019'
     course_table = CourseInfo.objects.all()
     search_result = []
     class_name = set()
