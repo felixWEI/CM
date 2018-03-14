@@ -521,6 +521,7 @@
                 <div class="input-group">
                   <select class="form-control" id="setYear">
                     <option>2018</option>
+                    <option>2019</option>
                   </select>
                   <span class="input-group-addon">年</span>
                 </div>
@@ -528,18 +529,7 @@
               <div class="col-sm-2 form-group">
                 <div class="input-group">
                   <select class="form-control" id="setMonth">
-                    <option>3</option>
-                    <option>4</option>
-                    <option>5</option>
-                    <option>6</option>
-                    <option>7</option>
-                    <option>8</option>
-                    <option>9</option>
-                    <option>10</option>
-                    <option>11</option>
-                    <option>12</option>
-                    <option>1</option>
-                    <option>2</option>
+                  {% for i in times.0 %}<option>{{i}}</option>{% endfor %}
                   </select>
                   <span class="input-group-addon">月</span>
                 </div>
@@ -547,9 +537,7 @@
               <div class="col-sm-2 form-group">
                 <div class="input-group">
                   <select class="form-control" id="setDay">
-                    <option>1</option>
-                    <option>2</option>
-                    <option>22</option>
+                  {% for i in times.1 %}<option>{{i}}</option>{% endfor %}
                   </select>
                   <span class="input-group-addon">日</span>
                 </div>
@@ -557,9 +545,7 @@
               <div class="col-sm-2 form-group">
                 <div class="input-group">
                   <select class="form-control" id="setHour">
-                    <option>10</option>
-                    <option>11</option>
-                    <option>12</option>
+                  {% for i in times.2 %}<option>{{i}}</option>{% endfor %}
                   </select>
                   <span class="input-group-addon">时</span>
                 </div>
@@ -567,10 +553,7 @@
               <div class="col-sm-2 form-group">
                 <div class="input-group">
                   <select class="form-control" id="setMin">
-                    <option>40</option>
-                    <option>45</option>
-                    <option>50</option>
-                    <option>55</option>
+                  {% for i in times.3 %}<option>{{i}}</option>{% endfor %}
                   </select>
                   <span class="input-group-addon">分</span>
                 </div>

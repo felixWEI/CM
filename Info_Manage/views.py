@@ -206,6 +206,10 @@ def class_manage(request):
     semester = set()
     course_hour = set()
     course_degree = set()
+    current_course_count = len(course_table)
+    current_hour_count = 0
+    current_degree_count = 0
+    current_course_claim = 0
     for eachItem in course_table:
         for eachClass in eachItem.class_name.split(' '):
             search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
@@ -218,14 +222,9 @@ def class_manage(request):
         semester.add(eachItem.semester)
         course_hour.add(eachItem.course_hour)
         course_degree.add(eachItem.course_degree)
-    current_course_count = len(search_result)
-    current_hour_count = 0
-    current_degree_count = 0
-    current_course_claim = 0
-    for eachItem in search_result:
-        current_hour_count += float(eachItem[6])
-        current_degree_count += float(eachItem[7])
-        if eachItem[11]:
+        current_hour_count += float(eachItem.course_hour)
+        current_degree_count += float(eachItem.course_degree)
+        if eachItem.suit_teacher:
             current_course_claim += 1
     summary_table = [current_course_count, current_hour_count, current_degree_count, current_course_claim]
 
@@ -235,6 +234,7 @@ def class_manage(request):
     return render(request, 'class_manage.html', {'UserName': request.user.first_name+request.user.last_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
                                                  'summary_table': summary_table, 'year': current_year})
+
 
 @csrf_exempt
 def class_filter_by_submit(request):
@@ -432,8 +432,9 @@ def arrange_class(request):
         if search_result[0].s5_status_flag:
             step_position[4] = 'active'
 
+    times = [[i for i in range(1, 13)], [i for i in range(1, 32)], [i for i in range(24)], [i for i in range(1, 60)]]
     return render(request, 'arrange_class.html', {'UserName': request.user.first_name+request.user.last_name+request.user.username, 'step_info': step_info,
-                                                  'step_position': step_position})
+                                                  'step_position': step_position, 'times': times})
 
 
 @csrf_exempt
