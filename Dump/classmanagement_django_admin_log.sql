@@ -32,11 +32,11 @@ CREATE TABLE `django_admin_log` (
   `content_type_id` int(11) DEFAULT NULL,
   `user_id` int(11) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `django_admin_log_417f1b1c` (`content_type_id`),
-  KEY `django_admin_log_e8701ad4` (`user_id`),
-  CONSTRAINT `django_admin__content_type_id_5151027a_fk_django_content_type_id` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
-  CONSTRAINT `django_admin_log_user_id_1c5f563_fk_auth_user_id` FOREIGN KEY (`user_id`) REFERENCES `auth_user` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+  KEY `django_admin_log_content_type_id_c4bce8eb_fk_django_co` (`content_type_id`),
+  KEY `django_admin_log_user_id_c564eba6_fk_users_user_id` (`user_id`),
+  CONSTRAINT `django_admin_log_content_type_id_c4bce8eb_fk_django_co` FOREIGN KEY (`content_type_id`) REFERENCES `django_content_type` (`id`),
+  CONSTRAINT `django_admin_log_user_id_c564eba6_fk_users_user_id` FOREIGN KEY (`user_id`) REFERENCES `users_user` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -45,7 +45,7 @@ CREATE TABLE `django_admin_log` (
 
 LOCK TABLES `django_admin_log` WRITE;
 /*!40000 ALTER TABLE `django_admin_log` DISABLE KEYS */;
-INSERT INTO `django_admin_log` VALUES (1,'2018-01-06 15:46:09','2','felix',1,'[{\"added\": {}}]',4,1);
+INSERT INTO `django_admin_log` VALUES (1,'2018-03-15 12:42:13','1','教务员',1,'[{\"added\": {}}]',2,1),(2,'2018-03-15 12:51:20','2','8000',2,'[{\"changed\": {\"fields\": [\"last_login\", \"is_staff\"]}}]',6,1),(3,'2018-03-15 13:24:41','4','33080',2,'[{\"changed\": {\"fields\": [\"last_login\", \"is_staff\"]}}]',6,1),(4,'2018-03-15 13:31:23','4','33080',2,'[{\"changed\": {\"fields\": [\"last_login\", \"email\"]}}]',6,1),(5,'2018-03-15 13:31:33','3','33364',2,'[{\"changed\": {\"fields\": [\"last_login\", \"email\"]}}]',6,1);
 /*!40000 ALTER TABLE `django_admin_log` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -58,4 +58,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-03-13 21:38:24
+-- Dump completed on 2018-03-15 23:41:14

@@ -30,8 +30,21 @@ CREATE TABLE `current_step_info` (
   `s2_postgraduate_1` varchar(45) DEFAULT NULL,
   `s2_postgraduate_2` varchar(45) DEFAULT NULL,
   `s2_doctor` varchar(45) DEFAULT NULL,
+  `s2_start_request` varchar(45) DEFAULT NULL,
+  `s2_deadline` datetime DEFAULT NULL,
+  `s2_teacher_confirm_u` varchar(45) DEFAULT NULL,
+  `s2_teacher_confirm_p1` varchar(45) DEFAULT NULL,
+  `s2_teacher_confirm_p2` varchar(45) DEFAULT NULL,
+  `s2_teacher_confirm_d` varchar(45) DEFAULT NULL,
+  `s3_status_flag` varchar(45) DEFAULT NULL,
+  `s4_status_flag` varchar(45) DEFAULT NULL,
+  `s4_teacher_confirm_u` varchar(45) DEFAULT '0',
+  `s4_teacher_confirm_p1` varchar(45) DEFAULT '0',
+  `s4_teacher_confirm_p2` varchar(45) DEFAULT '0',
+  `s4_teacher_confirm_d` varchar(45) DEFAULT '0',
+  `s5_status_flag` varchar(45) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -40,7 +53,6 @@ CREATE TABLE `current_step_info` (
 
 LOCK TABLES `current_step_info` WRITE;
 /*!40000 ALTER TABLE `current_step_info` DISABLE KEYS */;
-INSERT INTO `current_step_info` VALUES (1,'start','2017-2018',NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `current_step_info` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -53,4 +65,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-03-13 21:38:26
+-- Dump completed on 2018-03-15 23:41:15
