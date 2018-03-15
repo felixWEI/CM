@@ -25,7 +25,7 @@ def teacher_manage(request):
     if search_result:
         year = search_result[0].s1_year_info
     else:
-        year = '2018-2019'
+        year = 'None'
     teacher_table = TeacherInfo.objects.all()
     course_table = CourseInfo.objects.all()
     search_result = []
@@ -93,7 +93,7 @@ def teacher_personal(request):
     if search_result:
         year = search_result[0].s1_year_info
     else:
-        year = '2018-2019'
+        year = 'None'
     course_table = CourseInfo.objects.all()
     search_result = []
     tmp = ''
@@ -197,7 +197,7 @@ def class_manage(request):
     if search_result:
         current_year = search_result[0].s1_year_info
     else:
-        current_year = '2018-2019'
+        current_year = 'None'
     course_table = CourseInfo.objects.all()
     search_result = []
     class_name = set()

@@ -96,7 +96,11 @@
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">统计信息</h1>
-          <div><p class="bg-info">当前在排课中：目标学期为{{ year }}学年第一学期</p></div>
+          {% if year == 'None' %}
+            <div><p class="bg-info">当前不再排课当中</p></div>
+          {% else %}
+            <div><p class="bg-info">当前在排课中：目标学期为{{ year }}学年</p></div>
+          {% endif %}
           <div class="row">
             <div class="col-sm-2">
                 <div class="placeholders2">
