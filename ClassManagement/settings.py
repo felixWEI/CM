@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Home',
+    'users',
     'Info_Search',
     'Info_Manage',
 ]
@@ -119,9 +120,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hans'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Shanghai'
 
 USE_I18N = True
 
@@ -139,5 +140,23 @@ STATICFILES_DIRS =[
     os.path.join(BASE_DIR, 'Home/static'),
     os.path.join(BASE_DIR, 'Info_Search/static'),
 ]
+
+AUTH_USER_MODEL = 'users.User'
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'users.backends.EmailBackend',
+)
 LOGIN_REDIRECT_URL = "/teacher_personal/"
 LOGOUT_URL = "/"
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = True
+EMAIL_HOST = 'smtp.qq.com'
+EMAIL_PORT = 465
+EMAIL_HOST_USER = 'helloweifan@qq.com'
+EMAIL_HOST_PASSWORD = 'zrfxpbshiadxbccd'
+EMAIL_FROM = 'helloweifan@qq.com'
+ALLOWED_HOSTS = [
+    '192.168.0.102',
+]
+

@@ -75,6 +75,7 @@
                      </b>
                  </a>
               </li>
+              <li class="nav-item"><a href="{% url 'password_change' %}?next={{ request.path }}"><b>修改密码</b></a></li>
           </ul>
         </div>
       </div>
@@ -171,7 +172,7 @@
             <div class="pull-right" style="margin-top: 10px;">
                   <button id="import" class="btn btn-primary" data-toggle="modal" data-target="#importModal">导入</button>
                   <button id="delete" class="btn btn-danger">删除该行</button>
-                  <button class="btn btn-primary" data-toggle="modal" data-target="#editModal" onclick="edit_course_info()">编辑课程信息</button>
+                  <button class="btn btn-primary" onclick="edit_course_info()">编辑课程信息</button>
                   <button class="btn btn-primary" data-toggle="modal" data-target="#configModal">添加课程信息</button>
             </div>
             <table class="table table-striped" id="table_course">

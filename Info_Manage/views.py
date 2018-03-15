@@ -29,8 +29,8 @@ def teacher_manage(request):
     teacher_table = TeacherInfo.objects.all()
     course_table = CourseInfo.objects.all()
     search_result = []
-    weight_total_1 = 0
-    weight_total_2 = 0
+    weight_total_1 = 1
+    weight_total_2 = 1
     for eachItem in teacher_table:
         search_result.append([eachItem.teacher_id, eachItem.teacher_name, eachItem.first_semester_expect*100, eachItem.second_semester_expect*100,
                              eachItem.first_semester_hours, eachItem.second_semester_hours, eachItem.first_semester_degree, eachItem.second_semester_degree])
@@ -98,7 +98,7 @@ def teacher_personal(request):
     search_result = []
     tmp = ''
     for eachItem in course_table:
-        if request.user.first_name+request.user.last_name in eachItem.teacher_ordered.split(','):
+        if request.user.last_name+request.user.first_name in eachItem.teacher_ordered.split(','):
             tmp = '已申报'
         else:
             tmp = ''
@@ -117,12 +117,12 @@ def teacher_personal(request):
         expect_semester2 = 0
     summary_table = [expect_semester1, expect_semester2]
 
-    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '课程状态']
+    table_head = ['代码', '名称', '学位', '学年', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '课程状态']
     default_value_for_class = ['法学理论', '法律史', '宪法学', '民商法学', '诉讼法学', '经济法学', '环保法', '国际法学', '刑法学',
                                '宪法学与行政法学', '环境与资源保护法', '国际法', '二专', '法学院本科', '跨校辅修']
     table_default = ['', '', ['本科', '法律硕士', '法学硕士', '博士'], ['17', '16', '15', '14'], default_value_for_class,
                     ['一', '二', '三', '四', '五', '七', '八'], '', ['1', '2', '3', '4', '5'], ['必修', '选修'], '', '']
-    return render(request, 'teacher_personal.html', {'UserName': request.user.first_name+request.user.last_name+request.user.username, 'class_table': search_result,
+    return render(request, 'teacher_personal.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
                                                  'summary_table': summary_table, 'year': year})
 
@@ -166,8 +166,8 @@ def teacher_table_upload(request):
     teacher_list = []
     line_width = work_sheet.row_len(0)
     for line_number in range(line_length):
-        teacher_id, teacher_name = work_sheet.row(line_number)
-        if type(teacher_id.value) == float:
+        teacher_id, teacher_name, _ = work_sheet.row(line_number)
+        if type(teacher_id.value) == int or type(teacher_id.value) == float:
             teacher_list.append([int(teacher_id.value), teacher_name.value])
     insert_teacher_list_into_db(teacher_list)
     return HttpResponse('Pass')
@@ -231,7 +231,7 @@ def class_manage(request):
     table_head = ['代码', '名称', '学位', '学年', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '可选教师']
     table_default = ['', '', student_type, year, class_name,
                      semester, course_hour, course_degree, ['必修', '选修'], '', '']
-    return render(request, 'class_manage.html', {'UserName': request.user.first_name+request.user.last_name+request.user.username, 'class_table': search_result,
+    return render(request, 'class_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
                                                  'summary_table': summary_table, 'year': current_year})
 
@@ -266,6 +266,7 @@ def save_course_into_database(course_info):
     now = datetime.now()
     search_result = CourseInfo.objects.all().filter(course_id=course_info[0])
     if search_result:
+        class_list = search_result[0].class_name.split(' ')
         CourseInfo.objects.filter(course_id=course_info[0]).update(course_id=course_info[0],course_name=course_info[1], student_type=course_info[2],
                                                                     year=course_info[3], class_name=course_info[4], semester=course_info[5],
                                                                     course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
@@ -433,7 +434,7 @@ def arrange_class(request):
             step_position[4] = 'active'
 
     times = [[i for i in range(1, 13)], [i for i in range(1, 32)], [i for i in range(24)], [i for i in range(1, 60)]]
-    return render(request, 'arrange_class.html', {'UserName': request.user.first_name+request.user.last_name+request.user.username, 'step_info': step_info,
+    return render(request, 'arrange_class.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'step_info': step_info,
                                                   'step_position': step_position, 'times': times})
 
 

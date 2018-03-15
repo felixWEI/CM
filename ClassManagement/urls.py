@@ -13,7 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth.views import login
 from Home.views import home_page, logout_view
@@ -26,8 +26,10 @@ from Info_Search.views import info_search_main
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^accounts/login/$', login, {'template_name': 'login.html'}),
+    url(r'^accounts/login/$', login, {'template_name': 'registration\login.html'}),
     url(r'^accounts/logout/$', logout_view),
+    url(r'^users/', include('users.urls')),
+    url(r'^users/', include('django.contrib.auth.urls')),
     url(r'^$', home_page, name='home'),
     url(r'^teacher_manage/', teacher_manage),
     url(r'^teacher_personal/', teacher_personal),
