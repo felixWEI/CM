@@ -36,8 +36,10 @@ $(document).ready(function () {
 
 	$('#edit_table').click( function(){
         if ( t.row('.selected').length === 0 ){
+            alert('没有选择的教师')
             return
         }
+        $('#editModal').modal('show')
         console.log(t.row('.selected').data());
         document.getElementById('0').value = t.row('.selected').data()[0];
         document.getElementById('1').value = t.row('.selected').data()[1];
@@ -61,10 +63,14 @@ $(document).ready(function () {
         $.ajax({
             type: 'POST',
             url: '/teacher_change_expect/',
-            data: {"modify_0": first_semester_expect, 'modify_1':second_semester_expect},
+            data: {"modify_0": first_semester_expect, 'modify_1':second_semester_expect, 'teacher_id':teacher_code},
             dataType: "json",
             success: function(result){
-                console.log('Yes');
+                if (result['status']=='Success'){
+                    alert('修改期望成功')
+                }else{
+                    alert(result['status'])
+                }
             },
             error: function (){
                 console.log('No');

@@ -172,9 +172,10 @@
           <h2 class="sub-header">教师信息</h2>
           <div class="table-responsive">
              <div class="pull-right" style="margin-top: 10px;">
-                  <button id="import" class="btn btn-primary">导入</button>
-                  <button id="delete" class="btn btn-danger">删除该行</button>
-                  <button id="edit_table" class="btn btn-primary" data-toggle="modal" data-target="#editModal" onclick="edit_course_info()">申报该课程</button>
+                  <!--<button id="delete" class="btn btn-danger">删除该行</button>-->
+               <button class="btn btn-primary" onclick="request_course()">申报该课程</button>
+               <button class="btn btn-primary" onclick="cancel_request()">取消申报</button>
+               <button id="" class="btn btn-primary" data-toggle="modal" data-target="#editModal" onclick="">完成申报</button>
             </div>
             <table class="table table-striped" id="table_course">
               <thead>
@@ -230,124 +231,242 @@
       </div>
     </div>
 
-          <!-- Modal -->
-      <div class="modal fade" id="editModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myEditModalLabel">申报课程</h4>
-            </div>
-            <div class="modal-body " id="edit_modal_body">
-              <form class="form-horizontal">
-                  <div class="row form-group">
-                      <label for="e_0" class="col-sm-2 control-label">{{ table_head.0 }}</label>
-                      <div class="col-sm-10">
-                          <div class="input-group">
-                              <input id="e_0"  disabled=disabled class="form-control" type="text" placeholder="课程号码">
-                          </div>
-                      </div>
-                  </div>
+    <!-- Modal -->
+    <div class="modal fade" id="requestModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myEditModalLabel">申报课程</h4>
+          </div>
+          <div class="modal-body " id="edit_modal_body">
+            <form class="form-horizontal">
+                <div class="row form-group">
+                    <label for="e_0" class="col-sm-2 control-label">{{ table_head.0 }}</label>
+                    <div class="col-sm-10">
+                        <div class="input-group">
+                            <input id="e_0"  disabled=disabled class="form-control" type="text" placeholder="课程号码">
+                        </div>
+                    </div>
+                </div>
 
-                  <div class="row form-group">
-                      <label for="e_1" class="col-sm-2 control-label">{{ table_head.1 }}</label>
-                      <div class="col-sm-10"><input id="e_1" disabled=disabled class="form-control" type="text" placeholder="课程名称"></div>
-                  </div>
-                  <div class="row form-group">
-                      <label for="e_2" class="col-sm-2 control-label">{{ table_head.2 }}</label>
-                      <div class="col-sm-4">
-                          <select id="e_2" disabled=disabled class="form-control">
-                            {% for row in table_default.2 %}
-                            <option>{{row}}</option>
-                            {% endfor %}
-                          </select>
-                      </div>
-                      <label for="e_3" class="col-sm-2 control-label">{{ table_head.3 }}</label>
-                      <div class="col-sm-4">
-                          <select id="e_3" disabled=disabled class="form-control">
-                            {% for row in table_default.3 %}
-                            <option>{{row}}</option>
-                            {% endfor %}
-                          </select>
-                      </div>
-                  </div>
-                  <div class="row form-group">
-                      <label for="e_4" class="col-sm-2 control-label">{{ table_head.4 }}</label>
-                      <div class="col-sm-10"><input id="e_4" disabled=disabled class="form-control" type="text" placeholder="班级"></div>
-                  </div>
-                  <div class="row form-group">
-                      <label for="e_5" class="col-sm-2 control-label">{{ table_head.5 }}</label>
-                      <div class="col-sm-4">
-                          <select id="e_5" disabled=disabled class="form-control">
-                            {% for row in table_default.5 %}
-                            <option>{{row}}</option>
-                            {% endfor %}
-                          </select>
-                      </div>
-                      <label for="e_6" class="col-sm-2 control-label">{{ table_head.6 }}</label>
-                      <div class="col-sm-4">
-                          <select id="e_6" disabled=disabled class="form-control">
-                            {% for row in table_default.6 %}
-                            <option>{{row}}</option>
-                            {% endfor %}
-                          </select>
-                      </div>
-                  </div>
-                  <div class="row form-group">
-                      <div class="col-sm-6">
-                          <div class="row form-group">
-                              <label for="e_7" class="col-sm-4 control-label">{{ table_head.7 }}</label>
-                              <div class="col-sm-8">
-                                  <select id="e_7" disabled=disabled class="form-control">
-                                  {% for row in table_default.7 %}
-                                  <option>{{row}}</option>
-                                  {% endfor %}
-                                  </select>
-                              </div>
+                <div class="row form-group">
+                    <label for="e_1" class="col-sm-2 control-label">{{ table_head.1 }}</label>
+                    <div class="col-sm-10"><input id="e_1" disabled=disabled class="form-control" type="text" placeholder="课程名称"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="e_2" class="col-sm-2 control-label">{{ table_head.2 }}</label>
+                    <div class="col-sm-4">
+                        <select id="e_2" disabled=disabled class="form-control">
+                          {% for row in table_default.2 %}
+                          <option>{{row}}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                    <!--<label for="e_3" class="col-sm-2 control-label">{{ table_head.3 }}</label>-->
+                    <!--<div class="col-sm-4">-->
+                        <!--<select id="e_3" disabled=disabled class="form-control">-->
+                          <!--{% for row in table_default.3 %}-->
+                          <!--<option>{{row}}</option>-->
+                          <!--{% endfor %}-->
+                        <!--</select>-->
+                    <!--</div>-->
+                </div>
+                <div class="row form-group">
+                    <label for="e_4" class="col-sm-2 control-label">{{ table_head.3 }}</label>
+                    <div class="col-sm-10"><input id="e_4" disabled=disabled class="form-control" type="text" placeholder="班级"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="e_5" class="col-sm-2 control-label">{{ table_head.4 }}</label>
+                    <div class="col-sm-4">
+                        <select id="e_5" disabled=disabled class="form-control">
+                          {% for row in table_default.5 %}
+                          <option>{{row}}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                    <label for="e_6" class="col-sm-2 control-label">{{ table_head.5 }}</label>
+                    <div class="col-sm-4">
+                        <select id="e_6" disabled=disabled class="form-control">
+                          {% for row in table_default.6 %}
+                          <option>{{row}}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-6">
+                        <div class="row form-group">
+                            <label for="e_7" class="col-sm-4 control-label">{{ table_head.6 }}</label>
+                            <div class="col-sm-8">
+                                <select id="e_7" disabled=disabled class="form-control">
+                                {% for row in table_default.7 %}
+                                <option>{{row}}</option>
+                                {% endfor %}
+                                </select>
                             </div>
-                          <div class="row form-group">
-                            <label for="e_8" class="col-sm-4 control-label">{{ table_head.8 }}</label>
-                            <div class="col-sm-8"><input id="e_8" disabled=disabled class="form-control" type="text" placeholder="必/选"></div>
                           </div>
-                          <div class="row form-group">
-                            <label for="e_9" class="col-sm-4 control-label">{{ table_head.9 }}</label>
-                            <div class="col-sm-8"><input id="e_9" disabled=disabled class="form-control" type="text" placeholder="教师数"></div>
-                          </div>
-                          <div class="row form-group">
-                            <label for="e_10" class="col-sm-4 control-label">{{ table_head.10 }}</label>
-                            <div class="col-sm-8"><input id="e_10" disabled=disabled class="form-control" type="text" placeholder="周上课次数"></div>
-                          </div>
-                      </div>
-                      <div class="col-sm-6">
-                          <div class="row form-group" hidden="hidden">
-                              <label for="e_11" class="col-sm-4 control-label">{{ table_head.11 }}</label>
-                              <div class="col-sm-8">
-                                  <table id="e_11" class="table table-bordered">
-                                      <tbody>
-                                          <tr>
-                                              <td></td>
-                                          </tr>
-                                          <tr>
-                                              <td></td>
-                                          </tr>
-                                          <tr>
-                                              <td></td>
-                                          </tr>
-                                      </tbody>
-                                  </table>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="button" onclick="submit_request()">确认申报</button>
-                <button type="button" class="button" data-dismiss="modal">取消</button>
-            </div>
+                        <div class="row form-group">
+                          <label for="e_8" class="col-sm-4 control-label">{{ table_head.7 }}</label>
+                          <div class="col-sm-8"><input id="e_8" disabled=disabled class="form-control" type="text" placeholder="必/选"></div>
+                        </div>
+                        <div class="row form-group">
+                          <label for="e_9" class="col-sm-4 control-label">{{ table_head.8 }}</label>
+                          <div class="col-sm-8"><input id="e_9" disabled=disabled class="form-control" type="text" placeholder="教师数"></div>
+                        </div>
+                        <div class="row form-group">
+                          <label for="e_10" class="col-sm-4 control-label">{{ table_head.9 }}</label>
+                          <div class="col-sm-8"><input id="e_10" disabled=disabled class="form-control" type="text" placeholder="周上课次数"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="row form-group" hidden="hidden">
+                            <label for="e_11" class="col-sm-4 control-label">{{ table_head.10 }}</label>
+                            <div class="col-sm-8">
+                                <table id="e_11" class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="button" onclick="submit_request()">确认申报</button>
+              <button type="button" class="button" data-dismiss="modal">取消</button>
           </div>
         </div>
       </div>
+    </div>
+
+    <div class="modal fade" id="cancelModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="">取消申报</h4>
+          </div>
+          <div class="modal-body " id="">
+            <form class="form-horizontal">
+                <div class="row form-group">
+                    <label for="c_0" class="col-sm-2 control-label">{{ table_head.0 }}</label>
+                    <div class="col-sm-10">
+                        <div class="input-group">
+                            <input id="c_0"  disabled=disabled class="form-control" type="text" placeholder="课程号码">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group">
+                    <label for="e_1" class="col-sm-2 control-label">{{ table_head.1 }}</label>
+                    <div class="col-sm-10"><input id="c_1" disabled=disabled class="form-control" type="text" placeholder="课程名称"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="c_2" class="col-sm-2 control-label">{{ table_head.2 }}</label>
+                    <div class="col-sm-4">
+                        <select id="c_2" disabled=disabled class="form-control">
+                          {% for row in table_default.2 %}
+                          <option>{{row}}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                    <!--<label for="e_3" class="col-sm-2 control-label">{{ table_head.3 }}</label>-->
+                    <!--<div class="col-sm-4">-->
+                        <!--<select id="e_3" disabled=disabled class="form-control">-->
+                          <!--{% for row in table_default.3 %}-->
+                          <!--<option>{{row}}</option>-->
+                          <!--{% endfor %}-->
+                        <!--</select>-->
+                    <!--</div>-->
+                </div>
+                <div class="row form-group">
+                    <label for="c_4" class="col-sm-2 control-label">{{ table_head.3 }}</label>
+                    <div class="col-sm-10"><input id="c_4" disabled=disabled class="form-control" type="text" placeholder="班级"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="c_5" class="col-sm-2 control-label">{{ table_head.4 }}</label>
+                    <div class="col-sm-4">
+                        <select id="c_5" disabled=disabled class="form-control">
+                          {% for row in table_default.5 %}
+                          <option>{{row}}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                    <label for="c_6" class="col-sm-2 control-label">{{ table_head.5 }}</label>
+                    <div class="col-sm-4">
+                        <select id="c_6" disabled=disabled class="form-control">
+                          {% for row in table_default.6 %}
+                          <option>{{row}}</option>
+                          {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row form-group">
+                    <div class="col-sm-6">
+                        <div class="row form-group">
+                            <label for="c_7" class="col-sm-4 control-label">{{ table_head.6 }}</label>
+                            <div class="col-sm-8">
+                                <select id="c_7" disabled=disabled class="form-control">
+                                {% for row in table_default.7 %}
+                                <option>{{row}}</option>
+                                {% endfor %}
+                                </select>
+                            </div>
+                          </div>
+                        <div class="row form-group">
+                          <label for="c_8" class="col-sm-4 control-label">{{ table_head.7 }}</label>
+                          <div class="col-sm-8"><input id="c_8" disabled=disabled class="form-control" type="text" placeholder="必/选"></div>
+                        </div>
+                        <div class="row form-group">
+                          <label for="c_9" class="col-sm-4 control-label">{{ table_head.8 }}</label>
+                          <div class="col-sm-8"><input id="c_9" disabled=disabled class="form-control" type="text" placeholder="教师数"></div>
+                        </div>
+                        <div class="row form-group">
+                          <label for="c_10" class="col-sm-4 control-label">{{ table_head.9 }}</label>
+                          <div class="col-sm-8"><input id="c_10" disabled=disabled class="form-control" type="text" placeholder="周上课次数"></div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div class="row form-group" hidden="hidden">
+                            <label for="c_11" class="col-sm-4 control-label">{{ table_head.10 }}</label>
+                            <div class="col-sm-8">
+                                <table id="c_11" class="table table-bordered">
+                                    <tbody>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+                                        <tr>
+                                            <td></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="button" onclick="submit_cancel()">确认取消申报</button>
+              <button type="button" class="button" data-dismiss="modal">取消</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -360,7 +479,6 @@
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <script src="../static/assets/js/ie10-viewport-bug-workaround.js"></script>
 
-    <script type="text/javascript" src="../static/DataTables/jQuery-3.2.1/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="../static/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="../static/DataTables/Buttons-1.5.1/js/dataTables.buttons.min.js"></script>
     <script type="text/javascript" src="../static/dist/js/jszip.min.js"></script>

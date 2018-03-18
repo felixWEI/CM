@@ -32,11 +32,15 @@ $(document).ready(function () {
     $('#delete').click( function () {
         course_id = t.row('.selected').data()[0];
         console.log(course_id)
+        student_type = t.row('.selected').data()[2]
+        class_grade = t.row('.selected').data()[3]
+        class_name = t.row('.selected').data()[4]
+        combine_data = student_type+'-'+class_grade+'_'+class_name
         t.row('.selected').remove().draw( false );
         $.ajax({
             type: 'POST',
             url: '/class_delete_one_row/',
-            data: {'course_id': course_id},
+            data: {'course_id': course_id, 'old_data':combine_data},
             dataType: 'json',
             success: function(result){
                 alert('Pass');
@@ -91,36 +95,83 @@ $(document).ready(function () {
             data: {"modify_0": modify_0, 'modify_1':modify_1},
             dataType: "json",
             success: function(result){
-                alert('Yes')
+                if (result['status']=='Success'){
+                    alert('修改期望成功')
+                }else{
+                    alert(result['status'])
+                }
             },
             error: function (){
                 alert('No');
             }
         });
     });
-//    $("#add_e_11").click( function(){
-//        $.ajax({
-//            type: 'POST',
-//            url: '/class_get_all_teacher/',
-//            dataType: "json",
-//            success: function(result){
-//                alert('Yes')
-//            },
-//            error: function (){
-//                alert('No');
-//            }
-//        });
-//    })
+    $("#a_search_course_id").click( function(){
+        course_id = document.getElementById('a_0').value
+        $.ajax({
+            type: 'POST',
+            url: '/class_search_from_course_id/',
+            data: {'course_id': course_id},
+            dataType: "json",
+            success: function(result){
+                if (result['status'] == 'Success'){
+                    document.getElementById('a_1').value = result['raw_data'][0]
+                    document.getElementById('a_2').value = result['raw_data'][1]
+                    document.getElementById('a_3').value = result['raw_data'][2]
+                    document.getElementById('a_4').value = result['raw_data'][3]
+                    document.getElementById('a_5').value = result['raw_data'][4]
+                    document.getElementById('a_6').value = result['raw_data'][5]
+                    document.getElementById('a_7').value = result['raw_data'][6]
+                    document.getElementById('a_8').value = result['raw_data'][7]
+                    document.getElementById('a_9').value = result['raw_data'][8]
+                    document.getElementById('a_10').value = result['raw_data'][9]
+                    document.getElementById('a_1').setAttribute('disabled', 'disabled')
+                    document.getElementById('a_5').setAttribute('disabled', 'disabled')
+                    document.getElementById('a_6').setAttribute('disabled', 'disabled')
+                    document.getElementById('a_7').setAttribute('disabled', 'disabled')
+                    document.getElementById('a_8').setAttribute('disabled', 'disabled')
+                    document.getElementById('a_9').setAttribute('disabled', 'disabled')
+                    document.getElementById('a_10').setAttribute('disabled', 'disabled')
+                }else{
+                    document.getElementById('a_1').value = ''
+                    document.getElementById('a_2').value = ''
+                    document.getElementById('a_3').value = ''
+                    document.getElementById('a_4').value = ''
+                    document.getElementById('a_5').value = ''
+                    document.getElementById('a_6').value = ''
+                    document.getElementById('a_7').value = ''
+                    document.getElementById('a_8').value = ''
+                    document.getElementById('a_9').value = ''
+                    document.getElementById('a_10').value = ''
+                    document.getElementById('a_1').removeAttribute('disabled')
+                    document.getElementById('a_5').removeAttribute('disabled')
+                    document.getElementById('a_6').removeAttribute('disabled')
+                    document.getElementById('a_7').removeAttribute('disabled')
+                    document.getElementById('a_8').removeAttribute('disabled')
+                    document.getElementById('a_9').removeAttribute('disabled')
+                    document.getElementById('a_10').removeAttribute('disabled')
+                }
+            },
+            error: function (){
+                alert('No');
+            }
+        });
+    })
     $("#search_teacher_id").click( function(){
-        teacher_id = document.getElementById('e_11_teacher_id').value;
-        console.log(teacher_id);
+        teacher_str = document.getElementById('e_11_teacher_str').value;
+        console.log(teacher_str);
         $.ajax({
             type: 'POST',
             url: '/class_get_teacher_name/',
-            data: {'teacher_id': teacher_id},
+            data: {'teacher_str': teacher_str},
             dataType: "json",
             success: function(result){
-                document.getElementById('helpBlock').innerHTML = result['teacher_name'];
+                if (result['status'] == 'Success'){
+                    document.getElementById('helpBlock1').innerHTML = result['teacher_id'];
+                    document.getElementById('helpBlock2').innerHTML = result['teacher_name'];
+                }else{
+                    alert('没有找到该教师')
+                }
             },
             error: function (){
                 alert('No');
@@ -128,8 +179,8 @@ $(document).ready(function () {
         });
     })
     $("#add_teacher_id").click( function(){
-        teacher_id = document.getElementById('e_11_teacher_id').value;
-        teacher_name = document.getElementById('helpBlock').innerText;
+        teacher_id = document.getElementById('helpBlock1').innerText;
+        teacher_name = document.getElementById('helpBlock2').innerText;
         $("#e_11").DataTable().row.add([teacher_id, teacher_name]).draw();
         $('#add_teacher_e_11').modal('hide');
     })
@@ -175,10 +226,6 @@ function submit_checkbox_info(){
     });
 }
 function add_course_info(length){
-    if (String(document.getElementById('a_0').value) in t.column(0).data()){
-        alert('Teacher Id already exist!!');
-        return
-    }
     row_data = Array();
     for (var i=0; i < Number(length); i++ ){
         if ( document.getElementById('a_'+String(i)).value !== undefined ){
@@ -192,11 +239,12 @@ function add_course_info(length){
 //        console.log(document.getElementById(i).value);
     }
     t.row.add(row_data).draw();
+    old_data = ''
     var row_str = JSON.stringify(row_data);
     $.ajax({
         type: 'POST',
             url:'/class_save_one_row/',
-            data: {"row_data": row_str},
+            data: {"row_data": row_str, 'old_data':old_data},
             dataType: "json",
             success: function (result) {
                 alert('success');
@@ -210,15 +258,14 @@ function add_course_info(length){
 function edit_course_info(){
     if ( t.row('.selected').length === 0 ){
         alert('没有选中的课程')
-
+        return
     }
     $('#editModal').modal('show');
     document.getElementById('e_0').value = t.row('.selected').data()[0];
     document.getElementById('e_1').value = t.row('.selected').data()[1];
-
     document.getElementById('e_2').innerHTML = '<option>'+t.row('.selected').data()[2]+'</option>'+document.getElementById('e_2').innerHTML;
     document.getElementById('e_3').innerHTML = '<option>'+t.row('.selected').data()[3]+'</option>'+document.getElementById('e_3').innerHTML;
-    document.getElementById('e_4').value = t.row('.selected').data()[4];
+    document.getElementById('e_4').innerHTML = '<option>'+t.row('.selected').data()[4]+'</option>'+document.getElementById('e_4').innerHTML;
     document.getElementById('e_5').innerHTML = '<option>'+t.row('.selected').data()[5]+'</option>'+document.getElementById('e_5').innerHTML;
     document.getElementById('e_6').innerHTML = '<option>'+t.row('.selected').data()[6]+'</option>'+document.getElementById('e_6').innerHTML;
     document.getElementById('e_7').innerHTML = '<option>'+t.row('.selected').data()[7]+'</option>'+document.getElementById('e_7').innerHTML;
@@ -251,6 +298,42 @@ function edit_course_info(){
 	})
 
 }
+function request_course(){
+    if ( t.row('.selected').length === 0 ){
+        alert('没有选中的课程')
+        return
+    }
+    $('#requestModal').modal('show');
+    document.getElementById('e_0').value = t.row('.selected').data()[0];
+    document.getElementById('e_1').value = t.row('.selected').data()[1];
+    document.getElementById('e_2').innerHTML = '<option>'+t.row('.selected').data()[2]+'</option>'+document.getElementById('e_2').innerHTML;
+    document.getElementById('e_4').value = t.row('.selected').data()[3];
+    document.getElementById('e_5').innerHTML = '<option>'+t.row('.selected').data()[4]+'</option>'+document.getElementById('e_5').innerHTML;
+    document.getElementById('e_6').innerHTML = '<option>'+t.row('.selected').data()[5]+'</option>'+document.getElementById('e_6').innerHTML;
+    document.getElementById('e_7').innerHTML = '<option>'+t.row('.selected').data()[6]+'</option>'+document.getElementById('e_7').innerHTML;
+    document.getElementById('e_8').value = t.row('.selected').data()[7];
+    document.getElementById('e_9').value = t.row('.selected').data()[8];
+    document.getElementById('e_10').value = t.row('.selected').data()[9];
+}
+function cancel_request(){
+    if ( t.row('.selected').length === 0 ){
+        alert('没有选中的课程')
+        return
+    }
+    $('#cancelModal').modal('show');
+    console.log(t.row('.selected').data());
+    document.getElementById('c_0').value = t.row('.selected').data()[0];
+    document.getElementById('c_1').value = t.row('.selected').data()[1];
+    document.getElementById('c_2').innerHTML = '<option>'+t.row('.selected').data()[2]+'</option>'+document.getElementById('e_2').innerHTML;
+    document.getElementById('c_4').value = t.row('.selected').data()[3];
+    document.getElementById('c_5').innerHTML = '<option>'+t.row('.selected').data()[4]+'</option>'+document.getElementById('e_5').innerHTML;
+    document.getElementById('c_6').innerHTML = '<option>'+t.row('.selected').data()[5]+'</option>'+document.getElementById('e_6').innerHTML;
+    document.getElementById('c_7').innerHTML = '<option>'+t.row('.selected').data()[6]+'</option>'+document.getElementById('e_7').innerHTML;
+    document.getElementById('c_8').value = t.row('.selected').data()[7];
+    document.getElementById('c_9').value = t.row('.selected').data()[8];
+    document.getElementById('c_10').value = t.row('.selected').data()[9];
+}
+
 function submit_edit_info(){
     row_data = Array();
     for (var i=0; i < 12; i++ ){
@@ -271,6 +354,11 @@ function submit_edit_info(){
             str += ',';
         }
     }
+    student_type = t.row('.selected').data()[2]
+    class_grade = t.row('.selected').data()[3]
+    class_name = t.row('.selected').data()[4]
+    combine_data = student_type+'-'+class_grade+'_'+class_name
+    console.log(combine_data)
     row_data[11] = str;
     t.row('.selected').data(row_data).draw();
     console.log(row_data);
@@ -278,7 +366,7 @@ function submit_edit_info(){
     $.ajax({
         type: 'POST',
         url:'/class_save_one_row/',
-        data: {"row_data": row_str},
+        data: {"row_data": row_str, 'old_data':combine_data},
         dataType: "json",
         success: function (result) {
             alert('success');
@@ -298,7 +386,34 @@ function submit_request(){
         data: {"course_id": course_id},
         dataType: "json",
         success: function (result) {
-            alert('success');
+            if (result['status'] == 'Success'){
+                alert('申报成功')
+            }else{
+                alert(result['status'])
+            }
+            $('#requestModal').modal('hide')
+        },
+        error: function () {
+            alert('fail');
+        }
+
+    })
+}
+function submit_cancel(){
+    course_id = document.getElementById('c_0').value;
+    status = 'cancel'
+    $.ajax({
+        type: 'POST',
+        url:'/teacher_request_course/',
+        data: {"course_id": course_id, 'status':status},
+        dataType: "json",
+        success: function (result) {
+            if (result['status'] == 'Success'){
+                alert('取消申报成功')
+            }else{
+                alert(result['status'])
+            }
+            $('#cancelModal').modal('hide')
         },
         error: function () {
             alert('fail');

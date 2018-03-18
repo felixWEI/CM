@@ -148,15 +148,8 @@ AUTHENTICATION_BACKENDS = (
 )
 LOGIN_REDIRECT_URL = "/teacher_personal/"
 LOGOUT_URL = "/"
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = True
-EMAIL_HOST = 'smtp.qq.com'
-EMAIL_PORT = 465
-EMAIL_HOST_USER = 'helloweifan@qq.com'
-EMAIL_HOST_PASSWORD = 'zrfxpbshiadxbccd'
-EMAIL_FROM = 'helloweifan@qq.com'
 ALLOWED_HOSTS = [
     '192.168.0.102',
+    '127.0.0.1'
 ]
 
