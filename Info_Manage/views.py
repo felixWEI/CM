@@ -19,27 +19,13 @@ import xlwt
 from io import StringIO, BytesIO
 
 
-CLASS_NAME_LIST = ["国际法","国际经济法导论","国际私法","民法II","民法I", "民事诉讼法","商法","宪法","刑法II","刑法I", "刑事诉讼法", "行政法",
-                    "中国法制史", "法理学导论","专业外语", "文艺复兴史", "留学生高级汉语I", "留学生高级汉语II","留学生专业汉语I","法理学","法理学","商法学", "刑法学",
-                    "刑事诉讼法学", "国际法学", "中国法制史", "宪法学", "国际经济法", "国际私法", "证据法", "民法学", "行政法与行政诉讼法", "经济法学", "外国法律史", "商法学", "法律职业伦理与法律方法", "知识产权法", "环境资源法", "法理学专题"
-                    "民法学专题", "刑法学专题", "宪法学专题", "模拟法庭训练", "中国法制史专题", "经济法专题", "法律职业规范与伦理", "法律文书训练", "自然资源和环境保护法", "知识产权法", "比较法专题", "国际贸易法", "合同法",
-                    "专利法", "物权法", "金融法", "证据法", "票据法", "法律文书课", "法律诊所与模拟法庭训练（民事方向）", "法律谈判课", "法律诊所与模拟法庭训练（刑事方向）", "法理学研究", "比较法研究", "宪法学研究", "国际法研究",
-                    "民商法研究", "程序法研究", "刑事政策研究", "西方法律思想史", "立法学专题", "中国法制史专题", "经济法专题", "比较宪法学专题", "中国行政法专题", "民法专题", "商法专题", "金融法研究", "知识产权法研究", "国际经济法专题",
-                    "国际金融法专题","国际金融法专题（全英文）","国际公法专题（全英文）","中国刑法","犯罪学","中国民诉法专题","外国民事诉讼法专题","中国刑诉法专题","外国刑事诉讼法专题","环境法原理","环境管理与经济法","国际环境法专题",
-                    "冲突法研究", "中国当代社会法理学问题", "法律方法论专题","经济法基础理论研究","法经济学","规制与竞争法专题研究","马克思主义法学思想","物权法","中国环境法","西方法律史专题","西方法理学研究","行政诉讼法学",
-                    "法学名著精读","中国民法史","比较刑法","人权研究","外国行政法","经济行政法","侵权法研究","公司法与破产法研究","证券法研究","银行法专题","著作权与计算机软件保护研究","欧盟法专题","国际服务贸易法","证据法",
-                    "证据法学","司法制度专题","律师制度专题","国际投资法研究","国际投资法专题","环境科学","债法研究","国际海关法专题","中国法律思想史专题","普通法专题","民法原理与环境法","国际金融信托法","票据法与保险法研究",
-                    "国际贸易的知识产权法","国际贸易法专题","比较商法","国际仲裁与诉讼研究","中世纪法专题","比较司法制度","国际可持续发展法","经济犯罪","国际法理论","国际私法专题","国际贸易知识产权法","民法专题研究",
-                    "比较宪法学","海事法研究","外国民事诉讼法专题","诉讼法学原理","比较法的方法与课题","民事诉讼法专题研究","证据法专题研究","法律史研究方法与课题","当代中国社会法理问题","比较行政法学","宪法学原理","环境法总论",
-                    "商法学研究","国际环境法","近代大陆法专题","环境侵权法","刑事政策前沿","刑法学前沿","国际投资法","国际金融法","冲突法与中国司法实践","民法解释学","侵权责任法专题","医事法专题","物权法专题研究","商法学前沿问题",
-                    "宪法学经典文献精读","比较商法研究","国际海关法专题","裁判方法及其哲学基础","民事司法比较研究","证据法比较研究","中国财产法史专题","当代西方法理学","法律经济学","涉外经济行政法","中国行政法专题","环境法前沿问题研究","刑法社会学",
-                    "自然资源法律制度研究","刑法解释学","刑法方法论（不限年级）","婚姻家庭法","知识产权法","外国行政法","合同法的理论与实践","知识经济与知识产权管理","交易法律制度",
-                    "法治社会的公民权利","环境与资源保护法律政策","日本战后法律事件的解读","法科大学生的创新与创业","人权与法","宪政文明史","法治理念与实践","法律与科技文明","全球化时代的法律冲突与对话","法律与社会",
-                    "行政法","民法I","中国法制史","行政诉讼法","刑事诉讼法","民法II","民事诉讼法","国际私法","商法","专业英语I(法律)","国际经济法导论","知识产权法","专业英语II(法律)","专业英语III(法律)","法理学"
-                    "法律实务","毕业实习","毕业论文","物权法","税法","金融法","公司法","自然资源和环境保护法","婚姻家庭法","国际金融法","国际贸易法","侵权行为法","证券法","票据法","证据学","比较宪法","国际投资法"
-                    "国际投资法","国际税法","国际经济合同","台港澳法","法律诊所教育","国际商事仲裁法","海商法","刑事政策","中国法律思想史","西方法律思想史","外国法律制度","刑法II","外国民事诉讼法","国际商法","国际法","刑法I",
-                    "宪法学","民法总论","刑法","债法(合同法)","商法","民事诉讼法","知识产权法","国际法","国际经济法","刑事诉讼法","中国特色社会主义理论与实践研究","英语","专业英语","专业英语(写作)","法理学导论",
-                    "宪法","经济法"]
+CLASS_NAME_LIST = ["第二专业教学", "通识教育","法学专业教育", "跨校辅修教学", "基础教育", "法律硕士(法学)", "法律硕士(非法学)1班",
+                   "法律硕士(非法学)2班", "法律硕士在职生", "法律史", "法学理论", "国际法学", "环境与资源保护法学", "经济法学",
+                   "民商法学", "诉讼法学", "刑法学", "宪法学与行政法学"]
+STUDENT_TYPE = ['本科', '法学硕士', '法律硕士', '法学博士']
+COURSE_HOUR = ['18', '36', '54', '56', '72']
+COURSE_DEGREE= ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', '9.0', '10']
+COURSE_TYPE = ['必修', '选修']
 
 
 
@@ -142,10 +128,7 @@ def teacher_personal(request):
     summary_table = [expect_semester1, expect_semester2]
 
     table_head = ['代码', '名称', '学位', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '课程状态']
-    default_value_for_class = ['法学理论', '法律史', '宪法学', '民商法学', '诉讼法学', '经济法学', '环保法', '国际法学', '刑法学',
-                               '宪法学与行政法学', '环境与资源保护法', '国际法', '二专', '法学院本科', '跨校辅修']
-    table_default = ['', '', ['本科', '法律硕士', '法学硕士', '博士'], ['17', '16', '15', '14'], default_value_for_class,
-                     ['一', '二', '三', '四', '五', '七', '八'], '', ['1', '2', '3', '4', '5'], ['必修', '选修'], '', '']
+    table_default = ['', '', STUDENT_TYPE, CLASS_NAME_LIST, ['一', '二'], COURSE_HOUR, COURSE_DEGREE, ['必修', '选修'], '', '', '']
     return render(request, 'teacher_personal.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
                                                  'summary_table': summary_table, 'year': year})
@@ -294,18 +277,27 @@ def class_manage(request):
 def class_filter_by_submit(request):
     student_type = request.POST['type'].strip().split(' ')
     semester = request.POST['semester'].strip().split(' ')
+    table_id = request.POST['table_id']
     course_table = CourseInfo.objects.all()
     search_result = []
     for eachItem in course_table:
         if eachItem.semester in semester and eachItem.student_type in student_type:
-            if request.user.last_name + request.user.first_name in eachItem.teacher_ordered.split(','):
-                tmp = '已申报'
-            else:
-                tmp = ''
-            search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
-                                  eachItem.class_name, eachItem.semester,
-                                  eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
-                                  eachItem.allow_teachers, eachItem.times_every_week, tmp])
+            if table_id == 'table_course_manage':
+                for eachClass in eachItem.class_name.split(' '):
+                    search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
+                                          eachClass.split('-')[-1].split('_')[0], eachClass.split('-')[-1].split('_')[-1], eachItem.semester,
+                                          eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
+                                          eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher])
+            elif table_id == 'table_course_personal':
+                teacher_list = eachItem.teacher_ordered.split(',') if eachItem.teacher_ordered else []
+                if request.user.username in teacher_list:
+                    tmp = '已申报'
+                else:
+                    tmp = ''
+                search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
+                                      eachItem.class_name, eachItem.semester, eachItem.course_hour,
+                                      eachItem.course_degree, eachItem.course_type,
+                                      eachItem.allow_teachers, eachItem.times_every_week, tmp])
     result = json.dumps({'result': search_result})
     return HttpResponse(result)
 

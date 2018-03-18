@@ -1,5 +1,5 @@
 $(document).ready(function () {
-	t = $('#table_course').DataTable({
+	t = $('#table_course_manage').DataTable({
         dom: 'Bfrtip',
         buttons: [ {
             extend: 'excelHtml5',
@@ -10,7 +10,7 @@ $(document).ready(function () {
         } ]
 	});
 
-    $('#table_course tbody').on( 'click', 'tr', function () {
+    $('#table_course_manage tbody').on( 'click', 'tr', function () {
         if ( $(this).hasClass('selected') ) {
             $(this).removeClass('selected');
         }
@@ -198,7 +198,7 @@ function submit_checkbox_info(){
         str1 += "法律硕士 ";
     }
     if (document.getElementById('c_student_type_4').checked == true){
-        str1 += "博士 ";
+        str1 += "法学博士 ";
     }
     str2 = "";
     if (document.getElementById('c_semester_1').checked == true){
@@ -210,15 +210,15 @@ function submit_checkbox_info(){
     $.ajax({
         type: 'POST',
         url: '/class_filter_by_submit/',
-        data: {'type': str1, 'semester':str2},
+        data: {'type': str1, 'semester':str2, 'table_id':'table_course_manage'},
         dataType: "json",
         success: function(result){
             console.log(result['result'])
-            $('#table_course').DataTable().clear();
+            $('#table_course_manage').DataTable().clear();
             for (var i = 0; i < result['result'].length; i++){
-                $('#table_course').DataTable().row.add(result['result'][i])
+                $('#table_course_manage').DataTable().row.add(result['result'][i])
             }
-            $('#table_course').DataTable().draw();
+            $('#table_course_manage').DataTable().draw();
         },
         error: function (){
             alert('No');
