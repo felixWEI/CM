@@ -58,8 +58,10 @@ $(document).ready(function () {
         hours_semester_2 = document.getElementById('5').value
         degree_semester_1 = document.getElementById('6').value
         degree_semester_2 = document.getElementById('7').value
+        teacher_apply_status = document.getElementById('8').value
+        notes = document.getElementById('9').value
         t.row('.selected').data([teacher_code, teacher_name, first_semester_expect, second_semester_expect, hours_semester_1,hours_semester_2,
-        degree_semester_1, degree_semester_2]).draw();
+        degree_semester_1, degree_semester_2, teacher_apply_status, notes]).draw();
         $.ajax({
             type: 'POST',
             url: '/teacher_change_expect/',

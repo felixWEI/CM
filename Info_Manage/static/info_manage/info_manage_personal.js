@@ -388,6 +388,8 @@ function submit_request(){
         success: function (result) {
             if (result['status'] == 'Success'){
                 alert('申报成功')
+                t.row('.selected').data()[t.row('.selected').data().length-1] = '已申报';
+                t.row('.selected').data(t.row('.selected').data()).draw();
             }else{
                 alert(result['status'])
             }

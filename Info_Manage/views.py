@@ -12,21 +12,25 @@ from Info_Manage.models import TeacherInfo, CourseInfo, CurrentStepInfo
 # Create your views here.
 
 import os
+import sys
 import xlrd
 import math
 from datetime import datetime
 import xlwt
 from io import StringIO, BytesIO
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
-
+STUDENT_TYPE = ['本科', '法学硕士', '法律硕士', '法学博士']
 CLASS_NAME_LIST = ["第二专业教学", "通识教育","法学专业教育", "跨校辅修教学", "基础教育", "法律硕士(法学)", "法律硕士(非法学)1班",
                    "法律硕士(非法学)2班", "法律硕士在职生", "法律史", "法学理论", "国际法学", "环境与资源保护法学", "经济法学",
                    "民商法学", "诉讼法学", "刑法学", "宪法学与行政法学"]
-STUDENT_TYPE = ['本科', '法学硕士', '法律硕士', '法学博士']
+CLASS_GRADE = [str(datetime.now().year - i) for i in [2000, 2001, 2002, 2003]]
+SEMESTER = ['一', '二']
 COURSE_HOUR = ['18', '36', '54', '56', '72']
-COURSE_DEGREE= ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', '9.0', '10']
+COURSE_DEGREE = ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', '9.0', '10']
 COURSE_TYPE = ['必修', '选修']
-
+current_school_year = '{}-{}'.format(datetime.now().year, datetime.now().year+1)
 
 
 
@@ -42,11 +46,16 @@ def teacher_manage(request):
     search_result = []
     weight_total_1 = 1
     weight_total_2 = 1
+    apply_done = 0
     for eachItem in teacher_table:
-        search_result.append([eachItem.teacher_id, eachItem.teacher_name, eachItem.first_semester_expect*100, eachItem.second_semester_expect*100,
-                             eachItem.first_semester_hours, eachItem.second_semester_hours, eachItem.first_semester_degree, eachItem.second_semester_degree])
         weight_total_1 += eachItem.first_semester_expect
         weight_total_2 += eachItem.second_semester_expect
+        if apply_done and apply_done == '1':
+            apply_done += 1
+        search_result.append([eachItem.teacher_id, eachItem.teacher_name, eachItem.first_semester_expect*100,
+                              eachItem.second_semester_expect*100, eachItem.first_semester_hours,
+                              eachItem.second_semester_hours, eachItem.first_semester_degree,
+                              eachItem.second_semester_degree, eachItem.teacher_apply_done, eachItem.notes])
     current_teacher_count = len(search_result)
     total_hours_1 = 0
     total_hours_2 = 0
@@ -64,9 +73,10 @@ def teacher_manage(request):
     expect_degree_for_semester1 = round(total_degree_1/weight_total_1, 2)
     expect_degree_for_semester2 = round(total_degree_2/weight_total_2, 2)
 
-    summary_table = [current_teacher_count, expect_hours_for_semester1, expect_hours_for_semester2,
+    summary_table = [current_teacher_count, apply_done, expect_hours_for_semester1, expect_hours_for_semester2,
                      expect_degree_for_semester1, expect_degree_for_semester2]
-    table_head = ['教师代码', '教师姓名', '期望学时1', '期望学时2', '学时1', '学时2','难度1', '难度2']
+    table_head = ['教师代码', '教师姓名', '期望学时1(%)', '期望学时2(%)', '已分配学时1', '已分配学时2','已分配难度1', '已分配难度2',
+                  '申报完成', '特殊理由']
     return render(request, 'teacher_manage.html', {'UserName': request.user.first_name+request.user.last_name+request.user.username,
                                                    'teacher_table': search_result, 'summary_table': summary_table,
                                                    'table_head': table_head, 'year': year})
@@ -236,29 +246,26 @@ def class_manage(request):
         current_year = 'None'
     course_table = CourseInfo.objects.all()
     search_result = []
-    class_name = set()
-    student_type = set()
-    year = set()
-    semester = set()
-    course_hour = set()
-    course_degree = set()
+    class_name = CLASS_NAME_LIST
+    student_type = STUDENT_TYPE
+    year = CLASS_GRADE
+    semester = SEMESTER
+    course_hour = COURSE_HOUR
+    course_degree = COURSE_DEGREE
+    course_type = COURSE_TYPE
     current_course_count = len(course_table)
     current_hour_count = 0
     current_degree_count = 0
     current_course_claim = 0
     for eachItem in course_table:
+        if not eachItem.class_name:
+            continue
         for eachClass in eachItem.class_name.split(' '):
             tmp_class_grade, tmp_class_name = eachClass.split('-')[-1].split('_')
             search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
                                   tmp_class_grade, tmp_class_name, eachItem.semester,
                                   eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
                                   eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher])
-            class_name.add(tmp_class_name)
-            year.add(tmp_class_grade)
-        student_type.add(eachItem.student_type)
-        semester.add(eachItem.semester)
-        course_hour.add(eachItem.course_hour)
-        course_degree.add(eachItem.course_degree)
         current_hour_count += float(eachItem.course_hour)
         current_degree_count += float(eachItem.course_degree)
         if eachItem.suit_teacher:
@@ -267,7 +274,7 @@ def class_manage(request):
 
     table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '可选教师']
     table_default = ['', '', student_type, year, class_name,
-                     semester, course_hour, course_degree, ['必修', '选修'], '', '']
+                     semester, course_hour, course_degree, course_type, '', '']
     return render(request, 'class_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
                                                  'summary_table': summary_table, 'year': current_year})
@@ -306,13 +313,15 @@ def class_filter_by_submit(request):
 def class_save_one_row(request):
     course_info = json.loads(request.POST['row_data'])
     old_class_info = request.POST['old_data']
-    save_course_into_database_by_edit(course_info, old_class_info)
+    if 'old_course_id' in request.POST:
+        old_course_id = request.POST['old_course_id']
+    save_course_into_database_by_edit(course_info, old_class_info, old_course_id)
     result = 'Pass'
     result = json.dumps({'result': result})
     return HttpResponse(result)
 
 
-def save_course_into_database_by_edit(course_info, old_class_info):
+def save_course_into_database_by_edit(course_info, old_class_info, old_course_id=None):
     now = datetime.now()
     search_result = CourseInfo.objects.all().filter(course_id=course_info[0])
     if search_result:
@@ -320,6 +329,7 @@ def save_course_into_database_by_edit(course_info, old_class_info):
         if combine_class_name in search_result[0].class_name:
             CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],
                                                                      course_name=course_info[1],
+
                                                                      semester=course_info[5],
                                                                      course_hour=course_info[6],
                                                                      course_degree=course_info[7],
@@ -349,12 +359,25 @@ def save_course_into_database_by_edit(course_info, old_class_info):
                                                                      suit_teacher=suit_teacher,
                                                                      update_time=now)
     else:
+        # remove class from previous course
+        search_result = CourseInfo.objects.filter(course_id=old_course_id)
+        class_list = search_result[0].class_name.split(' ')
+        if old_class_info not in class_list:
+            return '{} not in {}'.format(old_class_info, old_course_id)
+        else:
+            class_list.remove(old_class_info)
+            if len(class_list) == 0:
+                CourseInfo.objects.filter(course_id=old_course_id).delete()
+            else:
+                class_name_str = ' '.join(class_list)
+                CourseInfo.objects.filter(course_id=old_course_id).update(class_name=class_name_str)
+        # add a new course
         combine_class_name = '{}-{}_{}'.format(course_info[2], course_info[3], course_info[4])
-        CourseInfo.objects.create(course_id=course_info[0], course_name=course_info[1], student_type=course_info[2],
+        CourseInfo.objects.create(course_id=course_info[0], course_name=course_info[1], student_type=course_info[2],year=current_school_year,
                                   class_name=combine_class_name, semester=course_info[5],
                                   course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
                                   allow_teachers=course_info[9], times_every_week=course_info[10],
-                                  suit_teacher=course_info[11], update_time=now)
+                                  suit_teacher='', teacher_ordered='', update_time=now)
 
 
 def save_course_into_database(course_info):
@@ -362,12 +385,12 @@ def save_course_into_database(course_info):
     search_result = CourseInfo.objects.all().filter(course_id=course_info[0])
     if search_result:
         CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],course_name=course_info[1], student_type=course_info[2],
-                                                                    year=course_info[3], class_name=course_info[4], semester=course_info[5],
+                                                                    year=current_school_year, class_name=course_info[4], semester=course_info[5],
                                                                     course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
                                                                     allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12],update_time=now)
     else:
         CourseInfo.objects.create(course_id=course_info[0], course_name=course_info[1], student_type=course_info[2],
-                                   year=course_info[3], class_name=course_info[4], semester=course_info[5],
+                                   year=current_school_year, class_name=course_info[4], semester=course_info[5],
                                    course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
                                    allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12],update_time=now)
 
@@ -473,16 +496,16 @@ def save_course_table_into_database(class_info_to_save):
 @csrf_exempt
 def class_get_teacher_name(request):
     teacher_str = request.POST['teacher_str']
-    search_result = TeacherInfo.objects.all().filter(teacher_id=teacher_str)
+    search_result = TeacherInfo.objects.all().filter(teacher_name=teacher_str)
     status = 'Success'
     if search_result:
-        teacher_id = teacher_str
-        teacher_name = search_result[0].teacher_name
+        teacher_name = teacher_str
+        teacher_id = search_result[0].teacher_id
     else:
-        search_result = TeacherInfo.objects.filter(teacher_name=teacher_str)
+        search_result = TeacherInfo.objects.filter(teacher_id=teacher_str)
         if search_result:
-            teacher_name = teacher_str
-            teacher_id = search_result[0].teacher_id
+            teacher_id = teacher_str
+            teacher_name = search_result[0].teacher_name
         else:
             teacher_name = ''
             teacher_id = ''

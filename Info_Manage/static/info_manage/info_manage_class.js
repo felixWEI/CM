@@ -10,6 +10,7 @@ $(document).ready(function () {
         } ]
 	});
 
+
     $('#table_course_manage tbody').on( 'click', 'tr', function () {
         if ( $(this).hasClass('selected') ) {
             $(this).removeClass('selected');
@@ -115,12 +116,13 @@ $(document).ready(function () {
             dataType: "json",
             success: function(result){
                 if (result['status'] == 'Success'){
+                    console.log(result['raw_data'][5])
                     document.getElementById('a_1').value = result['raw_data'][0]
                     document.getElementById('a_2').value = result['raw_data'][1]
                     document.getElementById('a_3').value = result['raw_data'][2]
                     document.getElementById('a_4').value = result['raw_data'][3]
                     document.getElementById('a_5').value = result['raw_data'][4]
-                    document.getElementById('a_6').value = result['raw_data'][5]
+                    document.getElementById('a_6').value = Number(result['raw_data'][5])
                     document.getElementById('a_7').value = result['raw_data'][6]
                     document.getElementById('a_8').value = result['raw_data'][7]
                     document.getElementById('a_9').value = result['raw_data'][8]
@@ -263,13 +265,42 @@ function edit_course_info(){
     $('#editModal').modal('show');
     document.getElementById('e_0').value = t.row('.selected').data()[0];
     document.getElementById('e_1').value = t.row('.selected').data()[1];
+    document.getElementById('e_2').options.length = 0
+    document.getElementById('e_3').options.length = 0
+    document.getElementById('e_4').options.length = 0
+    document.getElementById('e_5').options.length = 0
+    document.getElementById('e_6').options.length = 0
+    document.getElementById('e_7').options.length = 0
+    document.getElementById('e_8').options.length = 0
+    for (var i in STUDENT_TYPE){
+        document.getElementById('e_2').options.add(new Option(STUDENT_TYPE[i]))
+    }
+    for (var i=0; i < 4; i++){
+        year = Number(current_year) - i
+        document.getElementById('e_3').options.add(new Option(year))
+    }
+    for (var i in CLASS_NAME_LIST){
+        document.getElementById('e_4').options.add(new Option(CLASS_NAME_LIST[i]))
+    }
+    for (var i in SEMESTER){
+        document.getElementById('e_5').options.add(new Option(SEMESTER[i]))
+    }
+    for (var i in COURSE_HOUR){
+        document.getElementById('e_6').options.add(new Option(COURSE_HOUR[i]))
+    }
+    for (var i in COURSE_DEGREE){
+        document.getElementById('e_7').options.add(new Option(COURSE_DEGREE[i]))
+    }
+    for (var i in COURSE_TYPE){
+        document.getElementById('e_8').options.add(new Option(COURSE_TYPE[i]))
+    }
     document.getElementById('e_2').innerHTML = '<option>'+t.row('.selected').data()[2]+'</option>'+document.getElementById('e_2').innerHTML;
     document.getElementById('e_3').innerHTML = '<option>'+t.row('.selected').data()[3]+'</option>'+document.getElementById('e_3').innerHTML;
     document.getElementById('e_4').innerHTML = '<option>'+t.row('.selected').data()[4]+'</option>'+document.getElementById('e_4').innerHTML;
     document.getElementById('e_5').innerHTML = '<option>'+t.row('.selected').data()[5]+'</option>'+document.getElementById('e_5').innerHTML;
     document.getElementById('e_6').innerHTML = '<option>'+t.row('.selected').data()[6]+'</option>'+document.getElementById('e_6').innerHTML;
     document.getElementById('e_7').innerHTML = '<option>'+t.row('.selected').data()[7]+'</option>'+document.getElementById('e_7').innerHTML;
-    document.getElementById('e_8').value = t.row('.selected').data()[8];
+    document.getElementById('e_8').innerHTML = '<option>'+t.row('.selected').data()[8]+'</option>'+document.getElementById('e_8').innerHTML;
     document.getElementById('e_9').value = t.row('.selected').data()[9];
     document.getElementById('e_10').value = t.row('.selected').data()[10];
 	$.ajax({
@@ -279,11 +310,12 @@ function edit_course_info(){
         dataType: "json",
         success: function (result) {
             var teacher_list = result['result_list'];
+//            $('#e_11').DataTable().clear();
             $('#e_11').DataTable({
                 dom: '<"top">rt<"bottom"><"clear">',
                 "searching": false,
                 "ordering": false,
-                 "retrieve": true,
+                "destroy": true,
                 "data": teacher_list,
                 "column":[
                     {title: '工号'},
@@ -354,6 +386,7 @@ function submit_edit_info(){
             str += ',';
         }
     }
+    course_id = t.row('.selected').data()[0]
     student_type = t.row('.selected').data()[2]
     class_grade = t.row('.selected').data()[3]
     class_name = t.row('.selected').data()[4]
@@ -366,7 +399,7 @@ function submit_edit_info(){
     $.ajax({
         type: 'POST',
         url:'/class_save_one_row/',
-        data: {"row_data": row_str, 'old_data':combine_data},
+        data: {"row_data": row_str, 'old_data':combine_data, 'old_course_id':course_id},
         dataType: "json",
         success: function (result) {
             alert('success');

@@ -15,6 +15,8 @@ class TeacherInfo(models.Model):
     second_semester_hours = models.FloatField(db_column='second_semester_hours', blank=True, null=True)
     first_semester_degree = models.FloatField(db_column='first_semester_degree', blank=True, null=True)
     second_semester_degree = models.FloatField(db_column='second_semester_degree', blank=True, null=True)
+    teacher_apply_done = models.CharField(db_column='teacher_apply_done', max_length=45, blank=True, null=True)
+    notes = models.CharField(db_column='notes', max_length=2000, blank=True, null=True)
     update_time = models.DateTimeField(db_column='update_time', blank=True, null=True)
 
     class Meta:
