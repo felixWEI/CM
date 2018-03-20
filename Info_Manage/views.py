@@ -33,7 +33,6 @@ COURSE_TYPE = ['必修', '选修']
 current_school_year = '{}-{}'.format(datetime.now().year, datetime.now().year+1)
 
 
-
 @login_required()
 def teacher_manage(request):
     search_result = CurrentStepInfo.objects.all()
@@ -50,7 +49,7 @@ def teacher_manage(request):
     for eachItem in teacher_table:
         weight_total_1 += eachItem.first_semester_expect
         weight_total_2 += eachItem.second_semester_expect
-        if apply_done and apply_done == '1':
+        if eachItem.teacher_apply_done and eachItem.teacher_apply_done == '申报结束':
             apply_done += 1
         search_result.append([eachItem.teacher_id, eachItem.teacher_name, eachItem.first_semester_expect*100,
                               eachItem.second_semester_expect*100, eachItem.first_semester_hours,
@@ -75,9 +74,9 @@ def teacher_manage(request):
 
     summary_table = [current_teacher_count, apply_done, expect_hours_for_semester1, expect_hours_for_semester2,
                      expect_degree_for_semester1, expect_degree_for_semester2]
-    table_head = ['教师代码', '教师姓名', '期望学时1(%)', '期望学时2(%)', '已分配学时1', '已分配学时2','已分配难度1', '已分配难度2',
-                  '申报完成', '特殊理由']
-    return render(request, 'teacher_manage.html', {'UserName': request.user.first_name+request.user.last_name+request.user.username,
+    table_head = ['教师代码', '教师姓名', '期望学时1(%)', '期望学时2(%)', '已分配学时1', '已分配学时2','已分配难度1',
+                  '已分配难度2' ,'申报完成', '特殊理由']
+    return render(request, 'teacher_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username,
                                                    'teacher_table': search_result, 'summary_table': summary_table,
                                                    'table_head': table_head, 'year': year})
 
@@ -110,6 +109,11 @@ def save_teacher_into_database(all_teacher):
 
 @login_required()
 def teacher_personal(request):
+    search_result = TeacherInfo.objects.filter(teacher_id=request.user.username)
+    status = 'free'
+    if search_result:
+        if search_result[0].teacher_apply_done:
+            status = 'lock'
     search_result = CurrentStepInfo.objects.all()
     if search_result:
         year = search_result[0].s1_year_info
@@ -141,7 +145,7 @@ def teacher_personal(request):
     table_default = ['', '', STUDENT_TYPE, CLASS_NAME_LIST, ['一', '二'], COURSE_HOUR, COURSE_DEGREE, ['必修', '选修'], '', '', '']
     return render(request, 'teacher_personal.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
-                                                 'summary_table': summary_table, 'year': year})
+                                                 'summary_table': summary_table, 'year': year, 'status': status})
 
 
 @csrf_exempt
@@ -235,6 +239,42 @@ def remove_teacher_from_course_info(course_id, user_name):
             teacher_str = ','.join(teacher_list)
         CourseInfo.objects.filter(course_id=course_id).update(teacher_ordered=teacher_str, suit_teacher=teacher_str)
     return status
+
+
+@csrf_exempt
+def teacher_submit_apply_status(request):
+    status_code = request.POST['status']
+    teacher_id = request.POST['teacher_id']
+    search_result = TeacherInfo.objects.filter(teacher_id=teacher_id)
+    if search_result:
+        teacher_name = search_result[0].teacher_name
+    else:
+        result = json.dumps({'status': '该老师没有在系统中注册'})
+        return HttpResponse(result)
+    if status_code == 'check':
+        search_result = CourseInfo.objects.all()
+        result_teacher = {STUDENT_TYPE[0]: [], STUDENT_TYPE[1]: [], STUDENT_TYPE[2]: [], STUDENT_TYPE[3]: []}
+        for eachCourse in search_result:
+            teacher_list = eachCourse.teacher_ordered.split(',')
+            if teacher_name in teacher_list:
+                tmp = [eachCourse.course_id, eachCourse.course_name, eachCourse.course_degree]
+                result_teacher[eachCourse.student_type].append(tmp)
+        # print result_teacher
+        status = 'Success'
+        result = json.dumps({'status': status, 'list_1': result_teacher[STUDENT_TYPE[0]], 'list_2': result_teacher[STUDENT_TYPE[1]],
+                             'list_3': result_teacher[STUDENT_TYPE[2]], 'list_4': result_teacher[STUDENT_TYPE[3]]})
+    elif status_code == 'save':
+        status = 'Success'
+        notes = request.POST['notes']
+        if notes:
+            TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='申报结束', notes=notes)
+        else:
+            TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='申报结束')
+        result = json.dumps({'status': status})
+    else:
+        status = 'Unknown status code {}'.format(status_code)
+        result = json.dumps({'status': status})
+    return HttpResponse(result)
 
 
 @login_required()
@@ -668,7 +708,11 @@ def arrange_step_3(request):
             arrange_main()
         elif status == 'arrange over':
             CurrentStepInfo.objects.filter(id=search_result[0].id).update(s3_status_flag=status,
-                                                                          s4_status_flag='adjustment start')
+                                                                          s4_status_flag='adjustment start',
+                                                                          s4_teacher_confirm_u='0',
+                                                                          s4_teacher_confirm_p1='0',
+                                                                          s4_teacher_confirm_p2='0',
+                                                                          s4_teacher_confirm_d='0')
         else:
             result['status'] = 'Fail'
     result = json.dumps({'result': result})
@@ -698,16 +742,16 @@ def start_arrange():
     for eachCourse in search_result_course:
         degree_count[int(eachCourse.course_degree)-1] += 1
         total_hours += eachCourse.course_hour
-        if eachCourse.student_type == '博士':
+        if eachCourse.student_type == STUDENT_TYPE[3]:
             degree_count_d[int(eachCourse.course_degree)-1] += 1
             hours_d.append(eachCourse.course_hour)
-        elif eachCourse.student_type == '法律硕士':
+        elif eachCourse.student_type == STUDENT_TYPE[2]:
             degree_count_p2[int(eachCourse.course_degree)-1] += 1
             hours_p2.append(eachCourse.course_hour)
-        elif eachCourse.student_type == '法学硕士':
+        elif eachCourse.student_type == STUDENT_TYPE[1]:
             degree_count_p1[int(eachCourse.course_degree) - 1] += 1
             hours_p1.append(eachCourse.course_hour)
-        elif eachCourse.student_type == '本科':
+        elif eachCourse.student_type == STUDENT_TYPE[0]:
             degree_count_u[int(eachCourse.course_degree) - 1] += 1
             hours_u.append(eachCourse.course_hour)
         else:

@@ -143,7 +143,7 @@
                   </div>
               </li>
               <li>
-                  <button type="submit" class="btn btn-default center-block" onclick="submit_checkbox_info()">提交</button>
+                <button type="submit" class="btn btn-default center-block" onclick="submit_checkbox_info()">提交</button>
               </li>
           </ul>
         </div>
@@ -167,15 +167,19 @@
                   <div>{{ summary_table.1 }}%</div>
                 </div>
             </div>
-            <button id="modify_expect" class="btn btn-primary" data-toggle="modal" data-target="#modifyExpectModal">修改</button>
+            {% if status == 'free' %}
+              <button id="modify_expect" class="btn btn-primary" data-toggle="modal" data-target="#modifyExpectModal">修改</button>
+            {% endif %}
           </div>
           <h2 class="sub-header">教师信息</h2>
           <div class="table-responsive">
              <div class="pull-right" style="margin-top: 10px;">
                   <!--<button id="delete" class="btn btn-danger">删除该行</button>-->
-               <button class="btn btn-primary" onclick="request_course()">申报该课程</button>
-               <button class="btn btn-primary" onclick="cancel_request()">取消申报</button>
-               <button id="" class="btn btn-primary" data-toggle="modal" data-target="#editModal" onclick="">完成申报</button>
+               {% if status == 'free' %}
+                 <button class="btn btn-primary" onclick="request_course()">申报该课程</button>
+                 <button class="btn btn-primary" onclick="cancel_request()">取消申报</button>
+                 <button class="btn btn-primary" onclick="check_apply_status({{ request.user.username }})">完成申报</button>
+               {% endif %}
             </div>
             <table class="table table-striped" id="table_course_personal">
               <thead>
@@ -467,6 +471,64 @@
         </div>
       </div>
     </div>
+    <!-- Modal -->
+    <div class="modal fade" id="requestCompleteModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="">完成申报</h4>
+          </div>
+          <div class="modal-body ">
+            <div class="form-group">
+              <p><strong id="teacher_name">{{ request.user.last_name }}{{request.user.first_name}}({{request.user.username}})</strong>,  您好:</p>
+              <p>您的课程申报情况为:</p>
+              <p>本科: <b id="list_1_a"></b></p>
+              <p>法学硕士: <b id="list_2_a"></b></p>
+              <p>法律硕士: <b id="list_3_a"></b></p>
+              <p>法律博士: <b id="list_4_a"></b></p>
+              <br>
+              <p>其中, 高难度课程(难度大于7): </p>
+              <p>本科: <b id="list_1_p"></b></p>
+              <p>法学硕士: <b id="list_2_p"></b></p>
+              <p>法律硕士: <b id="list_3_p"></b></p>
+              <p>法律博士: <b id="list_4_p"></b></p>
+              <p>总数: <b id="total_high_degree_count"></b></p>
+              <p style="display:none" id="p_pass">您的申报符合要求</p>
+              <p style="display:none" id="p_fail">您的申报不符合要求, 请简述您的理由</p>
+              <textarea style="display:none" id="t_fail" class="form-control" rows="3"></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="button" onclick="apply_complete_1()">确认提交</button>
+              <button type="button" class="button" data-dismiss="modal">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirmCompleteModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">确认完成申报</h4>
+          </div>
+          <div class="modal-body ">
+            <div>
+              <p class="bg-danger">确认完成申报后将无法更改课程申报结果!</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="button" onclick="apply_complete_2({{request.user.username}})">确认提交</button>
+              <button type="button" class="button" data-dismiss="modal">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
 
     <!-- Bootstrap core JavaScript
     ================================================== -->

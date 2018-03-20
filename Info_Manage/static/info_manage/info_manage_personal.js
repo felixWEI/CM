@@ -184,7 +184,7 @@ $(document).ready(function () {
         $("#e_11").DataTable().row.add([teacher_id, teacher_name]).draw();
         $('#add_teacher_e_11').modal('hide');
     })
-    initFileInput("excelFile","/class_table_upload/")
+//    initFileInput("excelFile","/class_table_upload/")
 });
 function submit_checkbox_info(){
     str1 = "";
@@ -423,49 +423,175 @@ function submit_cancel(){
 
     })
 }
-function initFileInput(ctrlName, uploadUrl) {
-    var control = $('#' + ctrlName);
-    control.fileinput({
-        language: 'zh', //设置语言
-        uploadUrl: uploadUrl, //上传的地址
-        uploadAsync: true, //默认异步上传
-        showCaption: true,//是否显示标题
-        showUpload: true, //是否显示上传按钮
-        browseClass: "btn btn-primary", //按钮样式
-        allowedFileExtensions: ["xls", "xlsx", 'txt'], //接收的文件后缀
-        maxFileCount: 1,//最大上传文件数限制
-        previewFileIcon: '<i class="glyphicon glyphicon-file"></i>',
-        showPreview: true, //是否显示预览
-        previewFileIconSettings: {
-            'docx': '<i ass="fa fa-file-word-o text-primary"></i>',
-            'xlsx': '<i class="fa fa-file-excel-o text-success"></i>',
-            'xls': '<i class="fa fa-file-excel-o text-success"></i>',
-            'pptx': '<i class="fa fa-file-powerpoint-o text-danger"></i>',
-            'jpg': '<i class="fa fa-file-photo-o text-warning"></i>',
-            'pdf': '<i class="fa fa-file-archive-o text-muted"></i>',
-            'zip': '<i class="fa fa-file-archive-o text-muted"></i>',
+function check_apply_status(teacher_id){
+    status = 'check'
+    $.ajax({
+        type: 'POST',
+        url:'/teacher_submit_apply_status/',
+        data: {"teacher_id": teacher_id, 'status':status},
+        dataType: "json",
+        success: function (result) {
+            if (result['status'] == 'Success'){
+                init_modal_content(result)
+                $('#requestCompleteModal').modal('show')
+            }else{
+                alert(result['status'])
+            }
         },
-        uploadExtraData: function () {
-            var extraValue = "test";
-            return {"excelType": extraValue};
+        error: function () {
+            alert('fail');
         }
-    });
-}
+    })
 
-$("#excelFile").on("fileuploaded", function (event, data, previewId, index) {
-    console.log(data);
-    if(data.response.result == 'Pass')
-    {
-        alert(data.files[index].name + "上传成功!");
-    //关闭
-        $(".close").click();
+}
+function init_modal_content(result){
+    HIGH_DEGREE = 8;
+    CRITICAL_VALUE = 6;
+    total_high_degree_count = 0
+    list_1 = result['list_1'];
+    list_2 = result['list_2'];
+    list_3 = result['list_3'];
+    list_4 = result['list_4'];
+    obj_list_1_a = document.getElementById('list_1_a')
+    obj_list_2_a = document.getElementById('list_2_a')
+    obj_list_3_a = document.getElementById('list_3_a')
+    obj_list_4_a = document.getElementById('list_4_a')
+    obj_list_1_p = document.getElementById('list_1_p')
+    obj_list_2_p = document.getElementById('list_2_p')
+    obj_list_3_p = document.getElementById('list_3_p')
+    obj_list_4_p = document.getElementById('list_4_p')
+    str1 = "";
+    str2 = "";
+    for (var i=0; i < list_1.length; i++){
+        str1 += list_1[i]+' '
+        if (Number(list_1[i][2]) >= HIGH_DEGREE){
+            str2 += list_1[i]+' '
+            total_high_degree_count += 1
+        }
     }
-    else{
-        alert(data.files[index].name + "上传失败!" + data.response.message);
-    //重置
-    $("#excelFile").fileinput("clear");
-    $("#excelFile").fileinput("reset");
-    $('#excelFile').fileinput('refresh');
-    $('#excelFile').fileinput('enable');
+    obj_list_1_a.innerText = str1;
+    obj_list_1_p.innerText = str2;
+
+    str1 = "";
+    str2 = "";
+    for (var i=0; i < list_2.length; i++){
+        str1 += list_2[i]+' '
+        if (Number(list_2[i][2]) >= HIGH_DEGREE){
+            str2 += list_2[i]+' '
+            total_high_degree_count += 1
+        }
     }
-})
+    obj_list_2_a.innerText = str1;
+    obj_list_2_p.innerText = str2;
+
+    str1 = "";
+    str2 = "";
+    for (var i=0; i < list_3.length; i++){
+        str1 += list_3[i]+' '
+        if (Number(list_3[i][2]) >= HIGH_DEGREE){
+            str2 += list_3[i]+' '
+            total_high_degree_count += 1
+        }
+    }
+    obj_list_3_a.innerText = str1;
+    obj_list_3_p.innerText = str2;
+
+    str1 = "";
+    str2 = "";
+    for (var i=0; i < list_4.length; i++){
+        str1 += list_4[i]+' '
+        if (Number(list_4[i][2]) >= HIGH_DEGREE){
+            str2 += list_4[i]+' '
+            total_high_degree_count += 1
+        }
+    }
+    obj_list_4_a.innerText = str1;
+    obj_list_4_p.innerText = str2;
+    document.getElementById('total_high_degree_count').innerText = total_high_degree_count
+    if (total_high_degree_count > CRITICAL_VALUE){
+        document.getElementById('p_pass').style.display = "block"
+    }else{
+        document.getElementById('p_fail').style.display = "block"
+        document.getElementById('t_fail').style.display = "block"
+    }
+}
+function apply_complete_1(){
+    if ( document.getElementById('p_fail').style.display == 'block'){
+        if ( document.getElementById('t_fail').value.length < 2 ){
+            alert('请填写简述理由!')
+            return
+        }else{
+            $('#confirmCompleteModal').modal('show')
+        }
+    }
+    if ( document.getElementById('p_pass').style.display == 'block' ){
+        $('#confirmCompleteModal').modal('show')
+    }
+}
+function apply_complete_2(teacher_id){
+    status = 'save'
+    notes = document.getElementById('t_fail').value
+    $.ajax({
+        type: 'POST',
+        url:'/teacher_submit_apply_status/',
+        data: {"teacher_id": teacher_id, 'status':status, 'notes': notes},
+        dataType: "json",
+        success: function (result) {
+            if (result['status'] == 'Success'){
+                $('#confirmCompleteModal').modal('hide')
+                $('#requestCompleteModal').modal('hide')
+            }else{
+                alert(result['status'])
+            }
+        },
+        error: function () {
+            alert('fail');
+        }
+    })
+}
+//function initFileInput(ctrlName, uploadUrl) {
+//    var control = $('#' + ctrlName);
+//    control.fileinput({
+//        language: 'zh', //设置语言
+//        uploadUrl: uploadUrl, //上传的地址
+//        uploadAsync: true, //默认异步上传
+//        showCaption: true,//是否显示标题
+//        showUpload: true, //是否显示上传按钮
+//        browseClass: "btn btn-primary", //按钮样式
+//        allowedFileExtensions: ["xls", "xlsx", 'txt'], //接收的文件后缀
+//        maxFileCount: 1,//最大上传文件数限制
+//        previewFileIcon: '<i class="glyphicon glyphicon-file"></i>',
+//        showPreview: true, //是否显示预览
+//        previewFileIconSettings: {
+//            'docx': '<i ass="fa fa-file-word-o text-primary"></i>',
+//            'xlsx': '<i class="fa fa-file-excel-o text-success"></i>',
+//            'xls': '<i class="fa fa-file-excel-o text-success"></i>',
+//            'pptx': '<i class="fa fa-file-powerpoint-o text-danger"></i>',
+//            'jpg': '<i class="fa fa-file-photo-o text-warning"></i>',
+//            'pdf': '<i class="fa fa-file-archive-o text-muted"></i>',
+//            'zip': '<i class="fa fa-file-archive-o text-muted"></i>',
+//        },
+//        uploadExtraData: function () {
+//            var extraValue = "test";
+//            return {"excelType": extraValue};
+//        }
+//    });
+//}
+
+//$("#excelFile").on("fileuploaded", function (event, data, previewId, index) {
+//    console.log(data);
+//    if(data.response.result == 'Pass')
+//    {
+//        alert(data.files[index].name + "上传成功!");
+//    //关闭
+//        $(".close").click();
+//    }
+//    else{
+//        alert(data.files[index].name + "上传失败!" + data.response.message);
+//    //重置
+//    $("#excelFile").fileinput("clear");
+//    $("#excelFile").fileinput("reset");
+//    $('#excelFile').fileinput('refresh');
+//    $('#excelFile').fileinput('enable');
+//    }
+//})

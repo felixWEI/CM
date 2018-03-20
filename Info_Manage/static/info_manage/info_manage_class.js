@@ -25,7 +25,7 @@ $(document).ready(function () {
             $(this).removeClass('selected');
         }
         else {
-            t.$('tr.selected').removeClass('selected');
+            $('#e_11').DataTable().$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
         }
     } );

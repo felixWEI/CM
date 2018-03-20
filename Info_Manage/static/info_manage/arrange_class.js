@@ -30,7 +30,7 @@ $(document).ready(function () {
             data: {"year": year},
             dataType: "json",
             success: function(result){
-                alert('Yes');
+
             },
             error: function (){
                 alert('No');
@@ -85,7 +85,7 @@ $(document).ready(function () {
             data: {"status": status},
             dataType: "json",
             success: function(result){
-                alert('Yes');
+
             },
             error: function (){
                 alert('No');
@@ -108,7 +108,7 @@ $(document).ready(function () {
             data: {"status": status},
             dataType: "json",
             success: function(result){
-                alert('Yes');
+
             },
             error: function (){
                 alert('No');
@@ -145,7 +145,7 @@ $(document).ready(function () {
             data: {"status": status},
             dataType: "json",
             success: function(result){
-                alert('Yes');
+
             },
             error: function (){
                 alert('No');
@@ -166,7 +166,7 @@ $(document).ready(function () {
                 document.getElementById('analysis_course_report_1').removeAttribute('disabled');
             },
             error: function (){
-                alert('No');
+                alert('排课失败, 请检查教师申报信息');
             }
         });
     });
@@ -185,7 +185,7 @@ function click_class(button_id){
             data: {"id": button_id},
             dataType: "json",
             success: function(result){
-                alert('Yes');
+
             },
             error: function (){
                 alert('No');
@@ -232,7 +232,7 @@ function start_request() {
         data: {"id": 's2_r2_c1', 'deadline':time},
         dataType: "json",
         success: function(result){
-            alert('Yes')
+
         },
         error: function (){
             alert('No');
@@ -251,7 +251,7 @@ function click_teacher(button_id){
             data: {"id": button_id},
             dataType: "json",
             success: function(result){
-                alert('Yes');
+
             },
             error: function (){
                 alert('No');
@@ -269,7 +269,7 @@ function click_teacher(button_id){
             data: {"id": button_id},
             dataType: "json",
             success: function(result){
-                alert('Yes')
+
             },
             error: function (){
                 alert('No');
