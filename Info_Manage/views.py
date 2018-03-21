@@ -678,7 +678,17 @@ def arrange_class(request):
             step_info.append(int(search_result[0].s4_teacher_confirm_d))
 
         if search_result[0].s5_status_flag:
-            step_position[4] = 'active'
+            if search_result[0].s5_status_flag == 'lock start':
+                step_position[4] = 'active'
+            elif search_result[0].s5_status_flag == 'lock done':
+                step_position[0] = 'disabled'
+                step_position[1] = 'disabled'
+                step_position[2] = 'disabled'
+                step_position[3] = 'disabled'
+                step_position[4] = 'active'
+                step_info.append('lock done')
+            else:
+                pass
 
     times = [[i for i in range(1, 13)], [i for i in range(1, 32)], [i for i in range(24)], [i for i in range(1, 60)]]
     return render(request, 'arrange_class.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'step_info': step_info,
@@ -913,7 +923,7 @@ def arrange_main():
                 result_3[eachCourse].append(teacher_2[tmpKey])
     for tmpKey in result_3.keys():
         tmp = ",".join(result_3[tmpKey])
-        CourseInfo.objects.filter(course_id=tmpKey).update(teacher_auto_pick=tmp)
+        CourseInfo.objects.filter(course_id=tmpKey).update(teacher_auto_pick=tmp, teacher_final_pick=tmp)
 
     HttpResponse('Pass')
 
@@ -1153,7 +1163,7 @@ def arrange_export_report(request):
         search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
                               eachItem.year, eachItem.class_name, eachItem.semester,
                               eachItem.course_hour, eachItem.course_degree, eachItem.student_type,
-                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.teacher_auto_pick])
+                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.teacher_final_pick])
 
     table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '上课老师']
     for col, eachTitle in enumerate(table_head):
@@ -1179,6 +1189,7 @@ def arrange_search_by_course_id(request):
     course_id = request.POST['course_id']
     search_result = CourseInfo.objects.filter(course_id=course_id)
     if search_result:
+        status = 'Success'
         course_name = search_result[0].course_name
         student_type = search_result[0].student_type
         semester = search_result[0].semester
@@ -1187,10 +1198,18 @@ def arrange_search_by_course_id(request):
         course_hour = search_result[0].course_hour
         times_every_week = search_result[0].times_every_week
         allow_teachers = search_result[0].allow_teachers
-        teacher_pick = search_result[0].teacher_auto_pick
+        teacher_pick = search_result[0].teacher_final_pick
+        teacher_list = teacher_pick.split(',')
+        tmp = []
+        for eachTeacher in teacher_list:
+            teacher_table = TeacherInfo.objects.filter(teacher_name=eachTeacher)
+            if teacher_table:
+                teacher_id = teacher_table[0].teacher_id
+                tmp.append([teacher_id, eachTeacher])
+            else:
+                status = '原授课教师信息有误 {}'.format(eachTeacher)
         result = [course_name, student_type, semester, class_name, course_degree, course_hour, times_every_week,
-                  allow_teachers, teacher_pick]
-        status = 'Success'
+                  allow_teachers, tmp]
     else:
         status = '找不到该课程号码对应的课程'
 
@@ -1242,7 +1261,7 @@ def arrange_step_5(request):
     operation_status = request.POST['status']
     search_result = CurrentStepInfo.objects.all()
     status = '切换至最后一步失败'
-    if operation_status == 'lock start':
+    if operation_status:
         if len(search_result) == 1:
             CurrentStepInfo.objects.filter(id=search_result[0].id).update(s5_status_flag=operation_status)
             status = 'Success'

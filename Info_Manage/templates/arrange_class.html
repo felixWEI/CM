@@ -504,7 +504,11 @@
           </div>
           <div class="col-md-12 well text-center">
             <div class="col-md-4">
-              <button class="btn btn-primary btn-lg btn-block" type="button" disabled=disabled onclick="()">已锁定</button>
+              {% if step_info.15 == 'lock done'%}
+                <button class="btn btn-primary btn-lg btn-block" type="button" disabled="disabled" onclick="lock_other_step()">已锁定</button>
+              {% else %}
+                <button class="btn btn-primary btn-lg btn-block" onclick="lock_other_step()">锁定排课过程</button>
+              {% endif %}
             </div>
             <div class="col-md-4">
               <button class="btn btn-primary btn-lg btn-block" type="button" onclick="get_course_report()">排课结果导出</button>
@@ -680,63 +684,122 @@
                   <div class="row form-group">
                       <label for="e_1" class="col-sm-2 control-label">课程名称</label>
                       <div class="col-sm-10">
-                        <input id="e_1"  class="form-control" type="text" placeholder="课程名称">
+                        <input id="e_1" disabled='disabled' class="form-control" type="text" placeholder="课程名称">
                       </div>
                   </div>
                   <div class="row form-group">
                       <label for="e_2" class="col-sm-2 control-label">学位</label>
                       <div class="col-sm-4">
-                        <input id="e_2"  class="form-control" type="text" placeholder="学位">
+                        <input id="e_2" disabled='disabled' class="form-control" type="text" placeholder="学位">
                       </div>
                       <label for="e_3" class="col-sm-2 control-label">年级</label>
                       <div class="col-sm-4">
-                        <input id="e_3"  class="form-control" type="text" placeholder="年级">
+                        <input id="e_3" disabled='disabled' class="form-control" type="text" placeholder="年级">
                       </div>
                   </div>
                   <div class="row form-group">
                       <label for="e_4" class="col-sm-2 control-label">班级</label>
                       <div class="col-sm-10">
-                        <input id="e_4"  class="form-control" type="text" placeholder="班级">
+                        <input id="e_4" disabled='disabled' class="form-control" type="text" placeholder="班级">
                       </div>
                   </div>
                   <div class="row form-group">
                       <label for="e_5" class="col-sm-2 control-label">难度</label>
                       <div class="col-sm-4">
-                        <input id="e_5"  class="form-control" type="text" placeholder="难度">
+                        <input id="e_5" disabled='disabled' class="form-control" type="text" placeholder="难度">
                       </div>
                       <label for="e_6" class="col-sm-2 control-label">学时</label>
                       <div class="col-sm-4">
-                        <input id="e_6"  class="form-control" type="text" placeholder="学时">
+                        <input id="e_6" disabled='disabled' class="form-control" type="text" placeholder="学时">
                       </div>
                   </div>
                   <div class="row form-group">
                       <label for="e_7" class="col-sm-2 control-label">周上课次数</label>
                       <div class="col-sm-4">
-                        <input id="e_7"  class="form-control" type="text" placeholder="周上课次数">
+                        <input id="e_7" disabled='disabled' class="form-control" type="text" placeholder="周上课次数">
                       </div>
                       <label for="e_8" class="col-sm-2 control-label">要求教师个数</label>
                       <div class="col-sm-4">
-                        <input id="e_8"  class="form-control" type="text" placeholder="要求教师个数">
+                        <input id="e_8" disabled='disabled' class="form-control" type="text" placeholder="要求教师个数">
                       </div>
                   </div>
                   <h2 class="sub-header"></h2>
                   <div class="row form-group">
-                      <label for="e_9" class="col-sm-2 control-label">原授课老师</label>
-                      <div class="col-sm-10">
-                        <input id="e_9"  class="form-control" type="text" placeholder="原授课老师">
+                      <div class="col-sm-6">
+                        <label for="e_9" class="col-sm-2 control-label">原授课老师</label>
+                        <div class="col-sm-10">
+                          <table id="e_9" class="table table-striped">
+                            <thead>
+                              <tr>
+                                <td>工号</td>
+                                <td>姓名</td>
+                              </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
-                  </div>
-                  <div class="row form-group">
-                      <label for="e_10" class="col-sm-2 control-label">替换成授课老师</label>
-                      <div class="col-sm-10">
-                        <input id="e_10"  class="form-control" type="text" placeholder="替换成授课老师">
+                      <div class="col-sm-6">
+                        <div class="row form-group">
+                          <label for="e_10" class="col-sm-2 control-label">替换成授课老师</label>
+                          <div class="col-sm-10">
+                            <table id="e_10" class="table table-striped">
+                              <thead>
+                                <tr>
+                                  <td>工号</td>
+                                  <td>姓名</td>
+                                </tr>
+                              </thead>
+                              <tbody>
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                        <div class="row form-group">
+                            <div class="col-sm-4 col-sm-offset-2"><button id="add_e_11" class="btn btn-primary" style="width:100%" type="button" data-toggle="modal" data-target="#add_teacher_e_10">添加</button></div>
+                            <div class="col-sm-4"><button id="delete_e_10" class="btn btn-danger" style="width:100%" type="button">删除</button></div>
+                        </div>
                       </div>
                   </div>
               </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="button" onclick="change_assign_teacher()">确定</button>
+                <button class="button" onclick="change_assign_teacher()">确定</button>
                 <button type="button" class="button" data-dismiss="modal">取消</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Modal -->
+      <div class="modal fade" id="add_teacher_e_10" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title">添加老师</h4>
+            </div>
+            <div class="modal-body " >
+              <form class="form-horizontal">
+                <div class="row form-group">
+                  <label for="e_0" class="col-sm-2 control-label">工号 或者 姓名</label>
+                  <div class="col-sm-10">
+                      <div class="input-group">
+                        <input id="e_10_teacher_str"  class="form-control" type="text">
+                        <span class="input-group-btn">
+                          <button id="search_teacher_id" class="btn btn-default" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> 查找 </button>
+                        </span>
+                      </div>
+                      <div class="input-group">
+                        <span class="help-block" id="helpBlock1"></span>
+                        <span class="help-block" id="helpBlock2"></span>
+                      </div>
+                  </div>
+                </div>
+              </form>
+            </div>
+            <div class="modal-footer">
+              <button class="button" id="add_teacher_id">确定</button>
             </div>
           </div>
         </div>

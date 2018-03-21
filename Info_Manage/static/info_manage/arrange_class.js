@@ -1,5 +1,18 @@
 $(document).ready(function () {
-
+    $('#e_10 tbody').on( 'click', 'tr', function () {
+        if ( $(this).hasClass('selected') ) {
+            $(this).removeClass('selected');
+        }
+        else {
+            $('#e_10').DataTable().$('tr.selected').removeClass('selected');
+            $(this).addClass('selected');
+        }
+    } );
+    $('#delete_e_10').click( function () {
+        teacher_id = $('#e_10').DataTable().row('.selected').data()[0];
+        teacher_name = $('#e_10').DataTable().row('.selected').data()[1];
+        $('#e_10').DataTable().row('.selected').remove().draw( false );
+    } );
     var navListItems = $('ul.setup-panel li a');
     var allWells = $('.setup-content');
 
@@ -173,6 +186,41 @@ $(document).ready(function () {
     $("#close_arrange_class2").on('click', function () {
         $('#arrangeClass2').modal('hide');
     });
+    $("#search_teacher_id").click( function(){
+        teacher_str = document.getElementById('e_10_teacher_str').value;
+        console.log(teacher_str);
+        $.ajax({
+            type: 'POST',
+            url: '/class_get_teacher_name/',
+            data: {'teacher_str': teacher_str},
+            dataType: "json",
+            success: function(result){
+                if (result['status'] == 'Success'){
+                    document.getElementById('helpBlock1').innerHTML = result['teacher_id'];
+                    document.getElementById('helpBlock2').innerHTML = result['teacher_name'];
+                }else{
+                    alert('没有找到该教师')
+                }
+            },
+            error: function (){
+                alert('No');
+            }
+        });
+    })
+    $("#add_teacher_id").click( function(){
+        teacher_id = document.getElementById('helpBlock1').innerText;
+        teacher_name = document.getElementById('helpBlock2').innerText;
+        if ( $.inArray(Number(teacher_id), $("#e_10").DataTable().column(0).data()) != -1){
+            alert('该教师已经存在!');
+            return
+        }
+        if ( teacher_id == '' || teacher_name == ''){
+            alert('教师工号或教师姓名不能为空!')
+            return
+        }
+        $("#e_10").DataTable().row.add([teacher_id, teacher_name]).draw();
+        $('#add_teacher_e_10').modal('hide');
+    })
 });
 function click_class(button_id){
     button_value = Number(document.getElementById(button_id).getAttribute('value'));
@@ -330,8 +378,21 @@ function get_course_report(){
 }
 
 function change_assign_teacher(){
-    to_change_teacher = document.getElementById('e_10').value;
+    allow_teacher = document.getElementById('e_8').value;
+    if ( $('#e_10').DataTable().rows().data().length != Number(allow_teacher) ){
+        alert('替换教师数目不对!')
+        return
+    }
     course_id = document.getElementById('e_0').value;
+    str = "";
+    for (var i = 0; i < $('#e_10').DataTable().rows().data().length; i++){
+        if ( i == 0){
+            str = $('#e_10').DataTable().rows().data()[i][1]
+        }else{
+            str = str + ',' +$('#e_10').DataTable().rows().data()[i][1]
+        }
+    }
+    to_change_teacher = str
     $.ajax({
         type: 'POST',
         url: '/arrange_change_by_course_id/',
@@ -350,6 +411,10 @@ function change_assign_teacher(){
 
 function search_course_by_id(){
     course_id = document.getElementById('e_0').value;
+    if ( course_id == ''){
+        alert('请输入课程代码')
+        return
+    }
     $.ajax({
         type: 'POST',
         url: '/arrange_search_by_course_id/',
@@ -358,14 +423,36 @@ function search_course_by_id(){
         success: function(result){
             if (result['status'] == 'Success'){
                 course_content = result['course'];
-                console.log(course_content);
-                for (var i=0; i < course_content.length; i++){
+                for (var i=0; i < course_content.length-1; i++){
                     document.getElementById('e_'+String(i+1)).value = course_content[i]
                 }
+                console.log(course_content);
+                $('#e_9').DataTable({
+                    dom: '<"top">rt<"bottom"><"clear">',
+                    "searching": false,
+                    "ordering": false,
+                    "destroy": true,
+                    "data": course_content[course_content.length-1],
+                    "column":[
+                        {title: '工号'},
+                        {title: '姓名'}
+                    ]
+                });
+                $('#e_10').DataTable({
+                    dom: '<"top">rt<"bottom"><"clear">',
+                    "searching": false,
+                    "ordering": false,
+                    "destroy": true,
+                    "data": course_content[course_content.length-1],
+                    "column":[
+                        {title: '工号'},
+                        {title: '姓名'}
+                    ]
+                });
             }
         },
         error: function (){
-            alert('No');
+            alert('查找异常');
         }
     });
 }
@@ -381,6 +468,26 @@ function disable_adjustment_button(type){
         success: function(result){
             if (result['status'] == 'Success'){
 
+            }
+        },
+        error: function (){
+            alert('No');
+        }
+    });
+}
+
+function lock_other_step(){
+    status = 'lock done';
+    $.ajax({
+        type: 'POST',
+        url: '/arrange_step_5/',
+        data: {"status": status},
+        dataType: "json",
+        success: function(result){
+            if (result['status'] == 'Success'){
+                console.log(result)
+            }else{
+                alert(result['status'])
             }
         },
         error: function (){
