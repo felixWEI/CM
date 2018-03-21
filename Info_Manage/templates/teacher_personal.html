@@ -158,13 +158,13 @@
             <div class="col-sm-2">
                 <div class="placeholders2">
                   <span class="">第一学期期望学时</span>
-                  <div>{{ summary_table.0 }}%</div>
+                  <div id="page_expect_1">{{ summary_table.0 }}%</div>
                 </div>
             </div>
             <div class="col-sm-2">
                 <div class="placeholders2">
                   <span class="">第二学期期望学时</span>
-                  <div>{{ summary_table.1 }}%</div>
+                  <div id="page_expect_2">{{ summary_table.1 }}%</div>
                 </div>
             </div>
             {% if status == 'free' %}
@@ -494,6 +494,7 @@
               <p>法律硕士: <b id="list_3_p"></b></p>
               <p>法律博士: <b id="list_4_p"></b></p>
               <p>总数: <b id="total_high_degree_count"></b></p>
+              <p>要求: <b id="require_high_degree_count"></b></p>
               <p style="display:none" id="p_pass">您的申报符合要求</p>
               <p style="display:none" id="p_fail">您的申报不符合要求, 请简述您的理由</p>
               <textarea style="display:none" id="t_fail" class="form-control" rows="3"></textarea>

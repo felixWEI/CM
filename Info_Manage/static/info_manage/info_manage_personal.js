@@ -96,6 +96,8 @@ $(document).ready(function () {
             dataType: "json",
             success: function(result){
                 if (result['status']=='Success'){
+                    document.getElementById('page_expect_1').innerText = modify_0+"%";
+                    document.getElementById('page_expect_2').innerText = modify_1+"%";
                     alert('修改期望成功')
                 }else{
                     alert(result['status'])
@@ -508,7 +510,8 @@ function init_modal_content(result){
     obj_list_4_a.innerText = str1;
     obj_list_4_p.innerText = str2;
     document.getElementById('total_high_degree_count').innerText = total_high_degree_count
-    if (total_high_degree_count > CRITICAL_VALUE){
+    document.getElementById('require_high_degree_count').innerText = CRITICAL_VALUE
+    if (total_high_degree_count >= CRITICAL_VALUE){
         document.getElementById('p_pass').style.display = "block"
     }else{
         document.getElementById('p_fail').style.display = "block"

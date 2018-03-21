@@ -114,7 +114,12 @@ def teacher_personal(request):
     if search_result:
         if search_result[0].teacher_apply_done:
             status = 'lock'
+    now = datetime.now().replace()
     search_result = CurrentStepInfo.objects.all()
+    if search_result and search_result[0].s2_deadline:
+        delta = (search_result[0].s2_deadline.replace(tzinfo=None) - now).total_seconds()
+        if delta < 0.0:
+            status = 'lock'
     if search_result:
         year = search_result[0].s1_year_info
     else:
@@ -214,7 +219,7 @@ def save_teacher_to_course_info(course_id, user_name):
     search_result = CourseInfo.objects.all().filter(course_id=course_id)
     if search_result:
         teacher_list = search_result[0].teacher_ordered.split(',')
-        if len(teacher_list) == 0:
+        if len(teacher_list) == 1 and teacher_list[0] == '':
             teacher_str = user_name
         else:
             if user_name not in teacher_list:
@@ -301,8 +306,9 @@ def class_manage(request):
         if not eachItem.class_name:
             continue
         for eachClass in eachItem.class_name.split(' '):
+            tmp_student = eachClass.split('-')[0]
             tmp_class_grade, tmp_class_name = eachClass.split('-')[-1].split('_')
-            search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
+            search_result.append([eachItem.course_id, eachItem.course_name, tmp_student,
                                   tmp_class_grade, tmp_class_name, eachItem.semester,
                                   eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
                                   eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher])
@@ -355,8 +361,10 @@ def class_save_one_row(request):
     old_class_info = request.POST['old_data']
     if 'old_course_id' in request.POST:
         old_course_id = request.POST['old_course_id']
-    save_course_into_database_by_edit(course_info, old_class_info, old_course_id)
-    result = 'Pass'
+        save_course_into_database_by_edit(course_info, old_class_info, old_course_id)
+    else:
+        save_course_into_database_by_add(course_info, old_class_info)
+    result = 'Success'
     result = json.dumps({'result': result})
     return HttpResponse(result)
 
@@ -414,6 +422,51 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
         # add a new course
         combine_class_name = '{}-{}_{}'.format(course_info[2], course_info[3], course_info[4])
         CourseInfo.objects.create(course_id=course_info[0], course_name=course_info[1], student_type=course_info[2],year=current_school_year,
+                                  class_name=combine_class_name, semester=course_info[5],
+                                  course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
+                                  allow_teachers=course_info[9], times_every_week=course_info[10],
+                                  suit_teacher='', teacher_ordered='', update_time=now)
+
+
+def save_course_into_database_by_add(course_info, old_class_info):
+    now = datetime.now()
+    search_result = CourseInfo.objects.all().filter(course_id=course_info[0])
+    if search_result:
+        combine_class_name = '{}-{}_{}'.format(course_info[2], course_info[3], course_info[4])
+        if combine_class_name in search_result[0].class_name:
+            CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],
+                                                                     course_name=course_info[1],
+                                                                     semester=course_info[5],
+                                                                     course_hour=course_info[6],
+                                                                     course_degree=course_info[7],
+                                                                     course_type=course_info[8],
+                                                                     allow_teachers=course_info[9],
+                                                                     times_every_week=course_info[10],
+                                                                     suit_teacher=course_info[11],
+                                                                     update_time=now)
+        else:
+            class_list = search_result[0].class_name.split(' ')
+            class_list.append(combine_class_name)
+            if old_class_info:
+                class_list.remove(old_class_info)
+                suit_teacher = course_info[11]
+            else:
+                suit_teacher = search_result[0].suit_teacher
+            class_name_str = ' '.join(class_list)
+            CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],
+                                                                     course_name=course_info[1],
+                                                                     class_name=class_name_str,
+                                                                     semester=course_info[5],
+                                                                     course_hour=course_info[6],
+                                                                     course_degree=course_info[7],
+                                                                     course_type=course_info[8],
+                                                                     allow_teachers=course_info[9],
+                                                                     times_every_week=course_info[10],
+                                                                     suit_teacher=suit_teacher,
+                                                                     update_time=now)
+    else:
+        combine_class_name = '{}-{}_{}'.format(course_info[2], course_info[3], course_info[4])
+        CourseInfo.objects.create(course_id=course_info[0], course_name=course_info[1], student_type=course_info[2], year=current_school_year,
                                   class_name=combine_class_name, semester=course_info[5],
                                   course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
                                   allow_teachers=course_info[9], times_every_week=course_info[10],
@@ -735,7 +788,10 @@ def start_arrange():
             teacher_without_expect.append(eachTeacher.teacher_id)
         total_count += (eachTeacher.first_semester_expect + eachTeacher.second_semester_expect)
     degree_count = [0]*10
-    [degree_count_u, degree_count_p1, degree_count_p2, degree_count_d] = [[0]*10,[0]*10,[0]*10,[0]*10]
+    [degree_count_u, degree_count_p1, degree_count_p2, degree_count_d] = [[0]*len(COURSE_DEGREE),
+                                                                          [0]*len(COURSE_DEGREE),
+                                                                          [0]*len(COURSE_DEGREE),
+                                                                          [0]*len(COURSE_DEGREE)]
     [hours_u, hours_p1, hours_p2, hours_d] = [[], [], [], []]
     total_hours = 0
     total_courses = len(search_result_course)
@@ -766,12 +822,12 @@ def start_arrange():
     degree_count_p1.reverse()
     degree_count_p2.reverse()
     degree_count_d.reverse()
-    tmp_u,tmp_p1,tmp_p2,tmp_d = [0]*4,[0]*4,[0]*4,[0]*4
-    for index,item in enumerate([18,36,54,72]):
-        tmp_d[index] = hours_d.count(item)
-        tmp_p1[index] = hours_p1.count(item)
-        tmp_p2[index] = hours_p2.count(item)
-        tmp_u[index] = hours_u.count(item)
+    tmp_u,tmp_p1,tmp_p2,tmp_d = [0]*len(COURSE_HOUR),[0]*len(COURSE_HOUR),[0]*len(COURSE_HOUR),[0]*len(COURSE_HOUR)
+    for index, item in enumerate(COURSE_HOUR):
+        tmp_d[index] = hours_d.count(int(item))
+        tmp_p1[index] = hours_p1.count(int(item))
+        tmp_p2[index] = hours_p2.count(int(item))
+        tmp_u[index] = hours_u.count(int(item))
     degree_count_u.extend(tmp_u)
     degree_count_p1.extend(tmp_p1)
     degree_count_p2.extend(tmp_p2)

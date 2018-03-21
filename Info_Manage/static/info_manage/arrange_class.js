@@ -314,7 +314,7 @@ function initialize_arrange_class(page_info) {
     course_degree_info.innerHTML = str;
     document.getElementById('total_courses').innerText = page_info[6];
     str2 = '';
-    head = ['本科', '法学硕士', '法律硕士','博士'];
+    head = STUDENT_TYPE;
     for(var i in page_info[7]){
         str2 += '<tr><td>'+head[i]+'</td>';
         for(var j in page_info[7][i]){
