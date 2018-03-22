@@ -847,6 +847,7 @@ def start_arrange():
 
 
 def arrange_main():
+    file_obj = open('analysis_result.txt', 'w+')
     search_result_course = CourseInfo.objects.all()
     search_result_teacher = TeacherInfo.objects.all()
     teacher_1 = {}
@@ -888,7 +889,7 @@ def arrange_main():
                     'expect_hours_2': expect_hours_2, 'expect_degree_1': expect_degree_1, 'expect_degree_2': expect_degree_2,
                     'total_degree_1': 0, 'total_degree_2': 0}
         result_1[eachTeacher.teacher_id] = tmp_dict
-    print '<STEP 1 Limitation for teacher list>'
+    print >>file_obj, '<STEP 1 Limitation for teacher list>'
     for eachCourse in search_result_course:
         teacher_list = eachCourse.suit_teacher.split(',')
         if len(teacher_list) == int(eachCourse.allow_teachers):
@@ -905,11 +906,11 @@ def arrange_main():
                 result_1[teacher_1[eachTeacher]['id']][tmp_str2] += int(eachCourse.course_degree)
         else:
             result_2.append(eachCourse)
-    show_statistical(result_1)
-    result_1, result_2 = balance_for_high_degree(result_1, result_2, teacher_1)
-    show_statistical(result_1)
-    result_1, result_2 = balance_for_course_hour(result_1, result_2, teacher_1)
-    show_statistical(result_1)
+    show_statistical(result_1, file_obj)
+    result_1, result_2 = balance_for_high_degree(result_1, result_2, teacher_1, file_obj)
+    show_statistical(result_1, file_obj)
+    result_1, result_2 = balance_for_course_hour(result_1, result_2, teacher_1, file_obj)
+    show_statistical(result_1, file_obj)
     result_3 = {}
     for tmpKey in result_1.keys():
         for eachCourse in result_1[tmpKey]['course_list']:
@@ -924,21 +925,21 @@ def arrange_main():
     for tmpKey in result_3.keys():
         tmp = ",".join(result_3[tmpKey])
         CourseInfo.objects.filter(course_id=tmpKey).update(teacher_auto_pick=tmp, teacher_final_pick=tmp)
-
+    file_obj.close()
     HttpResponse('Pass')
 
 
-def show_statistical(result_1):
-    print '##########################################################'
-    print 'showing available information'
+def show_statistical(result_1, file_obj):
+    print >>file_obj, '##########################################################'
+    print >>file_obj, 'showing available information'
     for tmpKey in result_1.keys():
         avail_hours_1 = result_1[tmpKey]['expect_hours_1'] - result_1[tmpKey]['total_hours_1']
         avail_hours_2 = result_1[tmpKey]['expect_hours_2'] - result_1[tmpKey]['total_hours_2']
         avail_degree_1 = result_1[tmpKey]['expect_degree_1'] - result_1[tmpKey]['total_degree_1']
         avail_degree_2 = result_1[tmpKey]['expect_degree_2'] - result_1[tmpKey]['total_degree_2']
-        print 'teacher id: {} available hours {} {} available degree {} {}'.format(tmpKey, avail_hours_1, avail_hours_2,
+        print >>file_obj, 'teacher id: {} available hours {} {} available degree {} {}'.format(tmpKey, avail_hours_1, avail_hours_2,
                                                                                    avail_degree_1, avail_degree_2)
-    print '##########################################################'
+    print >>file_obj, '##########################################################'
 
 
 # 先学时大小再老师个数
@@ -1004,8 +1005,8 @@ def find_high_degree_course_count(result_list, count, result_all_teachers):
     return tmp_list
 
 
-def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_info):
-    print '<STEP 2 high degree course balance>'
+def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_info, file_obj):
+    print >>file_obj, '<STEP 2 high degree course balance>'
     high_degree_course_10 = []
     high_degree_course_9 = []
     high_degree_course_8 = []
@@ -1027,7 +1028,7 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
     for eachDegree in high_degree_course:
         for eachCourse in eachDegree:
             result_left_courses.remove(eachCourse)
-            print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+            print >>file_obj, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
             print eachCourse.course_id
             teacher_list = eachCourse.suit_teacher.split(',')
             all_teachers = int(eachCourse.allow_teachers)
@@ -1049,12 +1050,12 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
 
             high_degree_count = 0
             for eachTeacher in teacher_id_list:
-                print 'teacher id {}'.format(eachTeacher)
-                print 'course list {}'.format(result_all_teachers[eachTeacher]['course_list'])
-                print 'degree list {}'.format(result_all_teachers[eachTeacher]['degree_list'])
-                print 'hour left {}'.format(
+                print >>file_obj, 'teacher id {}'.format(eachTeacher)
+                print >>file_obj, 'course list {}'.format(result_all_teachers[eachTeacher]['course_list'])
+                print >>file_obj, 'degree list {}'.format(result_all_teachers[eachTeacher]['degree_list'])
+                print >>file_obj, 'hour left {}'.format(
                     (result_all_teachers[eachTeacher][tmp_str2] - result_all_teachers[eachTeacher][tmp_str1]))
-                print 'degree left {}'.format(
+                print >>file_obj, 'degree left {}'.format(
                     (result_all_teachers[eachTeacher][tmp_str4] - result_all_teachers[eachTeacher][tmp_str3]))
             while all_teachers > 0:
                 current_list = find_high_degree_course_count(teacher_id_list, high_degree_count, result_all_teachers)
@@ -1063,37 +1064,37 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                 if len(current_list) == 0:
                     high_degree_count += 1
                     continue
-                print 'current teacher list {}. high degree count {}'.format(current_list, high_degree_count)
+                print >>file_obj, 'current teacher list {}. high degree count {}'.format(current_list, high_degree_count)
                 if result_all_teachers[current_list[0]][tmp_str1] + eachCourse.course_hour <= result_all_teachers[current_list[0]][tmp_str2]:
-                    print 'teacher id {}'.format(current_list[0])
-                    print 'total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
-                    print 'degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
+                    print >>file_obj, 'teacher id {}'.format(current_list[0])
+                    print >>file_obj, 'total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
+                    print >>file_obj, 'degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
                     result_all_teachers[current_list[0]]['course_list'].append(eachCourse.course_id)
                     result_all_teachers[current_list[0]]['degree_list'].append(eachCourse.course_degree)
                     result_all_teachers[current_list[0]][tmp_str1] += eachCourse.course_hour
                     result_all_teachers[current_list[0]][tmp_str3] += eachCourse.course_degree
                     all_teachers -= 1
-                    print 'new total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
-                    print 'new degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
+                    print >>file_obj, 'new total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
+                    print >>file_obj, 'new degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
                 else:
                     high_degree_count += 1
                     if len(current_list) == len(teacher_id_list):
                         for i in range(all_teachers):
-                            print '<BAD SITUATION>'
-                            print 'teacher id {}'.format(current_list[i])
-                            print 'total hours {}'.format(result_all_teachers[current_list[i]][tmp_str1])
-                            print 'degree list {}'.format(result_all_teachers[current_list[i]]['degree_list'])
+                            print >>file_obj, '<BAD SITUATION>'
+                            print >>file_obj, 'teacher id {}'.format(current_list[i])
+                            print >>file_obj, 'total hours {}'.format(result_all_teachers[current_list[i]][tmp_str1])
+                            print >>file_obj, 'degree list {}'.format(result_all_teachers[current_list[i]]['degree_list'])
                             result_all_teachers[current_list[i]]['course_list'].append(eachCourse.course_id)
                             result_all_teachers[current_list[i]]['degree_list'].append(eachCourse.course_degree)
                             result_all_teachers[current_list[i]][tmp_str1] += eachCourse.course_hour
                             result_all_teachers[current_list[i]][tmp_str3] += eachCourse.course_degree
                             all_teachers -= 1
-                            print 'new total hours {}'.format(result_all_teachers[current_list[i]][tmp_str1])
-                            print 'new degree list {}'.format(result_all_teachers[current_list[i]]['degree_list'])
+                            print >>file_obj, 'new total hours {}'.format(result_all_teachers[current_list[i]][tmp_str1])
+                            print >>file_obj, 'new degree list {}'.format(result_all_teachers[current_list[i]]['degree_list'])
 
-            print '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
+            print >>file_obj, '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
     for eachItem in tmp_teacher_in_high_degree_course:
-        print '{} {}'.format(eachItem, result_all_teachers[eachItem]['degree_list'])
+        print >>file_obj, '{} {}'.format(eachItem, result_all_teachers[eachItem]['degree_list'])
     # tmp = {}
     # for eachDegree in high_degree_course:
     #     for eachCourse in eachDegree:
@@ -1108,10 +1109,10 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
     return result_all_teachers, result_left_courses
 
 
-def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_info):
-    print '<STEP 3 course hour balance>'
+def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_info, file_obj):
+    print >>file_obj, '<STEP 3 course hour balance>'
     for eachCourse in result_left_courses:
-        print '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
+        print >>file_obj, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
         print eachCourse.course_id
         all_teachers = int(eachCourse.allow_teachers)
         if eachCourse.semester == '一':
@@ -1129,25 +1130,25 @@ def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_in
         for eachTeacher in tmp:
             teacher_list.append(teacher_info[eachTeacher]['id'])
         for eachTeacher in teacher_list:
-            print 'teacher id {}'.format(eachTeacher)
-            print 'course list {}'.format(result_all_teachers[eachTeacher]['course_list'])
-            print 'degree list {}'.format(result_all_teachers[eachTeacher]['degree_list'])
-            print 'hour left {}'.format(
+            print >>file_obj, 'teacher id {}'.format(eachTeacher)
+            print >>file_obj, 'course list {}'.format(result_all_teachers[eachTeacher]['course_list'])
+            print >>file_obj, 'degree list {}'.format(result_all_teachers[eachTeacher]['degree_list'])
+            print >>file_obj, 'hour left {}'.format(
                 (result_all_teachers[eachTeacher][tmp_str2] - result_all_teachers[eachTeacher][tmp_str1]))
-            print 'degree left {}'.format(
+            print >>file_obj, 'degree left {}'.format(
                 (result_all_teachers[eachTeacher][tmp_str4] - result_all_teachers[eachTeacher][tmp_str3]))
         teacher_list = sort_new_2(teacher_list, result_all_teachers, tmp_str2, tmp_str1, tmp_str4, tmp_str3)
         for i in range(all_teachers):
-            print 'teacher id {}'.format(teacher_list[i])
-            print 'total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1])
-            print 'degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
+            print >>file_obj, 'teacher id {}'.format(teacher_list[i])
+            print >>file_obj, 'total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1])
+            print >>file_obj, 'degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
             result_all_teachers[teacher_list[i]]['course_list'].append(eachCourse.course_id)
             result_all_teachers[teacher_list[i]]['degree_list'].append(eachCourse.course_degree)
             result_all_teachers[teacher_list[i]][tmp_str1] += eachCourse.course_hour
             result_all_teachers[teacher_list[i]][tmp_str3] += eachCourse.course_degree
             all_teachers -= 1
-            print 'new total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1])
-            print 'new degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
+            print >>file_obj, 'new total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1])
+            print >>file_obj, 'new degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
 
     return result_all_teachers, result_left_courses
 
@@ -1181,6 +1182,28 @@ def arrange_export_report(request):
     response = HttpResponse(sio.getvalue(), content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename={}_{}.xls'.format('arrange_result', now)
     response.write(sio.getvalue())
+    return response
+
+
+@csrf_exempt
+def arrange_export_analysis_1(request):
+    now = datetime.now().strftime("%Y-%m-%d %H-%M")
+    file_obj = open('analysis_result.txt', 'rb+').read()
+    response = HttpResponse(content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename={}_{}.txt'.format('analysis_report_1', now)
+    response.write(file_obj)
+    return response
+
+
+@csrf_exempt
+def arrange_export_analysis_2(request):
+    now = datetime.now().strftime("%Y-%m-%d %H-%M")
+    total_info = start_arrange()
+    file_obj = open('statistical_result.txt', 'wb+')
+    file_obj.write('教师总数为: {}'.format(total_info[0][0]))
+    response = HttpResponse(content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename={}_{}.txt'.format('analysis_report_1', now)
+    response.write(file_obj)
     return response
 
 

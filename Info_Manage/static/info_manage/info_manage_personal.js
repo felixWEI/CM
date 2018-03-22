@@ -414,6 +414,8 @@ function submit_cancel(){
         success: function (result) {
             if (result['status'] == 'Success'){
                 alert('取消申报成功')
+                t.row('.selected').data()[t.row('.selected').data().length-1] = '';
+                t.row('.selected').data(t.row('.selected').data()).draw();
             }else{
                 alert(result['status'])
             }
@@ -511,9 +513,15 @@ function init_modal_content(result){
     obj_list_4_p.innerText = str2;
     document.getElementById('total_high_degree_count').innerText = total_high_degree_count
     document.getElementById('require_high_degree_count').innerText = CRITICAL_VALUE
+    console.log(total_high_degree_count)
+    console.log(CRITICAL_VALUE)
     if (total_high_degree_count >= CRITICAL_VALUE){
         document.getElementById('p_pass').style.display = "block"
+        document.getElementById('p_fail').style.display = "none"
+        document.getElementById('t_fail').style.display = "none"
+
     }else{
+        document.getElementById('p_pass').style.display = "none"
         document.getElementById('p_fail').style.display = "block"
         document.getElementById('t_fail').style.display = "block"
     }

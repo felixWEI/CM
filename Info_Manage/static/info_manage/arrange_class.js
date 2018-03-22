@@ -377,6 +377,11 @@ function get_course_report(){
     location.replace(post_url);
 }
 
+function get_analysis_report_1(){
+    var post_url = '/arrange_export_analysis_2/';
+    location.replace(post_url);
+}
+
 function change_assign_teacher(){
     allow_teacher = document.getElementById('e_8').value;
     if ( $('#e_10').DataTable().rows().data().length != Number(allow_teacher) ){

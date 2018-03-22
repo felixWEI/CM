@@ -21,7 +21,8 @@ from Info_Manage.views import teacher_manage, teacher_personal, class_manage, te
                         arrange_class, teacher_save_and_config, teacher_table_upload, class_save_one_row, class_delete_one_row, \
                         class_get_suit_teacher, class_table_upload, arrange_step_1, arrange_step_2, arrange_step_3, \
                         arrange_export_report, class_get_teacher_name, class_filter_by_submit, arrange_search_by_course_id, \
-                        arrange_change_by_course_id, arrange_change_button_status, arrange_step_5, class_search_from_course_id, teacher_submit_apply_status
+                        arrange_change_by_course_id, arrange_change_button_status, arrange_step_5, \
+    class_search_from_course_id, teacher_submit_apply_status, arrange_export_analysis_1, arrange_export_analysis_2
 from Info_Search.views import info_search_main
 
 urlpatterns = [
@@ -51,6 +52,8 @@ urlpatterns = [
     url(r'^arrange_step_2/', arrange_step_2),
     url(r'^arrange_step_3/', arrange_step_3),
     url(r'^arrange_export_report/', arrange_export_report),
+    url(r'^arrange_export_analysis_1/', arrange_export_analysis_1),
+    url(r'^arrange_export_analysis_2/', arrange_export_analysis_2),
     url(r'^arrange_search_by_course_id/', arrange_search_by_course_id),
     url(r'^arrange_change_by_course_id/', arrange_change_by_course_id),
     url(r'^arrange_change_button_status/', arrange_change_button_status),
