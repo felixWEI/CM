@@ -551,6 +551,7 @@ function apply_complete_2(teacher_id){
             if (result['status'] == 'Success'){
                 $('#confirmCompleteModal').modal('hide')
                 $('#requestCompleteModal').modal('hide')
+                window.location.reload();
             }else{
                 alert(result['status'])
             }

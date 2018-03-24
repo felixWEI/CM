@@ -161,6 +161,14 @@ def teacher_request_course(request):
         teacher_name = searchResult[0].teacher_name
     else:
         teacher_name = '教务员'
+    now = datetime.now().replace()
+    search_result = CurrentStepInfo.objects.all()
+    if search_result and search_result[0].s2_deadline:
+        delta = (search_result[0].s2_deadline.replace(tzinfo=None) - now).total_seconds()
+        if delta < 0.0:
+            status = '申报时间已经截至, 无法再申报或者取消课程'
+            result = json.dumps({'status': status})
+            return HttpResponse(result)
     if 'status' not in request.POST.keys():
         status = save_teacher_to_course_info(course_id, teacher_name)
     else:
@@ -678,7 +686,7 @@ def arrange_class(request):
             step_info.append(int(search_result[0].s4_teacher_confirm_d))
 
         if search_result[0].s5_status_flag:
-            if search_result[0].s5_status_flag == 'lock start':
+            if search_result[0].s5_status_flag == 'lock start' or search_result[0].s5_status_flag == 'unlock':
                 step_position[4] = 'active'
             elif search_result[0].s5_status_flag == 'lock done':
                 step_position[0] = 'disabled'

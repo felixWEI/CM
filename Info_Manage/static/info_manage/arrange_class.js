@@ -51,7 +51,9 @@ $(document).ready(function () {
         });
         $('ul.setup-panel li:eq(1)').removeClass('disabled');
         $('ul.setup-panel li a[href="#step-2"]').trigger('click');
+        windows.location.reload();
         $(this).remove();
+
 
     });
     // var t_s2_r1_c2 = 0;
@@ -113,6 +115,7 @@ $(document).ready(function () {
     $('#activate-step-4').on('click', function(e) {
         $('ul.setup-panel li:eq(3)').removeClass('disabled');
         $('ul.setup-panel li a[href="#step-4"]').trigger('click');
+        windows.location.reload();
         $(this).remove();
         status = 'arrange over';
         $.ajax({
@@ -221,6 +224,27 @@ $(document).ready(function () {
         $("#e_10").DataTable().row.add([teacher_id, teacher_name]).draw();
         $('#add_teacher_e_10').modal('hide');
     })
+
+    $('#lock_other_step').click( function(){
+        status = 'lock done';
+        $.ajax({
+            type: 'POST',
+            url: '/arrange_step_5/',
+            data: {"status": status},
+            dataType: "json",
+            success: function(result){
+                if (result['status'] == 'Success'){
+                    alert('锁定成功! 请刷新页面!')
+                    $('#confirmLockModal').modal('hide');
+                }else{
+                    alert(result['status'])
+                }
+            },
+            error: function (){
+                alert('No');
+            }
+        });
+    })
 });
 function click_class(button_id){
     button_value = Number(document.getElementById(button_id).getAttribute('value'));
@@ -253,6 +277,7 @@ function click_class(button_id){
             success: function(result){
                 if (result['result'] === 'start request'){
                     document.getElementById('s2_r2_c1').removeAttribute('disabled');
+                    windows.location.reload();
                 }
             },
             error: function (){
@@ -280,7 +305,8 @@ function start_request() {
         data: {"id": 's2_r2_c1', 'deadline':time},
         dataType: "json",
         success: function(result){
-
+            $('#setTimeout').modal('hide');
+            windows.location.reload();
         },
         error: function (){
             alert('No');
@@ -291,7 +317,7 @@ function start_request() {
 function click_teacher(button_id){
     button_value = Number(document.getElementById(button_id).getAttribute('value'));
     if (button_value === 0){
-        document.getElementById(button_id).text = '确认教师';
+        document.getElementById(button_id).text = '确认课程教师';
         document.getElementById(button_id).setAttribute('value', '1');
         $.ajax({
             type: 'POST',
@@ -481,8 +507,8 @@ function disable_adjustment_button(type){
     });
 }
 
-function lock_other_step(){
-    status = 'lock done';
+function unlock_other_step(){
+    status = 'unlock';
     $.ajax({
         type: 'POST',
         url: '/arrange_step_5/',
@@ -490,7 +516,7 @@ function lock_other_step(){
         dataType: "json",
         success: function(result){
             if (result['status'] == 'Success'){
-                console.log(result)
+                alert('解锁成功! 请刷新页面!')
             }else{
                 alert(result['status'])
             }
@@ -499,4 +525,5 @@ function lock_other_step(){
             alert('No');
         }
     });
+
 }
