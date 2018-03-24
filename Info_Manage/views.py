@@ -1208,27 +1208,27 @@ def arrange_export_analysis_2(request):
     now = datetime.now().strftime("%Y-%m-%d %H-%M")
     total_info = start_arrange()
     file_obj = open('statistical_result.txt', 'wb+')
-    file_obj.write('教师总数: {}\r\n'.format(total_info[0]))
-    file_obj.write('有{}位教师有期望学时, 总计{}学时\r\n'.format(total_info[1], total_info[2]))
-    file_obj.write('其余{}位教师, 预计平均学时为{}学时\r\n'.format(total_info[3], total_info[4]))
-    file_obj.write('预计各难度平均分配教师:\r\n')
+    print >>file_obj, '教师总数: {}\r\n'.format(total_info[0])
+    print >> file_obj, '有{}位教师有期望学时, 总计{}学时\r\n'.format(total_info[1], total_info[2])
+    print >> file_obj, '其余{}位教师, 预计平均学时为{}学时\r\n'.format(total_info[3], total_info[4])
+    print >> file_obj, '预计各难度平均分配教师:\r\n'
     for index, eachLine in enumerate(total_info[5], 1):
-        file_obj.write('  {} {}\r\n'.format((11-index), eachLine))
-    file_obj.write('课程总数{}\r\n'.format(total_info[6]))
+        print >> file_obj, '  {} {}\r\n'.format((11-index), eachLine)
+    print >> file_obj, '课程总数{}\r\n'.format(total_info[6])
     for index, eachLine in enumerate(STUDENT_TYPE):
-        file_obj.write('{}\r\n'.format(eachLine))
+        print >> file_obj, '{}\r\n'.format(eachLine)
         for j, eachItem in enumerate(total_info[7][index], 1):
             if j == 1:
-                file_obj.write('  各课程各难度数:\r\n')
+                print >> file_obj,'  各课程各难度数:\r\n'
             elif j == 11:
-                file_obj.write('  各课程各学时数:\r\n')
+                print >> file_obj, '  各课程各学时数:\r\n'
             else:
                 pass
 
-            if j >= 1 and j < 11:
-                file_obj.write('  {} {}\r\n'.format(11 - j, eachItem))
-            if j>= 11:
-                file_obj.write('  {} {}\r\n'.format(COURSE_HOUR[j % 11], eachItem))
+            if 1 <= j < 11:
+                print >> file_obj, '  {} {}\r\n'.format(11 - j, eachItem)
+            if j >= 11:
+                print >> file_obj, '  {} {}\r\n'.format(COURSE_HOUR[j % 11], eachItem)
     response = HttpResponse(content_type='text/plain')
     response['Content-Disposition'] = 'attachment; filename={}_{}.txt'.format('analysis_report_2', now)
     file_obj.close()
