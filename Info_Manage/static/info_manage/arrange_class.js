@@ -398,12 +398,12 @@ function initialize_arrange_class(page_info) {
     }
     document.getElementById('whole_info_present').innerHTML = str2;
 }
-function get_course_report(){
-    var post_url = '/arrange_export_report/';
+function get_analysis_report_1(){
+    var post_url = '/arrange_export_analysis_1/';
     location.replace(post_url);
 }
 
-function get_analysis_report_1(){
+function get_analysis_report_2(){
     var post_url = '/arrange_export_analysis_2/';
     location.replace(post_url);
 }
