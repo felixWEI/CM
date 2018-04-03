@@ -93,7 +93,7 @@ $(document).ready(function () {
     }
 
     $('#activate-step-3').on('click', function() {
-        status = 'start arrange';
+        var status = 'start arrange';
         $.ajax({
             type: 'POST',
             url: '/arrange_step_3/',
@@ -117,7 +117,7 @@ $(document).ready(function () {
         $('ul.setup-panel li a[href="#step-4"]').trigger('click');
         windows.location.reload();
         $(this).remove();
-        status = 'arrange over';
+        var status = 'arrange over';
         $.ajax({
             type: 'POST',
             url: '/arrange_step_3/',
@@ -135,7 +135,7 @@ $(document).ready(function () {
         $('ul.setup-panel li:eq(4)').removeClass('disabled');
         $('ul.setup-panel li a[href="#step-5"]').trigger('click');
         $(this).remove();
-        status = 'lock start';
+        var status = 'lock start';
         $.ajax({
             type: 'POST',
             url: '/arrange_step_5/',
@@ -154,7 +154,8 @@ $(document).ready(function () {
         });
     });
     $("#arrange_class_with_teacher").on('click', function () {
-        status = 'arrange main';
+        status='arrange main';
+        alert(status);
         $.ajax({
             type: 'POST',
             url: '/arrange_step_3/',
@@ -169,7 +170,8 @@ $(document).ready(function () {
         });
     });
     $("#arrange_class_start").on('click', function () {
-        status = 'arrange main';
+        var status = 'arrange main';
+        alert(status);
         $.ajax({
             type: 'POST',
             url: '/arrange_step_3/',
@@ -226,7 +228,7 @@ $(document).ready(function () {
     })
 
     $('#lock_other_step').click( function(){
-        status = 'lock done';
+        var status = 'lock done';
         $.ajax({
             type: 'POST',
             url: '/arrange_step_5/',
@@ -356,7 +358,7 @@ function click_teacher(button_id){
 }
 
 function arrange_start() {
-    status = 'init info';
+    var status = 'init info';
     $.ajax({
         type: 'POST',
         url: '/arrange_step_3/',
@@ -397,6 +399,10 @@ function initialize_arrange_class(page_info) {
         str2 += '</tr>';
     }
     document.getElementById('whole_info_present').innerHTML = str2;
+}
+function get_course_report(){
+    var post_url = '/arrange_export_report/';
+    location.replace(post_url);
 }
 function get_analysis_report_1(){
     var post_url = '/arrange_export_analysis_1/';
@@ -508,7 +514,7 @@ function disable_adjustment_button(type){
 }
 
 function unlock_other_step(){
-    status = 'unlock';
+    var status = 'unlock';
     $.ajax({
         type: 'POST',
         url: '/arrange_step_5/',
