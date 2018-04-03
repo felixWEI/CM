@@ -249,7 +249,7 @@ function add_course_info(length){
 //        console.log(document.getElementById(i).value);
     }
     t.row.add(row_data).draw();
-    old_data = ''
+    var old_data = ''
     var row_str = JSON.stringify(row_data);
     $.ajax({
         type: 'POST',
@@ -442,7 +442,7 @@ function submit_request(){
 }
 function submit_cancel(){
     course_id = document.getElementById('c_0').value;
-    status = 'cancel'
+    var status = 'cancel'
     $.ajax({
         type: 'POST',
         url:'/teacher_request_course/',

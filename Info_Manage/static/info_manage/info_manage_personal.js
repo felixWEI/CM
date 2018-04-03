@@ -349,7 +349,7 @@ function submit_edit_info(){
         }
 //        console.log(document.getElementById(i).value);
     }
-    str = "";
+    var str = "";
     for (var j=0; j < $("#e_11").DataTable().rows().data().length; j++){
         str += $("#e_11").DataTable().rows(j).data()[0][1];
         if( j <  $("#e_11").DataTable().rows().data().length-1){
@@ -405,7 +405,7 @@ function submit_request(){
 }
 function submit_cancel(){
     course_id = document.getElementById('c_0').value;
-    status = 'cancel'
+    var status = 'cancel'
     $.ajax({
         type: 'POST',
         url:'/teacher_request_course/',
@@ -428,7 +428,7 @@ function submit_cancel(){
     })
 }
 function check_apply_status(teacher_id){
-    status = 'check'
+    var status = 'check'
     $.ajax({
         type: 'POST',
         url:'/teacher_submit_apply_status/',
@@ -464,8 +464,8 @@ function init_modal_content(result){
     obj_list_2_p = document.getElementById('list_2_p')
     obj_list_3_p = document.getElementById('list_3_p')
     obj_list_4_p = document.getElementById('list_4_p')
-    str1 = "";
-    str2 = "";
+    var str1 = "";
+    var str2 = "";
     for (var i=0; i < list_1.length; i++){
         str1 += list_1[i]+' '
         if (Number(list_1[i][2]) >= HIGH_DEGREE){
@@ -540,7 +540,7 @@ function apply_complete_1(){
     }
 }
 function apply_complete_2(teacher_id){
-    status = 'save'
+    var status = 'save'
     notes = document.getElementById('t_fail').value
     $.ajax({
         type: 'POST',
