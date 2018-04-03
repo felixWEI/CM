@@ -171,7 +171,6 @@ $(document).ready(function () {
     });
     $("#arrange_class_start").on('click', function () {
         var status = 'arrange main';
-        alert(status);
         $.ajax({
             type: 'POST',
             url: '/arrange_step_3/',
