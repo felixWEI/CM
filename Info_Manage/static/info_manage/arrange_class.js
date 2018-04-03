@@ -115,8 +115,7 @@ $(document).ready(function () {
     $('#activate-step-4').on('click', function(e) {
         $('ul.setup-panel li:eq(3)').removeClass('disabled');
         $('ul.setup-panel li a[href="#step-4"]').trigger('click');
-        windows.location.reload();
-        $(this).remove();
+//        $(this).remove();
         var status = 'arrange over';
         $.ajax({
             type: 'POST',
@@ -124,12 +123,14 @@ $(document).ready(function () {
             data: {"status": status},
             dataType: "json",
             success: function(result){
-
+                windows.location.reload();
             },
             error: function (){
                 alert('No');
             }
         });
+
+
     });
     $('#activate-step-5').on('click', function(e) {
         $('ul.setup-panel li:eq(4)').removeClass('disabled');
