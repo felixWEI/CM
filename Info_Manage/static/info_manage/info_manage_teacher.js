@@ -120,6 +120,7 @@ $(document).ready(function () {
 //	    console.log(file);
 //	})
     initFileInput("excelFile","/teacher_table_upload/")
+    initFileInput("excelFile2","/teacher_help_declare_upload/")
 });
 
 function initFileInput(ctrlName, uploadUrl) {
@@ -153,7 +154,7 @@ function initFileInput(ctrlName, uploadUrl) {
 
 $("#excelFile").on("fileuploaded", function (event, data, previewId, index) {
     console.log(data);
-    if(data.response.success == true)
+    if(data.response.result == 'Pass')
     {
         alert(data.files[index].name + "上传成功!");
     //关闭
@@ -166,5 +167,22 @@ $("#excelFile").on("fileuploaded", function (event, data, previewId, index) {
     $("#excelFile").fileinput("reset");
     $('#excelFile').fileinput('refresh');
     $('#excelFile').fileinput('enable');
+    }
+});
+$("#excelFile2").on("fileuploaded", function (event, data, previewId, index) {
+    console.log(data);
+    if(data.response.result == 'Pass')
+    {
+        alert(data.files[index].name + "上传成功!");
+    //关闭
+        $(".close").click();
+    }
+    else{
+        alert(data.files[index].name + "上传失败!" + data.response.message);
+    //重置
+    $("#excelFile2").fileinput("clear");
+    $("#excelFile2").fileinput("reset");
+    $('#excelFile2').fileinput('refresh');
+    $('#excelFile2').fileinput('enable');
     }
 });

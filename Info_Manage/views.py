@@ -211,7 +211,42 @@ def teacher_table_upload(request):
         if type(teacher_id.value) == int or type(teacher_id.value) == float:
             teacher_list.append([int(teacher_id.value), teacher_name.value])
     insert_teacher_list_into_db(teacher_list)
-    return HttpResponse('Pass')
+    status = 'Pass'
+    result = json.dumps({'result': status})
+    return HttpResponse(result)
+
+
+@csrf_exempt
+def teacher_help_declare_upload(request):
+    input_file = request.FILES.get("file_data", None)
+    work_book = xlrd.open_workbook(filename=None, file_contents=input_file.read())
+    # TODO: result part
+    work_sheet = work_book.sheet_by_name('代理申报')
+    line_length = work_sheet.nrows
+    teacher_list = []
+    line_width = work_sheet.row_len(0)
+    main_content = False
+    for line_number in range(line_length):
+        line_content = work_sheet.row(line_number)
+        if line_content[0].value == '代码':
+            main_content = True
+            continue
+        if main_content:
+            search_result = CourseInfo.objects.filter(course_id=line_content[0].value)
+            if search_result:
+                suit_teacher_list = search_result[0].suit_teacher.split(',')
+                teacher_ordered_list = search_result[0].teacher_ordered.split(',')
+                if line_content[10].value not in suit_teacher_list:
+                    suit_teacher_list.append(line_content[10].value)
+                if line_content[10].value not in teacher_ordered_list:
+                    teacher_ordered_list.append(line_content[10].value)
+                suit_teacher_str = ','.join(suit_teacher_list)
+                teacher_ordered_str = ','.join(teacher_ordered_list)
+                CourseInfo.objects.filter(id=search_result[0].id).update(suit_teacher=suit_teacher_str, teacher_ordered=
+                                                                         teacher_ordered_str)
+    status = 'Pass'
+    result = json.dumps({'result': status})
+    return HttpResponse(result)
 
 
 def insert_teacher_list_into_db(teacher_list):
@@ -385,7 +420,6 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
         if combine_class_name in search_result[0].class_name:
             CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],
                                                                      course_name=course_info[1],
-
                                                                      semester=course_info[5],
                                                                      course_hour=course_info[6],
                                                                      course_degree=course_info[7],
@@ -405,6 +439,7 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
             class_name_str = ' '.join(class_list)
             CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],
                                                                      course_name=course_info[1],
+                                                                     student_type=course_info[2],
                                                                      class_name=class_name_str,
                                                                      semester=course_info[5],
                                                                      course_hour=course_info[6],

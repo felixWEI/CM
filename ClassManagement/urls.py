@@ -23,6 +23,7 @@ from Info_Manage.views import teacher_manage, teacher_personal, class_manage, te
                         arrange_export_report, class_get_teacher_name, class_filter_by_submit, arrange_search_by_course_id, \
                         arrange_change_by_course_id, arrange_change_button_status, arrange_step_5, \
     class_search_from_course_id, teacher_submit_apply_status, arrange_export_analysis_1, arrange_export_analysis_2
+from Info_Manage import views
 from Info_Search.views import info_search_main
 
 urlpatterns = [
@@ -37,6 +38,7 @@ urlpatterns = [
     url(r'^teacher_save_and_config/', teacher_save_and_config),
     url(r'^teacher_request_course/', teacher_request_course),
     url(r'^teacher_table_upload/', teacher_table_upload),
+    url(r'^teacher_help_declare_upload/', views.teacher_help_declare_upload, name="teacher_help_declare_upload"),
     url(r'^teacher_change_expect/', teacher_change_expect),
     url(r'^teacher_submit_apply_status/', teacher_submit_apply_status),
     url(r'^class_manage/', class_manage),
