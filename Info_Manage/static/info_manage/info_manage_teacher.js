@@ -159,6 +159,7 @@ $("#excelFile").on("fileuploaded", function (event, data, previewId, index) {
         alert(data.files[index].name + "上传成功!");
     //关闭
         $(".close").click();
+        location.reload();
     }
     else{
         alert(data.files[index].name + "上传失败!" + data.response.message);
@@ -176,6 +177,7 @@ $("#excelFile2").on("fileuploaded", function (event, data, previewId, index) {
         alert(data.files[index].name + "上传成功!");
     //关闭
         $(".close").click();
+        location.reload();
     }
     else{
         alert(data.files[index].name + "上传失败!" + data.response.message);

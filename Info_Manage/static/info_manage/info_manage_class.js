@@ -44,7 +44,9 @@ $(document).ready(function () {
             data: {'course_id': course_id, 'old_data':combine_data},
             dataType: 'json',
             success: function(result){
-                alert('Pass');
+                alert('删除成功!')
+                $('#confirmDeleteModal').modal('hide');
+                location.reload();
             },
             error: function(){
                 alert('Delete fail');
@@ -128,6 +130,9 @@ $(document).ready(function () {
                     document.getElementById('a_9').value = result['raw_data'][8]
                     document.getElementById('a_10').value = result['raw_data'][9]
                     document.getElementById('a_1').setAttribute('disabled', 'disabled')
+                    document.getElementById('a_2').removeAttribute('disabled')
+                    document.getElementById('a_3').removeAttribute('disabled')
+                    document.getElementById('a_4').removeAttribute('disabled')
                     document.getElementById('a_5').setAttribute('disabled', 'disabled')
                     document.getElementById('a_6').setAttribute('disabled', 'disabled')
                     document.getElementById('a_7').setAttribute('disabled', 'disabled')
@@ -146,6 +151,9 @@ $(document).ready(function () {
                     document.getElementById('a_9').value = ''
                     document.getElementById('a_10').value = ''
                     document.getElementById('a_1').removeAttribute('disabled')
+                    document.getElementById('a_2').removeAttribute('disabled')
+                    document.getElementById('a_3').removeAttribute('disabled')
+                    document.getElementById('a_4').removeAttribute('disabled')
                     document.getElementById('a_5').removeAttribute('disabled')
                     document.getElementById('a_6').removeAttribute('disabled')
                     document.getElementById('a_7').removeAttribute('disabled')
@@ -191,7 +199,7 @@ $(document).ready(function () {
             alert('教师工号或教师姓名不能为空!')
             return
         }
-        $("#e_11").DataTable().row.add([teacher_id, teacher_name]).draw();
+        $("#e_11").DataTable().row.add([Number(teacher_id), teacher_name]).draw();
         $('#add_teacher_e_11').modal('hide');
     })
     initFileInput("excelFile","/class_table_upload/")
@@ -257,7 +265,8 @@ function add_course_info(length){
             data: {"row_data": row_str, 'old_data':old_data},
             dataType: "json",
             success: function (result) {
-                alert('success');
+                alert('添加成功');
+                location.reload();
             },
             error: function () {
                 alert('fail');
@@ -410,7 +419,8 @@ function submit_edit_info(){
         data: {"row_data": row_str, 'old_data':combine_data, 'old_course_id':course_id},
         dataType: "json",
         success: function (result) {
-            alert('success');
+            alert('编辑成功');
+            location.reload()
         },
         error: function () {
             alert('fail');
@@ -491,6 +501,15 @@ function initFileInput(ctrlName, uploadUrl) {
     });
 }
 
+function confirm_delete_class(){
+    if ( t.row('.selected').length === 0 ){
+        alert('没有选中的课程')
+        return
+    }
+    $('#confirmDeleteModal').modal('show');
+    document.getElementById('p_danger_1').innerText = t.row('.selected').data()[0]
+}
+
 $("#excelFile").on("fileuploaded", function (event, data, previewId, index) {
     console.log(data);
     if(data.response.result == 'Pass')
@@ -498,6 +517,7 @@ $("#excelFile").on("fileuploaded", function (event, data, previewId, index) {
         alert(data.files[index].name + "上传成功!");
     //关闭
         $(".close").click();
+        location.reload();
     }
     else{
         alert(data.files[index].name + "上传失败!" + data.response.message);

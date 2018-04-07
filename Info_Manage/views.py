@@ -743,12 +743,12 @@ def arrange_step_1(request):
     year = request.POST['year']
     search_result = CurrentStepInfo.objects.all()
     if search_result:
-        pass
+        CurrentStepInfo.objects.filter(id=search_result[0].id).update(s1_year_info=year)
     else:
         CurrentStepInfo.objects.create(arrange_class_status='start', s1_year_info=year, s2_undergraduate='0', s2_postgraduate_1='0',
                                        s2_postgraduate_2='0', s2_doctor='0', s2_teacher_confirm_u='0',s2_teacher_confirm_p1='0',s2_teacher_confirm_p2='0',s2_teacher_confirm_d='0')
-    result = 'Pass'
-    result = json.dumps({'result': result})
+    status = 'Pass'
+    result = json.dumps({'status': status})
     return HttpResponse(result)
 
 
@@ -795,6 +795,10 @@ def arrange_step_2(request):
             if tmp[0].s2_undergraduate == '2' and tmp[0].s2_postgraduate_1 == '2' and tmp[0].s2_postgraduate_2 == '2' and tmp[0].s2_doctor == '2':
                 CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_start_request='1')
                 result = 'start request'
+        if len(tmp) == 1 and 's2_r3' in button_id:
+            if tmp[0].s2_teacher_confirm_u == '2' and tmp[0].s2_teacher_confirm_p1 == '2' and tmp[0].s2_teacher_confirm_p2 == '2' and tmp[0].s2_teacher_confirm_d == '2':
+                CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_start_request='2')
+                result = 'request end'
     result = json.dumps({'result': result})
     return HttpResponse(result)
 

@@ -36,6 +36,10 @@ $(document).ready(function () {
 
     $('#activate-step-2').on('click', function() {
         var year = document.getElementById('step_1_select_list').value;
+        if ( year == ''){
+            alert('请选择排课学期!')
+            return;
+        }
         console.log(year);
         $.ajax({
             type: 'POST',
@@ -43,17 +47,15 @@ $(document).ready(function () {
             data: {"year": year},
             dataType: "json",
             success: function(result){
-
+                $('ul.setup-panel li:eq(1)').removeClass('disabled');
+                $('ul.setup-panel li a[href="#step-2"]').trigger('click');
+                location.reload();
+                $(this).remove();
             },
             error: function (){
-                alert('No');
+
             }
         });
-        $('ul.setup-panel li:eq(1)').removeClass('disabled');
-        $('ul.setup-panel li a[href="#step-2"]').trigger('click');
-        windows.location.reload();
-        $(this).remove();
-
 
     });
     // var t_s2_r1_c2 = 0;
@@ -70,7 +72,10 @@ $(document).ready(function () {
         minute = time_split[4];
         second = 0;
         var leftTime = (new Date(year,month-1,day,hour,minute,second)) - (new Date()); //计算剩余的毫秒数
-        if (isNaN(leftTime)){
+        if (leftTime == 0){
+            location.reload();
+        }
+        if (isNaN(leftTime) || leftTime < 0){
             return;
         }
         var days = parseInt(leftTime / 1000 / 60 / 60 / 24 , 10); //计算剩余的天数
@@ -100,10 +105,10 @@ $(document).ready(function () {
             data: {"status": status},
             dataType: "json",
             success: function(result){
-
+                console.log(result)
             },
             error: function (){
-                alert('No');
+
             }
         });
         $('ul.setup-panel li:eq(2)').removeClass('disabled');
@@ -115,7 +120,7 @@ $(document).ready(function () {
     $('#activate-step-4').on('click', function(e) {
         $('ul.setup-panel li:eq(3)').removeClass('disabled');
         $('ul.setup-panel li a[href="#step-4"]').trigger('click');
-//        $(this).remove();
+        $(this).remove();
         var status = 'arrange over';
         $.ajax({
             type: 'POST',
@@ -123,10 +128,10 @@ $(document).ready(function () {
             data: {"status": status},
             dataType: "json",
             success: function(result){
-                windows.location.reload();
+                location.reload();
             },
             error: function (){
-                alert('No');
+
             }
         });
 
@@ -184,7 +189,7 @@ $(document).ready(function () {
                 document.getElementById('analysis_course_report_1').removeAttribute('disabled');
             },
             error: function (){
-                alert('排课失败, 请检查教师申报信息');
+//                alert('排课失败, 请检查教师申报信息');
             }
         });
     });
@@ -208,7 +213,7 @@ $(document).ready(function () {
                 }
             },
             error: function (){
-                alert('No');
+
             }
         });
     })
@@ -243,7 +248,7 @@ $(document).ready(function () {
                 }
             },
             error: function (){
-                alert('No');
+
             }
         });
     })
@@ -262,7 +267,7 @@ function click_class(button_id){
 
             },
             error: function (){
-                alert('No');
+
             }
         });
         button_value += 1;
@@ -279,11 +284,11 @@ function click_class(button_id){
             success: function(result){
                 if (result['result'] === 'start request'){
                     document.getElementById('s2_r2_c1').removeAttribute('disabled');
-                    windows.location.reload();
+                    location.reload();
                 }
             },
             error: function (){
-                alert('No');
+
             }
         });
         button_value += 1;
@@ -308,12 +313,12 @@ function start_request() {
         dataType: "json",
         success: function(result){
             $('#setTimeout').modal('hide');
-            windows.location.reload();
         },
         error: function (){
-            alert('No');
+
         }
-        });
+    });
+    location.reload();
 }
 
 function click_teacher(button_id){
@@ -330,7 +335,7 @@ function click_teacher(button_id){
 
             },
             error: function (){
-                alert('No');
+
             }
         });
         button_value += 1;
@@ -345,10 +350,12 @@ function click_teacher(button_id){
             data: {"id": button_id},
             dataType: "json",
             success: function(result){
-
+                if (result['result'] === 'request end'){
+                    document.getElementById('activate-step-3').removeAttribute('disabled');
+                }
             },
             error: function (){
-                alert('No');
+
             }
         });
         button_value += 1;
@@ -370,7 +377,7 @@ function arrange_start() {
             initialize_arrange_class(page_info);
         },
         error: function (){
-            alert('No');
+
         }
     });
 }
@@ -508,7 +515,7 @@ function disable_adjustment_button(type){
             }
         },
         error: function (){
-            alert('No');
+
         }
     });
 }
@@ -528,7 +535,7 @@ function unlock_other_step(){
             }
         },
         error: function (){
-            alert('No');
+
         }
     });
 

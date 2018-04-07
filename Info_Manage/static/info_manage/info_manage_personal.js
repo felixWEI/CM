@@ -99,6 +99,7 @@ $(document).ready(function () {
                     document.getElementById('page_expect_1').innerText = modify_0+"%";
                     document.getElementById('page_expect_2').innerText = modify_1+"%";
                     alert('修改期望成功')
+                    location.reload();
                 }else{
                     alert(result['status'])
                 }

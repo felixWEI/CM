@@ -131,7 +131,6 @@
                     <div class="col-md-11 col-md-offset-1">
                       <h4 class="text-left">学年</h4>
                       <select multiple class="form-control" id="step_1_select_list">
-                        <option>2017-2018</option>
                         <option>2018-2019</option>
                         <option>2019-2020</option>
                       </select>
@@ -280,7 +279,11 @@
                     </div>
                   </div>
                   <div class="col-md-2 col-md-offset-10 text-center">
-                    <button id="activate-step-3" class="btn btn-primary btn-bg">确认完成这一步</button>
+                    {% if step_info.7 == 2 and step_info.8 == 2 and step_info.9 == 2 and step_info.10 == 2%}
+                      <button id="activate-step-3" class="btn btn-primary btn-bg">确认完成这一步</button>
+                    {% else %}
+                      <button id="activate-step-3" class="btn btn-primary btn-bg" disabled="disabled">确认完成这一步</button>
+                    {% endif %}
                   </div>
                 </div>
             </div>

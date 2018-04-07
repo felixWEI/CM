@@ -181,7 +181,7 @@
           <div class="table-responsive">
             <div class="pull-right" style="margin-top: 10px;">
                   <button id="import" class="btn btn-primary" data-toggle="modal" data-target="#importModal">导入</button>
-                  <button id="delete" class="btn btn-danger">删除该行</button>
+                  <button class="btn btn-danger" onclick="confirm_delete_class()">删除该行</button>
                   <button class="btn btn-primary" onclick="edit_course_info()">编辑课程信息</button>
                   <button class="btn btn-primary" data-toggle="modal" data-target="#configModal">添加课程信息</button>
             </div>
@@ -253,12 +253,12 @@
 
                   <div class="row form-group">
                       <label for="a_1" class="col-sm-2 control-label">{{ table_head.1 }}</label>
-                      <div class="col-sm-10"><input id="a_1"  class="form-control" type="text" placeholder="课程名称"></div>
+                      <div class="col-sm-10"><input id="a_1" disabled="disabled" class="form-control" type="text" placeholder="课程名称"></div>
                   </div>
                   <div class="row form-group">
                       <label for="a_2" class="col-sm-2 control-label">{{ table_head.2 }}</label>
                       <div class="col-sm-4">
-                          <select id="a_2" class="form-control">
+                          <select id="a_2" disabled="disabled" class="form-control">
                             {% for row in table_default.2 %}
                             <option>{{row}}</option>
                             {% endfor %}
@@ -266,7 +266,7 @@
                       </div>
                       <label for="a_3" class="col-sm-2 control-label">{{ table_head.3 }}</label>
                       <div class="col-sm-4">
-                          <select id="a_3" class="form-control">
+                          <select id="a_3" disabled="disabled" class="form-control">
                             {% for row in table_default.3 %}
                             <option>{{row}}</option>
                             {% endfor %}
@@ -276,7 +276,7 @@
                   <div class="row form-group">
                       <label for="a_4" class="col-sm-2 control-label">{{ table_head.4 }}</label>
                       <div class="col-sm-10">
-                        <select id="a_4" class="form-control">
+                        <select id="a_4" disabled="disabled" class="form-control">
                           {% for row in table_default.4 %}
                           <option>{{row}}</option>
                           {% endfor %}
@@ -286,7 +286,7 @@
                   <div class="row form-group">
                       <label for="a_5" class="col-sm-2 control-label">{{ table_head.5 }}</label>
                       <div class="col-sm-4">
-                          <select id="a_5" class="form-control">
+                          <select id="a_5" disabled="disabled" class="form-control">
                             {% for row in table_default.5 %}
                             <option>{{row}}</option>
                             {% endfor %}
@@ -294,7 +294,7 @@
                       </div>
                       <label for="a_6" class="col-sm-2 control-label">{{ table_head.6 }}</label>
                       <div class="col-sm-4">
-                          <select id="a_6" class="form-control">
+                          <select id="a_6" disabled="disabled" class="form-control">
                             {% for row in table_default.6 %}
                             <option>{{row}}</option>
                             {% endfor %}
@@ -306,7 +306,7 @@
                           <div class="row form-group">
                               <label for="a_7" class="col-sm-4 control-label">{{ table_head.7 }}</label>
                               <div class="col-sm-8">
-                                  <select id="a_7" class="form-control">
+                                  <select id="a_7" disabled="disabled" class="form-control">
                                   {% for row in table_default.7 %}
                                   <option>{{row}}</option>
                                   {% endfor %}
@@ -316,7 +316,7 @@
                           <div class="row form-group">
                             <label for="a_8" class="col-sm-4 control-label">{{ table_head.8 }}</label>
                             <div class="col-sm-8">
-                              <select id="a_8" class="form-control">
+                              <select id="a_8" disabled="disabled" class="form-control">
                               {% for row in table_default.8 %}
                               <option>{{row}}</option>
                               {% endfor %}
@@ -325,11 +325,11 @@
                           </div>
                           <div class="row form-group">
                             <label for="a_9" class="col-sm-4 control-label">{{ table_head.9 }}</label>
-                            <div class="col-sm-8"><input id="a_9" class="form-control" type="text" placeholder="教师数"></div>
+                            <div class="col-sm-8"><input id="a_9" disabled="disabled" class="form-control" type="text" placeholder="教师数"></div>
                           </div>
                           <div class="row form-group">
                             <label for="a_10" class="col-sm-4 control-label">{{ table_head.10 }}</label>
-                            <div class="col-sm-8"><input id="a_10" class="form-control" type="text" placeholder="周上课次数"></div>
+                            <div class="col-sm-8"><input id="a_10" disabled="disabled" class="form-control" type="text" placeholder="周上课次数"></div>
                           </div>
                       </div>
                       <div class="col-sm-6" hidden="hidden">
@@ -528,6 +528,27 @@
           </div>
           <div class="modal-footer">
             <button class="button" id="add_teacher_id">确定</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">确认删除课程</h4>
+          </div>
+          <div class="modal-body ">
+            <div>
+              <p class="bg-danger" id="p_danger_1"></p>
+            </div>
+          </div>
+          <div class="modal-footer">
+              <button class="button" id="delete">确认提交</button>
+              <button type="button" class="button" data-dismiss="modal">关闭</button>
           </div>
         </div>
       </div>
