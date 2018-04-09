@@ -129,6 +129,7 @@ $(document).ready(function () {
                     document.getElementById('a_8').value = result['raw_data'][7]
                     document.getElementById('a_9').value = result['raw_data'][8]
                     document.getElementById('a_10').value = result['raw_data'][9]
+                    document.getElementById('a_12').value = result['raw_data'][10]
                     document.getElementById('a_1').setAttribute('disabled', 'disabled')
                     document.getElementById('a_2').removeAttribute('disabled')
                     document.getElementById('a_3').removeAttribute('disabled')
@@ -139,6 +140,7 @@ $(document).ready(function () {
                     document.getElementById('a_8').setAttribute('disabled', 'disabled')
                     document.getElementById('a_9').setAttribute('disabled', 'disabled')
                     document.getElementById('a_10').setAttribute('disabled', 'disabled')
+                    document.getElementById('a_12').removeAttribute('disabled')
                 }else{
                     document.getElementById('a_1').value = ''
                     document.getElementById('a_2').value = ''
@@ -150,6 +152,7 @@ $(document).ready(function () {
                     document.getElementById('a_8').value = ''
                     document.getElementById('a_9').value = ''
                     document.getElementById('a_10').value = ''
+                    document.getElementById('a_12').value = ''
                     document.getElementById('a_1').removeAttribute('disabled')
                     document.getElementById('a_2').removeAttribute('disabled')
                     document.getElementById('a_3').removeAttribute('disabled')
@@ -160,6 +163,7 @@ $(document).ready(function () {
                     document.getElementById('a_8').removeAttribute('disabled')
                     document.getElementById('a_9').removeAttribute('disabled')
                     document.getElementById('a_10').removeAttribute('disabled')
+                    document.getElementById('a_12').removeAttribute('disabled')
                 }
             },
             error: function (){
@@ -320,6 +324,7 @@ function edit_course_info(){
     document.getElementById('e_8').innerHTML = '<option>'+t.row('.selected').data()[8]+'</option>'+document.getElementById('e_8').innerHTML;
     document.getElementById('e_9').value = t.row('.selected').data()[9];
     document.getElementById('e_10').value = t.row('.selected').data()[10];
+    document.getElementById('e_12').value = t.row('.selected').data()[12];
 	$.ajax({
 	    type: 'POST',
         url:'/class_get_suit_teacher/',
@@ -385,7 +390,7 @@ function cancel_request(){
 
 function submit_edit_info(){
     row_data = Array();
-    for (var i=0; i < 12; i++ ){
+    for (var i=0; i < 13; i++ ){
         if ( document.getElementById('e_'+String(i)).value !== undefined ){
             row_data[i] = document.getElementById('e_'+String(i)).value;
             if (i==0){

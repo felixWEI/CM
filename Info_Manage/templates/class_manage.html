@@ -94,6 +94,9 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
+            <li style="padding-left:20px">
+              <P><b>课程学位</b></P>
+            </li>
             <li>
               <div class="checkbox" style="padding-left:20px">
                 <label>
@@ -124,6 +127,9 @@
             </li>
           </ul>
           <ul class="nav nav-sidebar">
+            <li style="padding-left:20px">
+              <P><b>开课学期</b></P>
+            </li>
               <li>
                   <div class="checkbox" style="padding-left:20px">
                       <label>
@@ -357,10 +363,14 @@
                           </div>
                       </div>
                   </div>
+                  <div class="row form-group">
+                    <label for="a_12" class="col-sm-2 control-label">{{ table_head.12 }}</label>
+                    <div class="col-sm-10"><input id="a_12" disabled="disabled" class="form-control" type="text" placeholder="多代码备注"></div>
+                  </div>
               </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="button" onclick="add_course_info(12)">提交</button>
+                <button type="button" class="button" onclick="add_course_info(13)">提交</button>
                 <button type="button" class="button" data-dismiss="modal">关闭窗口</button>
             </div>
           </div>
@@ -488,6 +498,10 @@
                             <div class="col-sm-4"><button id="delete_e_11" class="btn btn-danger" style="width:100%" type="button">删除</button></div>
                         </div>
                       </div>
+                  </div>
+                  <div class="row form-group">
+                    <label for="e_12" class="col-sm-2 control-label">{{ table_head.12 }}</label>
+                    <div class="col-sm-10"><input id="e_12" class="form-control" type="text" placeholder="多代码备注"></div>
                   </div>
               </form>
             </div>

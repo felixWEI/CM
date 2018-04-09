@@ -241,8 +241,8 @@ $(document).ready(function () {
             dataType: "json",
             success: function(result){
                 if (result['status'] == 'Success'){
-                    alert('锁定成功! 请刷新页面!')
                     $('#confirmLockModal').modal('hide');
+                    location.reload();
                 }else{
                     alert(result['status'])
                 }
@@ -445,6 +445,7 @@ function change_assign_teacher(){
         success: function(result){
             if (result['status'] == 'Success'){
                 alert('修改成功')
+                $('#changeAssignTeacher').modal('hide');
             }
         },
         error: function (){
@@ -529,7 +530,8 @@ function unlock_other_step(){
         dataType: "json",
         success: function(result){
             if (result['status'] == 'Success'){
-                alert('解锁成功! 请刷新页面!')
+                alert('解锁成功!')
+                location.reload();
             }else{
                 alert(result['status'])
             }

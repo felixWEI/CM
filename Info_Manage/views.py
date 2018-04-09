@@ -354,14 +354,15 @@ def class_manage(request):
             search_result.append([eachItem.course_id, eachItem.course_name, tmp_student,
                                   tmp_class_grade, tmp_class_name, eachItem.semester,
                                   eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
-                                  eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher])
+                                  eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher,
+                                  eachItem.notes])
         current_hour_count += float(eachItem.course_hour)
         current_degree_count += float(eachItem.course_degree)
         if eachItem.suit_teacher:
             current_course_claim += 1
     summary_table = [current_course_count, current_hour_count, current_degree_count, current_course_claim]
 
-    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '可选教师']
+    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '可选教师', '备注']
     table_default = ['', '', student_type, year, class_name,
                      semester, course_hour, course_degree, course_type, '', '']
     return render(request, 'class_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
@@ -380,10 +381,10 @@ def class_filter_by_submit(request):
         if eachItem.semester in semester and eachItem.student_type in student_type:
             if table_id == 'table_course_manage':
                 for eachClass in eachItem.class_name.split(' '):
-                    search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
+                    search_result.append([eachItem.course_id, eachItem.course_name, eachClass.split('-')[0],
                                           eachClass.split('-')[-1].split('_')[0], eachClass.split('-')[-1].split('_')[-1], eachItem.semester,
                                           eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
-                                          eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher])
+                                          eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher, eachItem.notes])
             elif table_id == 'table_course_personal':
                 teacher_list = eachItem.teacher_ordered.split(',') if eachItem.teacher_ordered else []
                 if request.user.username in teacher_list:
@@ -427,6 +428,7 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                                                      allow_teachers=course_info[9],
                                                                      times_every_week=course_info[10],
                                                                      suit_teacher=course_info[11],
+                                                                     notes=course_info[12],
                                                                      update_time=now)
         else:
             class_list = search_result[0].class_name.split(' ')
@@ -439,7 +441,6 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
             class_name_str = ' '.join(class_list)
             CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],
                                                                      course_name=course_info[1],
-                                                                     student_type=course_info[2],
                                                                      class_name=class_name_str,
                                                                      semester=course_info[5],
                                                                      course_hour=course_info[6],
@@ -448,6 +449,7 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                                                      allow_teachers=course_info[9],
                                                                      times_every_week=course_info[10],
                                                                      suit_teacher=suit_teacher,
+                                                                     notes=course_info[12],
                                                                      update_time=now)
     else:
         # remove class from previous course
@@ -468,7 +470,7 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                   class_name=combine_class_name, semester=course_info[5],
                                   course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
                                   allow_teachers=course_info[9], times_every_week=course_info[10],
-                                  suit_teacher='', teacher_ordered='', update_time=now)
+                                  suit_teacher='', teacher_ordered='', notes=course_info[12], update_time=now)
 
 
 def save_course_into_database_by_add(course_info, old_class_info):
@@ -485,7 +487,8 @@ def save_course_into_database_by_add(course_info, old_class_info):
                                                                      course_type=course_info[8],
                                                                      allow_teachers=course_info[9],
                                                                      times_every_week=course_info[10],
-                                                                     suit_teacher=course_info[11],
+                                                                     # suit_teacher=course_info[11],
+                                                                     notes=course_info[12],
                                                                      update_time=now)
         else:
             class_list = search_result[0].class_name.split(' ')
@@ -505,7 +508,8 @@ def save_course_into_database_by_add(course_info, old_class_info):
                                                                      course_type=course_info[8],
                                                                      allow_teachers=course_info[9],
                                                                      times_every_week=course_info[10],
-                                                                     suit_teacher=suit_teacher,
+                                                                     # suit_teacher=suit_teacher,
+                                                                     notes=course_info[12],
                                                                      update_time=now)
     else:
         combine_class_name = '{}-{}_{}'.format(course_info[2], course_info[3], course_info[4])
@@ -513,7 +517,7 @@ def save_course_into_database_by_add(course_info, old_class_info):
                                   class_name=combine_class_name, semester=course_info[5],
                                   course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
                                   allow_teachers=course_info[9], times_every_week=course_info[10],
-                                  suit_teacher='', teacher_ordered='', update_time=now)
+                                  suit_teacher='', teacher_ordered='', notes=course_info[12], update_time=now)
 
 
 def save_course_into_database(course_info):
@@ -528,7 +532,7 @@ def save_course_into_database(course_info):
         CourseInfo.objects.create(course_id=course_info[0], course_name=course_info[1], student_type=course_info[2],
                                    year=current_school_year, class_name=course_info[4], semester=course_info[5],
                                    course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
-                                   allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12],update_time=now)
+                                   allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12], notes=course_info[13], update_time=now)
 
 
 @csrf_exempt
@@ -600,8 +604,9 @@ def class_table_upload(request):
         times_every_week = eachLine[16].value
         suit_teacher = eachLine[17].value
         teacher_ordered = eachLine[17].value
+        notes = str(eachLine[22].value) if len(eachLine) >= 23 else ''
         class_info_to_save.append([course_id, course_name, student_type, year, class_name, semester, course_hour,
-                                   course_degree, course_type, allow_teachers, times_every_week, suit_teacher, teacher_ordered])
+                                   course_degree, course_type, allow_teachers, times_every_week, suit_teacher, teacher_ordered, notes])
 
     save_course_table_into_database(class_info_to_save)
     result = 'Pass'
@@ -618,8 +623,8 @@ def save_course_table_into_database(class_info_to_save):
         else:
             if course_dict[eachCourse[0]][5] != eachCourse[5]:
                 output += "{}, 学期信息与相同课程号发生冲突\n".format(eachCourse)
-            elif eachCourse[4].split('_')[0] not in course_dict[eachCourse[0]][4]:
-                output += "{}, 班级信息与相同课程号发生冲突\n".format(eachCourse)
+            # elif eachCourse[4].split('_')[0] not in course_dict[eachCourse[0]][4]:
+            #     output += "{}, 班级信息与相同课程号发生冲突\n".format(eachCourse)
             else:
                 course_dict[eachCourse[0]][4] += ' {}'.format(eachCourse[4])
 
@@ -660,7 +665,7 @@ def class_search_from_course_id(request):
         tmp_class_grade, tmp_class_name = class_list[0].split('-')[-1].split('_')
         raw_data.extend([search_result[0].course_name, search_result[0].student_type, tmp_class_grade, tmp_class_name, search_result[0].semester,
                          str(search_result[0].course_hour), str(search_result[0].course_degree), search_result[0].course_type,
-                         search_result[0].allow_teachers, search_result[0].times_every_week])
+                         search_result[0].allow_teachers, search_result[0].times_every_week, search_result[0].notes])
     if raw_data:
         status = 'Success'
     else:
@@ -941,6 +946,7 @@ def arrange_main():
         teacher_list = eachCourse.suit_teacher.split(',')
         if len(teacher_list) == int(eachCourse.allow_teachers):
             for eachTeacher in teacher_list:
+                print eachTeacher
                 result_1[teacher_1[eachTeacher]['id']]['course_list'].append(eachCourse.course_id)
                 result_1[teacher_1[eachTeacher]['id']]['degree_list'].append(eachCourse.course_degree)
                 if eachCourse.semester == '一':
@@ -949,8 +955,8 @@ def arrange_main():
                 else:
                     tmp_str1 = 'total_hours_2'
                     tmp_str2 = 'total_degree_2'
-                result_1[teacher_1[eachTeacher]['id']][tmp_str1] += int(eachCourse.course_hour)
-                result_1[teacher_1[eachTeacher]['id']][tmp_str2] += int(eachCourse.course_degree)
+                result_1[teacher_1[eachTeacher]['id']][tmp_str1] += int(eachCourse.course_hour)/int(eachCourse.allow_teachers)
+                result_1[teacher_1[eachTeacher]['id']][tmp_str2] += int(eachCourse.course_degree)/float(eachCourse.allow_teachers)
         else:
             result_2.append(eachCourse)
     show_statistical(result_1, file_obj)
@@ -1093,6 +1099,7 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                 tmp_str3 = 'total_degree_2'
                 tmp_str4 = 'expect_degree_2'
             for eachTeacher in teacher_list:
+                print eachTeacher
                 teacher_id_list.append(teacher_info[eachTeacher]['id'])
 
             high_degree_count = 0
@@ -1118,8 +1125,8 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                     print >>file_obj, 'degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
                     result_all_teachers[current_list[0]]['course_list'].append(eachCourse.course_id)
                     result_all_teachers[current_list[0]]['degree_list'].append(eachCourse.course_degree)
-                    result_all_teachers[current_list[0]][tmp_str1] += eachCourse.course_hour
-                    result_all_teachers[current_list[0]][tmp_str3] += eachCourse.course_degree
+                    result_all_teachers[current_list[0]][tmp_str1] += eachCourse.course_hour / float(eachCourse.allow_teachers)
+                    result_all_teachers[current_list[0]][tmp_str3] += eachCourse.course_degree / float(eachCourse.allow_teachers)
                     all_teachers -= 1
                     print >>file_obj, 'new total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
                     print >>file_obj, 'new degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
@@ -1133,8 +1140,8 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                             print >>file_obj, 'degree list {}'.format(result_all_teachers[current_list[i]]['degree_list'])
                             result_all_teachers[current_list[i]]['course_list'].append(eachCourse.course_id)
                             result_all_teachers[current_list[i]]['degree_list'].append(eachCourse.course_degree)
-                            result_all_teachers[current_list[i]][tmp_str1] += eachCourse.course_hour
-                            result_all_teachers[current_list[i]][tmp_str3] += eachCourse.course_degree
+                            result_all_teachers[current_list[i]][tmp_str1] += eachCourse.course_hour / float(eachCourse.allow_teachers)
+                            result_all_teachers[current_list[i]][tmp_str3] += eachCourse.course_degree / float(eachCourse.allow_teachers)
                             all_teachers -= 1
                             print >>file_obj, 'new total hours {}'.format(result_all_teachers[current_list[i]][tmp_str1])
                             print >>file_obj, 'new degree list {}'.format(result_all_teachers[current_list[i]]['degree_list'])
@@ -1191,8 +1198,8 @@ def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_in
             print >>file_obj, 'degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
             result_all_teachers[teacher_list[i]]['course_list'].append(eachCourse.course_id)
             result_all_teachers[teacher_list[i]]['degree_list'].append(eachCourse.course_degree)
-            result_all_teachers[teacher_list[i]][tmp_str1] += eachCourse.course_hour
-            result_all_teachers[teacher_list[i]][tmp_str3] += eachCourse.course_degree
+            result_all_teachers[teacher_list[i]][tmp_str1] += eachCourse.course_hour / float(eachCourse.allow_teachers)
+            result_all_teachers[teacher_list[i]][tmp_str3] += eachCourse.course_degree / float(eachCourse.allow_teachers)
             all_teachers -= 1
             print >>file_obj, 'new total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1])
             print >>file_obj, 'new degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
@@ -1314,6 +1321,36 @@ def arrange_change_by_course_id(request):
     course_id = request.POST['course_id']
     to_change_teacher = request.POST['to_change_teacher']
     try:
+        search_result = CourseInfo.objects.filter(course_id=course_id)
+        final_teacher_list = search_result[0].teacher_final_pick.split(',')
+        course_hour = search_result[0].course_hour / len(final_teacher_list)
+        course_degree = search_result[0].course_degree / len(final_teacher_list)
+        semester = search_result[0].semester
+        for eachTeacher in final_teacher_list:
+            teacher_result = TeacherInfo.objects.filter(teacher_name=eachTeacher)
+            if semester == '一':
+                value1 = float(teacher_result[0].first_semester_hours) - float(course_hour)
+                value2 = float(teacher_result[0].first_semester_degree) - float(course_degree)
+                TeacherInfo.objects.filter(teacher_name=eachTeacher).update(first_semester_hours=value1,
+                                                                            first_semester_degree=value2)
+            else:
+                value1 = float(teacher_result[0].second_semester_hours) - float(course_hour)
+                value2 = float(teacher_result[0].second_semester_degree) - float(course_degree)
+                TeacherInfo.objects.filter(teacher_name=eachTeacher).update(second_semester_hours=value1,
+                                                                            second_semester_degree=value2)
+        to_change_teacher_list = to_change_teacher.split(',')
+        for eachTeacher in to_change_teacher_list:
+            teacher_result = TeacherInfo.objects.filter(teacher_name=eachTeacher)
+            if semester == '一':
+                value1 = float(teacher_result[0].first_semester_hours) + float(course_hour)
+                value2 = float(teacher_result[0].first_semester_degree) + float(course_degree)
+                TeacherInfo.objects.filter(teacher_name=eachTeacher).update(first_semester_hours=value1,
+                                                                            first_semester_degree=value2)
+            else:
+                value1 = float(teacher_result[0].second_semester_hours) + float(course_hour)
+                value2 = float(teacher_result[0].second_semester_degree) + float(course_degree)
+                TeacherInfo.objects.filter(teacher_name=eachTeacher).update(second_semester_hours=value1,
+                                                                            second_semester_degree=value2)
         CourseInfo.objects.filter(course_id=course_id).update(teacher_final_pick=to_change_teacher)
         status = 'Success'
     except Exception, e:
