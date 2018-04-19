@@ -41,21 +41,25 @@ $(document).ready(function () {
             return;
         }
         console.log(year);
+        $('ul.setup-panel li:eq(1)').removeClass('disabled');
+        $('ul.setup-panel li a[href="#step-2"]').trigger('click');
+        $(this).remove();
         $.ajax({
             type: 'POST',
             url: '/arrange_step_1/',
             data: {"year": year},
             dataType: "json",
             success: function(result){
-                $('ul.setup-panel li:eq(1)').removeClass('disabled');
-                $('ul.setup-panel li a[href="#step-2"]').trigger('click');
-                location.reload();
-                $(this).remove();
+                if (result['result'] == 'success'){
+                    location.reload();
+                }
             },
             error: function (){
 
             }
         });
+//        location.reload();
+
 
     });
     // var t_s2_r1_c2 = 0;

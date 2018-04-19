@@ -749,11 +749,13 @@ def arrange_step_1(request):
     search_result = CurrentStepInfo.objects.all()
     if search_result:
         CurrentStepInfo.objects.filter(id=search_result[0].id).update(s1_year_info=year)
+        result = 'success'
     else:
         CurrentStepInfo.objects.create(arrange_class_status='start', s1_year_info=year, s2_undergraduate='0', s2_postgraduate_1='0',
                                        s2_postgraduate_2='0', s2_doctor='0', s2_teacher_confirm_u='0',s2_teacher_confirm_p1='0',s2_teacher_confirm_p2='0',s2_teacher_confirm_d='0')
-    status = 'Pass'
-    result = json.dumps({'status': status})
+        result = 'success'
+
+    result = json.dumps({'result': result})
     return HttpResponse(result)
 
 
