@@ -195,7 +195,7 @@ $(document).ready(function () {
     $("#add_teacher_id").click( function(){
         teacher_id = document.getElementById('helpBlock1').innerText;
         teacher_name = document.getElementById('helpBlock2').innerText;
-        if ( $.inArray(Number(teacher_id), $("#e_11").DataTable().column(0).data()) != -1){
+        if ( $.inArray((teacher_id), $("#e_11").DataTable().column(0).data()) != -1){
             alert('该教师已经存在!');
             return
         }
@@ -203,7 +203,7 @@ $(document).ready(function () {
             alert('教师工号或教师姓名不能为空!')
             return
         }
-        $("#e_11").DataTable().row.add([Number(teacher_id), teacher_name]).draw();
+        $("#e_11").DataTable().row.add([teacher_id, teacher_name]).draw();
         $('#add_teacher_e_11').modal('hide');
     })
     initFileInput("excelFile","/class_table_upload/")

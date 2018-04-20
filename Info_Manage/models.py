@@ -7,7 +7,7 @@ from django.db import models
 
 
 class TeacherInfo(models.Model):
-    teacher_id = models.IntegerField(db_column='teacher_id')
+    teacher_id = models.CharField(db_column='teacher_id',max_length=15, blank=True, null=True)
     teacher_name = models.CharField(db_column='teacher_name', max_length=45, blank=True, null=True)
     first_semester_expect = models.FloatField(db_column='first_semester_expect', blank=True, null=True)
     second_semester_expect = models.FloatField(db_column='second_semester_expect', blank=True, null=True)

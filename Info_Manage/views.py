@@ -209,7 +209,10 @@ def teacher_table_upload(request):
     for line_number in range(line_length):
         teacher_id, teacher_name, _ = work_sheet.row(line_number)
         if type(teacher_id.value) == int or type(teacher_id.value) == float:
-            teacher_list.append([int(teacher_id.value), teacher_name.value])
+            teacher_list.append([str(int(teacher_id.value)), teacher_name.value])
+        else :
+            if (teacher_id.value) and (teacher_id.value) != '工号':
+                teacher_list.append([teacher_id.value, teacher_name.value])
     insert_teacher_list_into_db(teacher_list)
     status = 'Pass'
     result = json.dumps({'result': status})
