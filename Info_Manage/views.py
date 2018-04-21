@@ -208,7 +208,7 @@ def teacher_table_upload(request):
     line_width = work_sheet.row_len(0)
     for line_number in range(line_length):
         teacher_id, teacher_name, _ = work_sheet.row(line_number)
-        if type(teacher_id.value) == str:
+        if type(teacher_id.value) == float:
             teacher_list.append([str(int(teacher_id.value)), teacher_name.value])
         else:
             if teacher_id.value and teacher_id.value != '工号':

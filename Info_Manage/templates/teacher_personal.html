@@ -184,7 +184,7 @@
                {% if status == 'free' %}
                  <button class="btn btn-primary" onclick="request_course()">申报该课程</button>
                  <button class="btn btn-primary" onclick="cancel_request()">取消申报</button>
-                 <button class="btn btn-primary" onclick="check_apply_status({{ request.user.username }})">完成申报</button>
+                 <button class="btn btn-primary" onclick="check_apply_status('{{ request.user.username }}')">完成申报</button>
                {% endif %}
             </div>
             <table class="table table-striped" id="table_course_personal">
@@ -528,7 +528,7 @@
             </div>
           </div>
           <div class="modal-footer">
-              <button class="button" onclick="apply_complete_2({{request.user.username}})">确认提交</button>
+              <button class="button" onclick="apply_complete_2('{{request.user.username}}')">确认提交</button>
               <button type="button" class="button" data-dismiss="modal">关闭</button>
           </div>
         </div>
