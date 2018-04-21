@@ -1353,13 +1353,14 @@ def arrange_change_by_course_id(request):
         for eachTeacher in to_change_teacher_list:
             teacher_result = TeacherInfo.objects.filter(teacher_name=eachTeacher)
             if semester == '一':
-                value1 = float(teacher_result[0].first_semester_hours) + float(course_hour)
-                value2 = float(teacher_result[0].first_semester_degree) + float(course_degree)
+
+                value1 = float(teacher_result[0].first_semester_hours if teacher_result[0].first_semester_hours else 0) + float(course_hour)
+                value2 = float(teacher_result[0].first_semester_degree if teacher_result[0].first_semester_degree else 0) + float(course_degree)
                 TeacherInfo.objects.filter(teacher_name=eachTeacher).update(first_semester_hours=value1,
                                                                             first_semester_degree=value2)
             else:
-                value1 = float(teacher_result[0].second_semester_hours) + float(course_hour)
-                value2 = float(teacher_result[0].second_semester_degree) + float(course_degree)
+                value1 = float(teacher_result[0].second_semester_hours if teacher_result[0].second_semester_hours else 0) + float(course_hour)
+                value2 = float(teacher_result[0].second_semester_degree if teacher_result[0].second_semester_degree else 0) + float(course_degree)
                 TeacherInfo.objects.filter(teacher_name=eachTeacher).update(second_semester_hours=value1,
                                                                             second_semester_degree=value2)
         CourseInfo.objects.filter(course_id=course_id).update(teacher_final_pick=to_change_teacher)
