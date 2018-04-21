@@ -51,10 +51,14 @@ def teacher_manage(request):
         weight_total_2 += eachItem.second_semester_expect
         if eachItem.teacher_apply_done and eachItem.teacher_apply_done == '申报结束':
             apply_done += 1
-        search_result.append([eachItem.teacher_id, eachItem.teacher_name, eachItem.first_semester_expect*100,
-                              eachItem.second_semester_expect*100, eachItem.first_semester_hours,
-                              eachItem.second_semester_hours, eachItem.first_semester_degree,
-                              eachItem.second_semester_degree, eachItem.teacher_apply_done, eachItem.notes])
+        search_result.append([eachItem.teacher_id, eachItem.teacher_name,
+                              eachItem.first_semester_expect*100,
+                              eachItem.second_semester_expect*100,
+                              eachItem.first_semester_hours if eachItem.first_semester_hours else 0,
+                              eachItem.second_semester_hours if eachItem.second_semester_hours else 0,
+                              eachItem.first_semester_degree if eachItem.first_semester_degree else 0,
+                              eachItem.second_semester_degree if eachItem.second_semester_degree else 0,
+                              eachItem.teacher_apply_done, eachItem.notes])
     current_teacher_count = len(search_result)
     total_hours_1 = 0
     total_hours_2 = 0
@@ -530,7 +534,7 @@ def save_course_into_database(course_info):
         CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],course_name=course_info[1], student_type=course_info[2],
                                                                     year=current_school_year, class_name=course_info[4], semester=course_info[5],
                                                                     course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
-                                                                    allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12],update_time=now)
+                                                                    allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12], notes=course_info[13], update_time=now)
     else:
         CourseInfo.objects.create(course_id=course_info[0], course_name=course_info[1], student_type=course_info[2],
                                    year=current_school_year, class_name=course_info[4], semester=course_info[5],
@@ -1087,7 +1091,7 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
         for eachCourse in eachDegree:
             result_left_courses.remove(eachCourse)
             print >>file_obj, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-            print eachCourse.course_id
+            print >>file_obj, eachCourse.course_id
             teacher_list = eachCourse.suit_teacher.split(',')
             all_teachers = int(eachCourse.allow_teachers)
             teacher_without_high_degree = []
@@ -1133,6 +1137,8 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                     result_all_teachers[current_list[0]][tmp_str1] += eachCourse.course_hour / float(eachCourse.allow_teachers)
                     result_all_teachers[current_list[0]][tmp_str3] += eachCourse.course_degree / float(eachCourse.allow_teachers)
                     all_teachers -= 1
+                    teacher_id_list.remove(current_list[0])
+                    high_degree_count = 0
                     print >>file_obj, 'new total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
                     print >>file_obj, 'new degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
                 else:

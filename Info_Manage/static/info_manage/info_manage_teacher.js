@@ -70,6 +70,7 @@ $(document).ready(function () {
             success: function(result){
                 if (result['status']=='Success'){
                     alert('修改期望成功')
+                    location.reload();
                 }else{
                     alert(result['status'])
                 }
