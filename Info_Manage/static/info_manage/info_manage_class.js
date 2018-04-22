@@ -512,7 +512,7 @@ function confirm_delete_class(){
         return
     }
     $('#confirmDeleteModal').modal('show');
-    document.getElementById('p_danger_1').innerText = t.row('.selected').data()[0]
+    document.getElementById('p_danger_1').innerText = t.row('.selected').data()
 }
 
 $("#excelFile").on("fileuploaded", function (event, data, previewId, index) {
