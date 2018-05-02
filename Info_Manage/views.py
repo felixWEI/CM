@@ -24,7 +24,7 @@ sys.setdefaultencoding('utf-8')
 STUDENT_TYPE = ['本科', '法学硕士', '法律硕士', '法学博士']
 CLASS_NAME_LIST = ["第二专业教学", "通识教育","法学专业教育", "跨校辅修教学", "基础教育", "法律硕士(法学)", "法律硕士(非法学)1班",
                    "法律硕士(非法学)2班", "法律硕士在职生", "法律史", "法学理论", "国际法学", "环境与资源保护法学", "经济法学",
-                   "民商法学", "诉讼法学", "刑法学", "宪法学与行政法学"]
+                   "民商法学", "诉讼法学", "刑法学", "宪法学与行政法学", "法律硕士（法学）国际班", "法律硕士（非法学）国际班"]
 CLASS_GRADE = [str(datetime.now().year - i) for i in [2000, 2001, 2002, 2003]]
 SEMESTER = ['一', '二']
 COURSE_HOUR = ['18', '36', '54', '56', '72']
@@ -132,7 +132,8 @@ def teacher_personal(request):
     search_result = []
     tmp = ''
     for eachItem in course_table:
-        if request.user.last_name+request.user.first_name in eachItem.teacher_ordered.split(','):
+        if request.user.last_name+request.user.first_name in eachItem.teacher_ordered.split(',') \
+                and request.user.last_name+request.user.first_name != '':
             tmp = '已申报'
         else:
             tmp = ''
@@ -439,12 +440,14 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                                                      update_time=now)
         else:
             class_list = search_result[0].class_name.split(' ')
-            class_list.append(combine_class_name)
             if old_class_info:
-                class_list.remove(old_class_info)
+                if old_class_info in class_list:
+                    class_list.remove(old_class_info)
                 suit_teacher = course_info[11]
             else:
                 suit_teacher = search_result[0].suit_teacher
+
+            class_list.append(combine_class_name)
             class_name_str = ' '.join(class_list)
             CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],
                                                                      course_name=course_info[1],
@@ -692,13 +695,14 @@ def arrange_class(request):
             step_info.append(search_result[0].s1_year_info)
             step_position[1] = 'active'
             if search_result[0].s2_undergraduate:
-                step_info.append(int(search_result[0].s2_undergraduate))
+
+                step_info.append(int(search_result[0].s2_undergraduate) % 3)
             if search_result[0].s2_postgraduate_1:
-                step_info.append(int(search_result[0].s2_postgraduate_1))
+                step_info.append(int(search_result[0].s2_postgraduate_1) % 3)
             if search_result[0].s2_postgraduate_2:
-                step_info.append(int(search_result[0].s2_postgraduate_2))
+                step_info.append(int(search_result[0].s2_postgraduate_2) % 3)
             if search_result[0].s2_doctor:
-                step_info.append(int(search_result[0].s2_doctor))
+                step_info.append(int(search_result[0].s2_doctor) % 3)
             if search_result[0].s2_start_request:
                 s2_start_request = int(search_result[0].s2_start_request)
                 now = datetime.now().replace()
@@ -711,13 +715,13 @@ def arrange_class(request):
                 deadline_string = search_result[0].s2_deadline.strftime('%Y %m %d %H %M')
                 step_info.append(deadline_string)
             if search_result[0].s2_teacher_confirm_u:
-                step_info.append(int(search_result[0].s2_teacher_confirm_u))
+                step_info.append(int(search_result[0].s2_teacher_confirm_u) % 3)
             if search_result[0].s2_teacher_confirm_p1:
-                step_info.append(int(search_result[0].s2_teacher_confirm_p1))
+                step_info.append(int(search_result[0].s2_teacher_confirm_p1) % 3)
             if search_result[0].s2_teacher_confirm_p2:
-                step_info.append(int(search_result[0].s2_teacher_confirm_p2))
+                step_info.append(int(search_result[0].s2_teacher_confirm_p2) % 3)
             if search_result[0].s2_teacher_confirm_d:
-                step_info.append(int(search_result[0].s2_teacher_confirm_d))
+                step_info.append(int(search_result[0].s2_teacher_confirm_d) % 3)
 
         if search_result[0].s3_status_flag == 'start arrange':
             step_position[2] = 'active'
@@ -806,11 +810,13 @@ def arrange_step_2(request):
             result = 'Fail'
         tmp = CurrentStepInfo.objects.all().filter(id=search_result[0].id)
         if len(tmp) == 1 and 's2_r1' in button_id:
-            if tmp[0].s2_undergraduate == '2' and tmp[0].s2_postgraduate_1 == '2' and tmp[0].s2_postgraduate_2 == '2' and tmp[0].s2_doctor == '2':
+            if int(tmp[0].s2_undergraduate) % 3 == 2 and int(tmp[0].s2_postgraduate_1) % 3 == 2 and \
+               int(tmp[0].s2_postgraduate_2) % 3 == 2 and int(tmp[0].s2_doctor) % 3 == 2:
                 CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_start_request='1')
                 result = 'start request'
         if len(tmp) == 1 and 's2_r3' in button_id:
-            if tmp[0].s2_teacher_confirm_u == '2' and tmp[0].s2_teacher_confirm_p1 == '2' and tmp[0].s2_teacher_confirm_p2 == '2' and tmp[0].s2_teacher_confirm_d == '2':
+            if int(tmp[0].s2_teacher_confirm_u) % 3 == 2 and int(tmp[0].s2_teacher_confirm_p1) % 3 == 2 and \
+               int(tmp[0].s2_teacher_confirm_p2) % 3 == 2 and int(tmp[0].s2_teacher_confirm_d) % 3 == 2:
                 CurrentStepInfo.objects.filter(id=search_result[0].id).update(s2_start_request='2')
                 result = 'request end'
     result = json.dumps({'result': result})
@@ -955,7 +961,7 @@ def arrange_main():
         teacher_list = eachCourse.suit_teacher.split(',')
         if len(teacher_list) == int(eachCourse.allow_teachers):
             for eachTeacher in teacher_list:
-                print eachTeacher
+                # print eachTeacher
                 result_1[teacher_1[eachTeacher]['id']]['course_list'].append(eachCourse.course_id)
                 result_1[teacher_1[eachTeacher]['id']]['degree_list'].append(eachCourse.course_degree)
                 if eachCourse.semester == '一':

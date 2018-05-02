@@ -451,7 +451,7 @@ function check_apply_status(teacher_id){
 }
 function init_modal_content(result){
     HIGH_DEGREE = 8;
-    CRITICAL_VALUE = 6;
+    CRITICAL_VALUE = 2;
     total_high_degree_count = 0
     list_1 = result['list_1'];
     list_2 = result['list_2'];
