@@ -18,7 +18,13 @@ class TeacherInfo(models.Model):
     teacher_apply_done = models.CharField(db_column='teacher_apply_done', max_length=45, blank=True, null=True)
     notes = models.CharField(db_column='notes', max_length=2000, blank=True, null=True)
     update_time = models.DateTimeField(db_column='update_time', blank=True, null=True)
-
+    teacher_title = models.CharField(db_column='teacher_title', max_length=45, blank=True, null=True)
+    major = models.CharField(db_column='major', max_length=45, blank=True, null=True)
+    teacher_type = models.CharField(db_column='teacher_type', max_length=45, blank=True, null=True)
+    birthday = models.DateTimeField(db_column='birthday')
+    sex = models.CharField(db_column='sex', max_length=45)
+    lock_state = models.IntegerField(db_column='lock_state')
+    
     class Meta:
         managed = False
         db_table = 'teacher_info'

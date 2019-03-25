@@ -119,6 +119,10 @@ def teacher_personal(request):
         if search_result[0].teacher_apply_done:
             status = 'lock'
     now = datetime.now().replace()
+    search_result_major = TeacherInfo.objects.values('major')
+    major_list = []
+    for row_major in search_result_major:
+        major_list.append(row_major['major'])
     search_result = CurrentStepInfo.objects.all()
     if search_result and search_result[0].s2_deadline:
         delta = (search_result[0].s2_deadline.replace(tzinfo=None) - now).total_seconds()
@@ -150,12 +154,11 @@ def teacher_personal(request):
         expect_semester1 = 0
         expect_semester2 = 0
     summary_table = [expect_semester1, expect_semester2]
-
     table_head = ['代码', '名称', '学位', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '课程状态']
     table_default = ['', '', STUDENT_TYPE, CLASS_NAME_LIST, ['一', '二'], COURSE_HOUR, COURSE_DEGREE, ['必修', '选修'], '', '', '']
     return render(request, 'teacher_personal.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
-                                                 'summary_table': summary_table, 'year': year, 'status': status})
+                                                 'summary_table': summary_table, 'year': year, 'status': status, 'major_list':set(major_list)})
 
 
 @csrf_exempt
