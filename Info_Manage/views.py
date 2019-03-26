@@ -7,8 +7,9 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.db import connection
 
-from Info_Manage.models import TeacherInfo, CourseInfo, CurrentStepInfo
+from Info_Manage.models import TeacherInfo, CourseInfo, CurrentStepInfo, CourseHistoryInfo
 # Create your views here.
 
 import os
@@ -1406,6 +1407,17 @@ def arrange_change_button_status(request):
     return HttpResponse(result)
 
 
+def update_final_result(current_year):
+    status = 'Success'
+    result_course_info = CourseInfo.objects.values()
+    for each_course in result_course_info:
+        if each_course['year'] == current_year:
+            with connection.cursor() as cursor:
+                cursor.execute('insert into course_history_info select * from course_info where id={}'.format(each_course['id']))
+                row = cursor.fetchone()
+    return status
+
+
 @csrf_exempt
 def arrange_step_5(request):
     operation_status = request.POST['status']
@@ -1413,8 +1425,11 @@ def arrange_step_5(request):
     status = '切换至最后一步失败'
     if operation_status:
         if len(search_result) == 1:
+            if operation_status == 'lock done':
+                status = update_final_result(search_result[0].s1_year_info)
             CurrentStepInfo.objects.filter(id=search_result[0].id).update(s5_status_flag=operation_status)
-            status = 'Success'
+
+
     result = json.dumps({'status': status})
     return HttpResponse(result)
 
