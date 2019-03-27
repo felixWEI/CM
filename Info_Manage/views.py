@@ -541,12 +541,14 @@ def save_course_into_database(course_info):
         CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],course_name=course_info[1], student_type=course_info[2],
                                                                     year=current_school_year, class_name=course_info[4], semester=course_info[5],
                                                                     course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
-                                                                    allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12], notes=course_info[13], update_time=now)
+                                                                    allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12], notes=course_info[13],
+                                                                 major=course_info[14], language=course_info[15], course_relate=course_info[16],update_time=now)
     else:
         CourseInfo.objects.create(course_id=course_info[0], course_name=course_info[1], student_type=course_info[2],
                                    year=current_school_year, class_name=course_info[4], semester=course_info[5],
                                    course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
-                                   allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12], notes=course_info[13], update_time=now)
+                                   allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12], notes=course_info[13],
+                                  major=course_info[14], language=course_info[15], course_relate=course_info[16],update_time=now)
 
 
 @csrf_exempt
@@ -619,8 +621,12 @@ def class_table_upload(request):
         suit_teacher = eachLine[17].value
         teacher_ordered = eachLine[17].value
         notes = str(eachLine[22].value) if len(eachLine) >= 23 else ''
+        major = eachLine[23]
+        language = eachLine[24]
+        course_relate = eachLine[25]
         class_info_to_save.append([course_id, course_name, student_type, year, class_name, semester, course_hour,
-                                   course_degree, course_type, allow_teachers, times_every_week, suit_teacher, teacher_ordered, notes])
+                                   course_degree, course_type, allow_teachers, times_every_week, suit_teacher, teacher_ordered, notes,
+                                   major, language, course_relate])
 
     save_course_table_into_database(class_info_to_save)
     result = 'Pass'
@@ -1410,8 +1416,11 @@ def arrange_change_button_status(request):
 def update_final_result(current_year):
     status = 'Success'
     result_course_info = CourseInfo.objects.values()
+
     for each_course in result_course_info:
         if each_course['year'] == current_year:
+            if CourseHistoryInfo.objects.filter(course_id=each_course['course_id'], year=current_year):
+                CourseHistoryInfo.objects.filter(course_id=each_course['course_id'], year=current_year).delete()
             with connection.cursor() as cursor:
                 cursor.execute('insert into course_history_info select * from course_info where id={}'.format(each_course['id']))
                 row = cursor.fetchone()
@@ -1428,8 +1437,6 @@ def arrange_step_5(request):
             if operation_status == 'lock done':
                 status = update_final_result(search_result[0].s1_year_info)
             CurrentStepInfo.objects.filter(id=search_result[0].id).update(s5_status_flag=operation_status)
-
-
     result = json.dumps({'status': status})
     return HttpResponse(result)
 
