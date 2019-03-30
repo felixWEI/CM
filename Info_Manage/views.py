@@ -1543,3 +1543,46 @@ def arrange_step_5(request):
     return HttpResponse(result)
 
 
+@login_required()
+def course_info_history_main(request):
+    search_result = CurrentStepInfo.objects.all()
+    if search_result:
+        current_year = search_result[0].s1_year_info
+    else:
+        current_year = 'None'
+    course_table = CourseInfo.objects.all()
+    search_result = []
+    class_name = CLASS_NAME_LIST
+    student_type = STUDENT_TYPE
+    year = CLASS_GRADE
+    semester = SEMESTER
+    course_hour = COURSE_HOUR
+    course_degree = COURSE_DEGREE
+    course_type = COURSE_TYPE
+    current_course_count = len(course_table)
+    current_hour_count = 0
+    current_degree_count = 0
+    current_course_claim = 0
+    for eachItem in course_table:
+        if not eachItem.class_name:
+            continue
+        for eachClass in eachItem.class_name.split(' '):
+            tmp_student = eachClass.split('-')[0]
+            tmp_class_grade, tmp_class_name = eachClass.split('-')[-1].split('_')
+            search_result.append([eachItem.course_id, eachItem.course_name, tmp_student,
+                                  tmp_class_grade, tmp_class_name, eachItem.semester,
+                                  eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
+                                  eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher,
+                                  eachItem.notes])
+        current_hour_count += float(eachItem.course_hour)
+        current_degree_count += float(eachItem.course_degree)
+        if eachItem.suit_teacher:
+            current_course_claim += 1
+    summary_table = [current_course_count, current_hour_count, current_degree_count, current_course_claim]
+
+    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '任课老师', '备注']
+    table_default = ['', '', student_type, year, class_name,
+                     semester, course_hour, course_degree, course_type, '', '']
+    return render(request, 'course_info_search_main.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
+                                                 'table_head': table_head, 'table_default': table_default,
+                                                 'summary_table': summary_table, 'year': current_year})
