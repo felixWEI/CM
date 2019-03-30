@@ -18,7 +18,13 @@ class TeacherInfo(models.Model):
     teacher_apply_done = models.CharField(db_column='teacher_apply_done', max_length=45, blank=True, null=True)
     notes = models.CharField(db_column='notes', max_length=2000, blank=True, null=True)
     update_time = models.DateTimeField(db_column='update_time', blank=True, null=True)
-
+    teacher_title = models.CharField(db_column='teacher_title', max_length=45, blank=True, null=True)
+    major = models.CharField(db_column='major', max_length=45, blank=True, null=True)
+    teacher_type = models.CharField(db_column='teacher_type', max_length=45, blank=True, null=True)
+    birthday = models.DateTimeField(db_column='birthday')
+    sex = models.CharField(db_column='sex', max_length=45)
+    lock_state = models.IntegerField(db_column='lock_state',default=0)
+    
     class Meta:
         managed = False
         db_table = 'teacher_info'
@@ -41,6 +47,38 @@ class CourseInfo(models.Model):
     teacher_auto_pick = models.CharField(db_column='teacher_auto_pick', max_length=200, blank=True, null=True)
     teacher_final_pick = models.CharField(db_column='teacher_final_pick', max_length=200, blank=True, null=True)
     notes = models.CharField(db_column='notes', max_length=200, blank=True, null=True)
+    major = models.CharField(db_column='major', max_length=45, blank=True, null=True)
+    language = models.CharField(db_column='language', max_length=45, blank=True, null=True)
+    course_relate = models.CharField(db_column='course_relate', max_length=45, blank=True, null=True)
+    lock_state = models.IntegerField(db_column='lock_state', default=0)
+    update_time = models.DateTimeField(db_column='update_time', blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'course_info'
+
+
+class CourseHistoryInfo(models.Model):
+    course_id = models.CharField(db_column='course_id', max_length=45, blank=True, null=True)
+    course_name = models.CharField(db_column='course_name', max_length=45, blank=True, null=True)
+    student_type = models.CharField(db_column='student_type', max_length=45, blank=True, null=True)
+    year = models.CharField(db_column='year', max_length=45, blank=True, null=True)
+    class_name = models.CharField(db_column='class_name', max_length=45, blank=True, null=True)
+    semester = models.CharField(db_column='semester', max_length=45, blank=True, null=True)
+    course_hour = models.FloatField(db_column='course_hour', blank=True, null=True)
+    course_degree = models.FloatField(db_column='course_degree', blank=True, null=True)
+    course_type = models.CharField(db_column='course_type', max_length=45, blank=True, null=True)
+    allow_teachers = models.IntegerField(db_column='allow_teachers')
+    times_every_week = models.IntegerField(db_column='times_every_week')
+    suit_teacher = models.CharField(db_column='suit_teacher', max_length=200, blank=True, null=True)
+    teacher_ordered = models.CharField(db_column='teacher_ordered', max_length=200, blank=True, null=True)
+    teacher_auto_pick = models.CharField(db_column='teacher_auto_pick', max_length=200, blank=True, null=True)
+    teacher_final_pick = models.CharField(db_column='teacher_final_pick', max_length=200, blank=True, null=True)
+    notes = models.CharField(db_column='notes', max_length=200, blank=True, null=True)
+    major = models.CharField(db_column='major', max_length=45, blank=True, null=True)
+    language = models.CharField(db_column='language', max_length=45, blank=True, null=True)
+    course_relate = models.CharField(db_column='course_relate', max_length=45, blank=True, null=True)
+    lock_state = models.IntegerField(db_column='lock_state', default=0)
     update_time = models.DateTimeField(db_column='update_time', blank=True, null=True)
 
     class Meta:

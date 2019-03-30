@@ -7,14 +7,16 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.db import connection
 
-from Info_Manage.models import TeacherInfo, CourseInfo, CurrentStepInfo
+from Info_Manage.models import TeacherInfo, CourseInfo, CurrentStepInfo, CourseHistoryInfo
 # Create your views here.
 
 import os
 import sys
 import xlrd
 import math
+import random
 from datetime import datetime
 import xlwt
 from io import StringIO, BytesIO
@@ -119,6 +121,10 @@ def teacher_personal(request):
         if search_result[0].teacher_apply_done:
             status = 'lock'
     now = datetime.now().replace()
+    search_result_major = TeacherInfo.objects.values('major')
+    major_list = []
+    for row_major in search_result_major:
+        major_list.append(row_major['major'])
     search_result = CurrentStepInfo.objects.all()
     if search_result and search_result[0].s2_deadline:
         delta = (search_result[0].s2_deadline.replace(tzinfo=None) - now).total_seconds()
@@ -150,12 +156,11 @@ def teacher_personal(request):
         expect_semester1 = 0
         expect_semester2 = 0
     summary_table = [expect_semester1, expect_semester2]
-
     table_head = ['代码', '名称', '学位', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '课程状态']
     table_default = ['', '', STUDENT_TYPE, CLASS_NAME_LIST, ['一', '二'], COURSE_HOUR, COURSE_DEGREE, ['必修', '选修'], '', '', '']
     return render(request, 'teacher_personal.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
-                                                 'summary_table': summary_table, 'year': year, 'status': status})
+                                                 'summary_table': summary_table, 'year': year, 'status': status, 'major_list':set(major_list)})
 
 
 @csrf_exempt
@@ -212,6 +217,7 @@ def teacher_table_upload(request):
     teacher_list = []
     line_width = work_sheet.row_len(0)
     for line_number in range(line_length):
+
         teacher_id, teacher_name, _ = work_sheet.row(line_number)
         if type(teacher_id.value) == float:
             teacher_list.append([str(int(teacher_id.value)), teacher_name.value])
@@ -222,6 +228,26 @@ def teacher_table_upload(request):
     status = 'Pass'
     result = json.dumps({'result': status})
     return HttpResponse(result)
+
+
+# @csrf_exempt
+# def teacher_table_upload(request):
+#     input_file = request.FILES.get("file_data", None)
+#     work_book = xlrd.open_workbook(filename=None, file_contents=input_file.read())
+#     # TODO: result part
+#     work_sheet = work_book.sheet_by_name('教师信息')
+#     line_length = work_sheet.nrows
+#     teacher_list = []
+#     line_width = work_sheet.row_len(0)
+#     for line_number in range(line_length):
+#         teacher_index = work_sheet.row(line_number)[0].value
+#         teacher_name = work_sheet.row(line_number)[1].value
+#         if type(teacher_index) == float and teacher_name:
+#             teacher_list.append(work_sheet.row(line_number))
+#     insert_teacher_extend_info_into_db(teacher_list)
+#     status = 'Pass'
+#     result = json.dumps({'result': status})
+#     return HttpResponse(result)
 
 
 @csrf_exempt
@@ -264,6 +290,28 @@ def insert_teacher_list_into_db(teacher_list):
             TeacherInfo.objects.filter(teacher_id=eachTeacher[0]).update(teacher_name=eachTeacher[1])
         else:
             TeacherInfo.objects.create(teacher_id=eachTeacher[0], teacher_name=eachTeacher[1], first_semester_expect=1.0, second_semester_expect=1.0)
+
+
+def insert_teacher_extend_info_into_db(teacher_list):
+    for eachTeacher in teacher_list:
+        searchResult = TeacherInfo.objects.all().filter(teacher_name=eachTeacher[2].value)
+        birthday = xlrd.xldate.xldate_as_datetime(eachTeacher[3].value, 1)
+        if searchResult:
+            TeacherInfo.objects.filter(teacher_name=eachTeacher[2].value).update(major=eachTeacher[1].value,
+                                                                           birthday=birthday,
+                                                                           teacher_title=eachTeacher[4].value,
+                                                                           teacher_type=eachTeacher[5].value,
+                                                                           sex=random.randint(0, 1))
+        else:
+            TeacherInfo.objects.create(teacher_name=eachTeacher[2].value,
+                                       teacher_id=str(random.randint(1000, 9999)),
+                                       major=eachTeacher[1].value,
+                                       birthday=birthday,
+                                       teacher_title=eachTeacher[4].value,
+                                       teacher_type=eachTeacher[5].value,
+                                       sex=random.randint(0, 1),
+                                       first_semester_expect=1.0,
+                                       second_semester_expect=1.0)
 
 
 def save_teacher_to_course_info(course_id, user_name):
@@ -537,12 +585,14 @@ def save_course_into_database(course_info):
         CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],course_name=course_info[1], student_type=course_info[2],
                                                                     year=current_school_year, class_name=course_info[4], semester=course_info[5],
                                                                     course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
-                                                                    allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12], notes=course_info[13], update_time=now)
+                                                                    allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12], notes=course_info[13],
+                                                                 major=course_info[14], language=course_info[15], course_relate=course_info[16],update_time=now)
     else:
         CourseInfo.objects.create(course_id=course_info[0], course_name=course_info[1], student_type=course_info[2],
                                    year=current_school_year, class_name=course_info[4], semester=course_info[5],
                                    course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
-                                   allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12], notes=course_info[13], update_time=now)
+                                   allow_teachers=course_info[9], times_every_week=course_info[10], suit_teacher=course_info[11], teacher_ordered=course_info[12], notes=course_info[13],
+                                  major=course_info[14], language=course_info[15], course_relate=course_info[16],update_time=now)
 
 
 @csrf_exempt
@@ -586,12 +636,54 @@ def class_get_suit_teacher(request):
     return HttpResponse(result)
 
 
+# @csrf_exempt
+# def class_table_upload(request):
+#     input_file = request.FILES.get("file_data", None)
+#     work_book = xlrd.open_workbook(filename=None, file_contents=input_file.read())
+#     # TODO: result part
+#     work_sheet = work_book.sheet_by_name('课程信息')
+#     line_length = work_sheet.nrows
+#     line_content = []
+#     for line_number in range(line_length):
+#         if line_number == 0:
+#             continue
+#         line_content.append(work_sheet.row(line_number))
+#     class_info_to_save = []
+#     for eachLine in line_content:
+#
+#         course_id = eachLine[7].value
+#         course_name = eachLine[8].value
+#         student_type = eachLine[3].value
+#         year = eachLine[1].value
+#         class_name = '{}-{}_{}'.format(student_type, int(eachLine[4].value) if eachLine[4].value else '', eachLine[5].value)
+#         semester = eachLine[2].value
+#         course_hour = eachLine[10].value
+#         course_degree = eachLine[11].value
+#         course_type = eachLine[12].value
+#         allow_teachers = eachLine[14].value
+#         times_every_week = eachLine[16].value
+#         suit_teacher = eachLine[17].value
+#         teacher_ordered = eachLine[17].value
+#         notes = str(eachLine[22].value) if len(eachLine) >= 23 else ''
+#         major = eachLine[23]
+#         language = eachLine[24]
+#         course_relate = eachLine[25]
+#         class_info_to_save.append([course_id, course_name, student_type, year, class_name, semester, course_hour,
+#                                    course_degree, course_type, allow_teachers, times_every_week, suit_teacher, teacher_ordered, notes,
+#                                    major, language, course_relate])
+#
+#     save_course_table_into_database(class_info_to_save)
+#     result = 'Pass'
+#     result = json.dumps({'result': result})
+#     return HttpResponse(result)
+
+
 @csrf_exempt
 def class_table_upload(request):
     input_file = request.FILES.get("file_data", None)
     work_book = xlrd.open_workbook(filename=None, file_contents=input_file.read())
     # TODO: result part
-    work_sheet = work_book.sheet_by_name('课程信息')
+    work_sheet = work_book.sheet_by_name('课程信息汇总')
     line_length = work_sheet.nrows
     line_content = []
     for line_number in range(line_length):
@@ -600,25 +692,19 @@ def class_table_upload(request):
         line_content.append(work_sheet.row(line_number))
     class_info_to_save = []
     for eachLine in line_content:
+        major = eachLine[0].value
+        course_id = eachLine[1].value
+        course_name = eachLine[2].value
+        course_hour = eachLine[3].value
+        student_type = eachLine[5].value
+        course_type = eachLine[6].value
+        language = eachLine[7].value
+        class_name = eachLine[8].value
+        course_relate = eachLine[11].value+','+eachLine[12].value
+        semester = eachLine[14].value
+        class_info_to_save.append([course_id, course_name, major, language, course_relate])
 
-        course_id = eachLine[7].value
-        course_name = eachLine[8].value
-        student_type = eachLine[3].value
-        year = eachLine[1].value
-        class_name = '{}-{}_{}'.format(student_type, int(eachLine[4].value) if eachLine[4].value else '', eachLine[5].value)
-        semester = eachLine[2].value
-        course_hour = eachLine[10].value
-        course_degree = eachLine[11].value
-        course_type = eachLine[12].value
-        allow_teachers = eachLine[14].value
-        times_every_week = eachLine[16].value
-        suit_teacher = eachLine[17].value
-        teacher_ordered = eachLine[17].value
-        notes = str(eachLine[22].value) if len(eachLine) >= 23 else ''
-        class_info_to_save.append([course_id, course_name, student_type, year, class_name, semester, course_hour,
-                                   course_degree, course_type, allow_teachers, times_every_week, suit_teacher, teacher_ordered, notes])
-
-    save_course_table_into_database(class_info_to_save)
+    save_course_table_extend_info_into_database(class_info_to_save)
     result = 'Pass'
     result = json.dumps({'result': result})
     return HttpResponse(result)
@@ -641,6 +727,31 @@ def save_course_table_into_database(class_info_to_save):
     for tmpKey in course_dict.keys():
         each_course = course_dict[tmpKey]
         save_course_into_database(each_course)
+    return output
+
+
+def save_course_table_extend_info_into_database(class_info_to_save):
+    output = ""
+    count = 0
+    for eachCourse in class_info_to_save:
+        now = datetime.now()
+
+        if not eachCourse[3]:
+            language = '中文'
+        else:
+            language = eachCourse[3]
+        search_result = CourseInfo.objects.all().filter(course_id=eachCourse[0])
+        if search_result:
+            CourseInfo.objects.filter(id=search_result[0].id).update(major=eachCourse[2],
+                                                                     language=language,
+                                                                     course_relate=eachCourse[4],
+                                                                     update_time=now)
+        else:
+            search_result = CourseInfo.objects.all().filter(course_name=eachCourse[1])
+            if search_result:
+                print "1 {}".format(eachCourse)
+            else:
+                print "2 {}".format(eachCourse)
     return output
 
 
@@ -1403,6 +1514,20 @@ def arrange_change_button_status(request):
     return HttpResponse(result)
 
 
+def update_final_result(current_year):
+    status = 'Success'
+    result_course_info = CourseInfo.objects.values()
+
+    for each_course in result_course_info:
+        if each_course['year'] == current_year:
+            # if CourseHistoryInfo.objects.filter(course_id=each_course['course_id'], year=current_year):
+            #     CourseHistoryInfo.objects.filter(course_id=each_course['course_id'], year=current_year).delete()
+            with connection.cursor() as cursor:
+                cursor.execute('insert into course_history_info select * from course_info where id={}'.format(each_course['id']))
+                row = cursor.fetchone()
+    return status
+
+
 @csrf_exempt
 def arrange_step_5(request):
     operation_status = request.POST['status']
@@ -1410,8 +1535,10 @@ def arrange_step_5(request):
     status = '切换至最后一步失败'
     if operation_status:
         if len(search_result) == 1:
-            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s5_status_flag=operation_status)
             status = 'Success'
+            if operation_status == 'lock done':
+                status = update_final_result(search_result[0].s1_year_info)
+            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s5_status_flag=operation_status)
     result = json.dumps({'status': status})
     return HttpResponse(result)
 
