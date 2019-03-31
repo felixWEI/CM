@@ -210,13 +210,20 @@ function submit_checkbox_info(){
     if (document.getElementById('c_semester_2').checked == true){
         str2 += "二 ";
     }
+    var major_list = Array();
+    $("input[name='major_check_list']:checked").each(function(i){
+        major_list[i] = $(this).val();
+    });
+//    var major_list = JSON.stringify(major_list)
+    console.log(major_list);
+    major_list = JSON.stringify(major_list);
     $.ajax({
         type: 'POST',
         url: '/class_filter_by_submit/',
-        data: {'type': str1, 'semester':str2, 'table_id': 'table_course_personal'},
+        data: {'type': str1, 'semester':str2, 'table_id': 'table_course_personal', 'major_list': major_list},
         dataType: "json",
         success: function(result){
-            console.log(result['result'])
+//            console.log(result['result'])
             $('#table_course_personal').DataTable().clear();
             for (var i = 0; i < result['result'].length; i++){
                 $('#table_course_personal').DataTable().row.add(result['result'][i])
