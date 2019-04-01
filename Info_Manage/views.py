@@ -32,6 +32,7 @@ SEMESTER = ['一', '二']
 COURSE_HOUR = ['18', '36', '54', '56', '72']
 COURSE_DEGREE = ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', '9.0', '10']
 COURSE_TYPE = ['必修', '选修']
+LANGUAGE = ['中', '英', '中/英']
 current_school_year = '{}-{}'.format(datetime.now().year, datetime.now().year+1)
 
 
@@ -53,14 +54,19 @@ def teacher_manage(request):
         weight_total_2 += eachItem.second_semester_expect
         if eachItem.teacher_apply_done and eachItem.teacher_apply_done == '申报结束':
             apply_done += 1
-        search_result.append([eachItem.teacher_id, eachItem.teacher_name,
+        search_result.append([eachItem.teacher_id,
+                              eachItem.teacher_name,
+                              eachItem.major,
+                              eachItem.teacher_type,
+                              eachItem.teacher_title,
+                              eachItem.birthday,
                               eachItem.first_semester_expect*100,
                               eachItem.second_semester_expect*100,
                               eachItem.first_semester_hours if eachItem.first_semester_hours else 0,
                               eachItem.second_semester_hours if eachItem.second_semester_hours else 0,
                               eachItem.first_semester_degree if eachItem.first_semester_degree else 0,
                               eachItem.second_semester_degree if eachItem.second_semester_degree else 0,
-                              eachItem.teacher_apply_done, eachItem.notes])
+                              eachItem.teacher_apply_done, eachItem.notes, eachItem.lock_state])
     current_teacher_count = len(search_result)
     total_hours_1 = 0
     total_hours_2 = 0
@@ -80,8 +86,8 @@ def teacher_manage(request):
 
     summary_table = [current_teacher_count, apply_done, expect_hours_for_semester1, expect_hours_for_semester2,
                      expect_degree_for_semester1, expect_degree_for_semester2]
-    table_head = ['教师代码', '教师姓名', '期望学时1(%)', '期望学时2(%)', '已分配学时1', '已分配学时2','已分配难度1',
-                  '已分配难度2' ,'申报完成', '特殊理由']
+    table_head = ['教师代码', '教师姓名', '学科组','职称','导师类型','出生年月','期望学时1(%)', '期望学时2(%)', '已分配学时1', '已分配学时2','已分配难度1',
+                  '已分配难度2' ,'申报完成', '特殊理由', '状态']
     return render(request, 'teacher_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username,
                                                    'teacher_table': search_result, 'summary_table': summary_table,
                                                    'table_head': table_head, 'year': year})
@@ -158,10 +164,24 @@ def teacher_personal(request):
                 tmp = '已申报'
             else:
                 tmp = ''
-
-            search_result.append([eachItem.course_id, eachItem.course_name, eachItem.major, eachItem.student_type, eachItem.class_name,
-                                  eachItem.semester, eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
-                                  eachItem.allow_teachers, eachItem.times_every_week, tmp])
+            if eachItem.course_relate:
+                course_relate = eachItem.course_relate.strip(',')
+            else:
+                course_relate = ''
+            search_result.append([eachItem.course_id,
+                                  eachItem.course_name,
+                                  eachItem.major,
+                                  eachItem.student_type,
+                                  eachItem.class_name,
+                                  eachItem.semester,
+                                  eachItem.course_hour,
+                                  eachItem.course_degree,
+                                  eachItem.course_type,
+                                  eachItem.language,
+                                  eachItem.allow_teachers,
+                                  eachItem.times_every_week,
+                                  course_relate,
+                                  tmp])
 
     search_result_teacher = TeacherInfo.objects.filter(teacher_id=request.user.username)
     if search_result_teacher:
@@ -171,8 +191,8 @@ def teacher_personal(request):
         expect_semester1 = 0
         expect_semester2 = 0
     summary_table = [expect_semester1, expect_semester2]
-    table_head = ['代码', '名称', '专业','学位', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '课程状态']
-    table_default = ['', '', STUDENT_TYPE, CLASS_NAME_LIST, ['一', '二'], COURSE_HOUR, COURSE_DEGREE, ['必修', '选修'], '', '', '']
+    table_head = ['代码', '名称', '专业','学位', '班级', '学期', '学时', '难度', '必/选', '语言','教师数', '周上课次数','打通课程代码','课程状态']
+    table_default = ['', '', major_set, STUDENT_TYPE, CLASS_NAME_LIST, ['一', '二'], COURSE_HOUR, COURSE_DEGREE, ['必修', '选修'], LANGUAGE, '', '', '']
     return render(request, 'teacher_personal.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
                                                  'summary_table': summary_table, 'year': year, 'status': status, 'major_list':major_list})
@@ -207,6 +227,7 @@ def teacher_request_course(request):
 def teacher_change_expect(request):
     modify_0 = request.POST['modify_0']
     modify_1 = request.POST['modify_1']
+    lock_state = request.POST['lock_state']
     modify_0 = float(modify_0) / 100.0
     modify_1 = float(modify_1) / 100.0
     if 'teacher_id' in request.POST.keys():
@@ -216,7 +237,9 @@ def teacher_change_expect(request):
     searchResult = TeacherInfo.objects.filter(teacher_id=teacher_id)
     status = '修改期望失败'
     if searchResult:
-        TeacherInfo.objects.filter(teacher_id=teacher_id).update(first_semester_expect=modify_0, second_semester_expect=modify_1)
+        TeacherInfo.objects.filter(teacher_id=teacher_id).update(first_semester_expect=modify_0,
+                                                                 second_semester_expect=modify_1,
+                                                                 lock_state=lock_state)
         status = 'Success'
     result = json.dumps({'status': status})
     return HttpResponse(result)
@@ -403,6 +426,15 @@ def class_manage(request):
         current_year = search_result[0].s1_year_info
     else:
         current_year = 'None'
+    search_result_major = TeacherInfo.objects.values('teacher_id', 'major')
+    major_list = []
+    for row_major in search_result_major:
+        if row_major['major']:
+            temp_list = row_major['major'].split('、')
+            major_list.extend(temp_list)
+    major_set = set(major_list)
+    major_set.add('综合')
+
     course_table = CourseInfo.objects.all()
     search_result = []
     class_name = CLASS_NAME_LIST
@@ -422,10 +454,25 @@ def class_manage(request):
         for eachClass in eachItem.class_name.split(' '):
             tmp_student = eachClass.split('-')[0]
             tmp_class_grade, tmp_class_name = eachClass.split('-')[-1].split('_')
-            search_result.append([eachItem.course_id, eachItem.course_name, tmp_student,
-                                  tmp_class_grade, tmp_class_name, eachItem.semester,
-                                  eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
-                                  eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher,
+            if eachItem.course_relate:
+                course_relate = eachItem.course_relate.strip(',')
+            else:
+                course_relate = ''
+            search_result.append([eachItem.course_id,
+                                  eachItem.course_name,
+                                  eachItem.major,
+                                  tmp_student,
+                                  tmp_class_grade,
+                                  tmp_class_name,
+                                  eachItem.semester,
+                                  eachItem.course_hour,
+                                  eachItem.course_degree,
+                                  eachItem.course_type,
+                                  eachItem.language,
+                                  eachItem.allow_teachers,
+                                  eachItem.times_every_week,
+                                  eachItem.suit_teacher,
+                                  course_relate,
                                   eachItem.notes])
         current_hour_count += float(eachItem.course_hour)
         current_degree_count += float(eachItem.course_degree)
@@ -433,12 +480,12 @@ def class_manage(request):
             current_course_claim += 1
     summary_table = [current_course_count, current_hour_count, current_degree_count, current_course_claim]
 
-    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '可选教师', '备注']
-    table_default = ['', '', student_type, year, class_name,
-                     semester, course_hour, course_degree, course_type, '', '']
+    table_head = ['代码', '名称', '专业', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '可选教师', '打通课程代码','备注']
+    table_default = ['', '', major_set, student_type, year, class_name,
+                     semester, course_hour, course_degree, course_type, LANGUAGE, '', '']
     return render(request, 'class_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
-                                                 'summary_table': summary_table, 'year': current_year})
+                                                 'summary_table': summary_table, 'year': current_year, 'major': major_set})
 
 
 @csrf_exempt

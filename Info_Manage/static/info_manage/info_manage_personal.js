@@ -1,6 +1,7 @@
 $(document).ready(function () {
 	t = $('#table_course_personal').DataTable({
-        dom: 'Bfrtip',
+        dom: 'Blfrtip',
+        lengthMenu: [50,100],
         buttons: [ {
             extend: 'excelHtml5',
             customize: function( xlsx ) {

@@ -1,6 +1,7 @@
 $(document).ready(function () {
 	t = $('#table_course_manage').DataTable({
-        dom: 'Bfrtip',
+        dom: 'Blfrtip',
+        lengthMenu: [50,100],
         buttons: [ {
             extend: 'excelHtml5',
             customize: function( xlsx ) {
@@ -229,10 +230,16 @@ function submit_checkbox_info(){
     if (document.getElementById('c_semester_2').checked == true){
         str2 += "二 ";
     }
+    var major_list = Array();
+    $("input[name='major_check_list']:checked").each(function(i){
+        major_list[i] = $(this).val();
+    });
+    major_list = JSON.stringify(major_list);
+    console.log(major_list);
     $.ajax({
         type: 'POST',
         url: '/class_filter_by_submit/',
-        data: {'type': str1, 'semester':str2, 'table_id':'table_course_manage'},
+        data: {'type': str1, 'semester':str2, 'table_id':'table_course_manage','major_list': major_list},
         dataType: "json",
         success: function(result){
             console.log(result['result'])
@@ -293,29 +300,32 @@ function edit_course_info(){
     document.getElementById('e_6').options.length = 0
     document.getElementById('e_7').options.length = 0
     document.getElementById('e_8').options.length = 0
+//    for (var i in STUDENT_TYPE){
+//        document.getElementById('e_3').options.add(new Option(STUDENT_TYPE[i]))
+//    }
     for (var i in STUDENT_TYPE){
-        document.getElementById('e_2').options.add(new Option(STUDENT_TYPE[i]))
+        document.getElementById('e_3').options.add(new Option(STUDENT_TYPE[i]))
     }
     for (var i=0; i < 4; i++){
         year = Number(current_year) - i
-        document.getElementById('e_3').options.add(new Option(year))
+        document.getElementById('e_4').options.add(new Option(year))
     }
     for (var i in CLASS_NAME_LIST){
-        document.getElementById('e_4').options.add(new Option(CLASS_NAME_LIST[i]))
+        document.getElementById('e_5').options.add(new Option(CLASS_NAME_LIST[i]))
     }
     for (var i in SEMESTER){
-        document.getElementById('e_5').options.add(new Option(SEMESTER[i]))
+        document.getElementById('e_6').options.add(new Option(SEMESTER[i]))
     }
     for (var i in COURSE_HOUR){
-        document.getElementById('e_6').options.add(new Option(COURSE_HOUR[i]))
+        document.getElementById('e_7').options.add(new Option(COURSE_HOUR[i]))
     }
     for (var i in COURSE_DEGREE){
-        document.getElementById('e_7').options.add(new Option(COURSE_DEGREE[i]))
+        document.getElementById('e_8').options.add(new Option(COURSE_DEGREE[i]))
     }
     for (var i in COURSE_TYPE){
-        document.getElementById('e_8').options.add(new Option(COURSE_TYPE[i]))
+        document.getElementById('e_9').options.add(new Option(COURSE_TYPE[i]))
     }
-    document.getElementById('e_2').innerHTML = '<option>'+t.row('.selected').data()[2]+'</option>'+document.getElementById('e_2').innerHTML;
+//    document.getElementById('e_2').innerHTML = '<option>'+t.row('.selected').data()[2]+'</option>'+document.getElementById('e_2').innerHTML;
     document.getElementById('e_3').innerHTML = '<option>'+t.row('.selected').data()[3]+'</option>'+document.getElementById('e_3').innerHTML;
     document.getElementById('e_4').innerHTML = '<option>'+t.row('.selected').data()[4]+'</option>'+document.getElementById('e_4').innerHTML;
     document.getElementById('e_5').innerHTML = '<option>'+t.row('.selected').data()[5]+'</option>'+document.getElementById('e_5').innerHTML;

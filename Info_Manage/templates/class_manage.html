@@ -144,10 +144,24 @@
                       </label>
                   </div>
               </li>
-              <li>
-                  <button type="submit" class="btn btn-default center-block" onclick="submit_checkbox_info()">提交</button>
+            </ul>
+            <ul class="nav nav-sidebar">
+              <li style="padding-left:20px">
+                <P><b>学科组</b></P>
               </li>
-          </ul>
+              {% for row in major %}
+                <li>
+                  <div class="checkbox" style="padding-left:20px">
+                    <label>
+                      <input type="checkbox" checked name="major_check_list" value="{{row}}"> {{row}}
+                    </label>
+                  </div>
+                </li>
+              {% endfor %}
+            </ul>
+          <li>
+            <button type="submit" class="btn btn-default center-block" onclick="submit_checkbox_info()">提交</button>
+          </li>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">统计信息</h1>
