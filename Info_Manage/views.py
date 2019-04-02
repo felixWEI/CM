@@ -32,7 +32,7 @@ SEMESTER = ['一', '二']
 COURSE_HOUR = ['18', '36', '54', '56', '72']
 COURSE_DEGREE = ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', '9.0', '10']
 COURSE_TYPE = ['必修', '选修']
-LANGUAGE = ['中', '英', '中/英']
+LANGUAGE = ['中文', '英文', '中/英']
 current_school_year = '{}-{}'.format(datetime.now().year, datetime.now().year+1)
 
 
@@ -481,8 +481,8 @@ def class_manage(request):
     summary_table = [current_course_count, current_hour_count, current_degree_count, current_course_claim]
 
     table_head = ['代码', '名称', '专业', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '可选教师', '打通课程代码','备注']
-    table_default = ['', '', major_set, student_type, year, class_name,
-                     semester, course_hour, course_degree, course_type, LANGUAGE, '', '']
+    table_default = ['', '', list(major_set), student_type, year, class_name,
+                     semester, course_hour, course_degree, course_type, LANGUAGE, '', '','']
     return render(request, 'class_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
                                                  'summary_table': summary_table, 'year': current_year, 'major': major_set})
@@ -537,25 +537,28 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
     now = datetime.now()
     search_result = CourseInfo.objects.all().filter(course_id=course_info[0])
     if search_result:
-        combine_class_name = '{}-{}_{}'.format(course_info[2], course_info[3], course_info[4])
+        combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
         if combine_class_name in search_result[0].class_name:
             CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],
                                                                      course_name=course_info[1],
-                                                                     semester=course_info[5],
-                                                                     course_hour=course_info[6],
-                                                                     course_degree=course_info[7],
-                                                                     course_type=course_info[8],
-                                                                     allow_teachers=course_info[9],
-                                                                     times_every_week=course_info[10],
-                                                                     suit_teacher=course_info[11],
-                                                                     notes=course_info[12],
+                                                                     major=course_info[2],
+                                                                     semester=course_info[6],
+                                                                     course_hour=course_info[7],
+                                                                     course_degree=course_info[8],
+                                                                     course_type=course_info[9],
+                                                                     language=course_info[10],
+                                                                     allow_teachers=course_info[11],
+                                                                     times_every_week=course_info[12],
+                                                                     suit_teacher=course_info[13],
+                                                                     course_relate=course_info[14],
+                                                                     notes=course_info[15],
                                                                      update_time=now)
         else:
             class_list = search_result[0].class_name.split(' ')
             if old_class_info:
                 if old_class_info in class_list:
                     class_list.remove(old_class_info)
-                suit_teacher = course_info[11]
+                suit_teacher = course_info[13]
             else:
                 suit_teacher = search_result[0].suit_teacher
 
@@ -563,15 +566,18 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
             class_name_str = ' '.join(class_list)
             CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],
                                                                      course_name=course_info[1],
+                                                                     major=course_info[2],
                                                                      class_name=class_name_str,
-                                                                     semester=course_info[5],
-                                                                     course_hour=course_info[6],
-                                                                     course_degree=course_info[7],
-                                                                     course_type=course_info[8],
-                                                                     allow_teachers=course_info[9],
-                                                                     times_every_week=course_info[10],
+                                                                     semester=course_info[6],
+                                                                     course_hour=course_info[7],
+                                                                     course_degree=course_info[8],
+                                                                     course_type=course_info[9],
+                                                                     language=course_info[10],
+                                                                     allow_teachers=course_info[11],
+                                                                     times_every_week=course_info[12],
                                                                      suit_teacher=suit_teacher,
-                                                                     notes=course_info[12],
+                                                                     course_relate=course_info[14],
+                                                                     notes=course_info[15],
                                                                      update_time=now)
     else:
         # remove class from previous course
@@ -587,61 +593,92 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                 class_name_str = ' '.join(class_list)
                 CourseInfo.objects.filter(course_id=old_course_id).update(class_name=class_name_str)
         # add a new course
-        combine_class_name = '{}-{}_{}'.format(course_info[2], course_info[3], course_info[4])
-        CourseInfo.objects.create(course_id=course_info[0], course_name=course_info[1], student_type=course_info[2],year=current_school_year,
-                                  class_name=combine_class_name, semester=course_info[5],
-                                  course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
-                                  allow_teachers=course_info[9], times_every_week=course_info[10],
-                                  suit_teacher='', teacher_ordered='', notes=course_info[12], update_time=now)
+        combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
+        CourseInfo.objects.create(course_id=course_info[0],
+                                  course_name=course_info[1],
+                                  major=course_info[2],
+                                  student_type=course_info[3],
+                                  year=current_school_year,
+                                  class_name=combine_class_name,
+                                  semester=course_info[6],
+                                  course_hour=course_info[7],
+                                  course_degree=course_info[8],
+                                  course_type=course_info[9],
+                                  language=course_info[10],
+                                  allow_teachers=course_info[11],
+                                  times_every_week=course_info[12],
+                                  suit_teacher='',
+                                  teacher_ordered='',
+                                  course_relate=course_info[14],
+                                  notes=course_info[15],
+                                  update_time=now)
 
 
 def save_course_into_database_by_add(course_info, old_class_info):
     now = datetime.now()
     search_result = CourseInfo.objects.all().filter(course_id=course_info[0])
     if search_result:
-        combine_class_name = '{}-{}_{}'.format(course_info[2], course_info[3], course_info[4])
+        combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
         if combine_class_name in search_result[0].class_name:
             CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],
                                                                      course_name=course_info[1],
-                                                                     semester=course_info[5],
-                                                                     course_hour=course_info[6],
-                                                                     course_degree=course_info[7],
-                                                                     course_type=course_info[8],
-                                                                     allow_teachers=course_info[9],
-                                                                     times_every_week=course_info[10],
+                                                                     major=course_info[2],
+                                                                     semester=course_info[6],
+                                                                     course_hour=course_info[7],
+                                                                     course_degree=course_info[8],
+                                                                     course_type=course_info[9],
+                                                                     language=course_info[10],
+                                                                     allow_teachers=course_info[11],
+                                                                     times_every_week=course_info[12],
                                                                      # suit_teacher=course_info[11],
-                                                                     notes=course_info[12],
+                                                                     course_relate=course_info[14],
+                                                                     notes=course_info[15],
                                                                      update_time=now)
         else:
             class_list = search_result[0].class_name.split(' ')
             class_list.append(combine_class_name)
             if old_class_info:
                 class_list.remove(old_class_info)
-                suit_teacher = course_info[11]
+                suit_teacher = course_info[13]
             else:
                 suit_teacher = search_result[0].suit_teacher
             class_name_str = ' '.join(class_list)
             CourseInfo.objects.filter(id=search_result[0].id).update(course_id=course_info[0],
                                                                      course_name=course_info[1],
+                                                                     major=course_info[2],
                                                                      class_name=class_name_str,
-                                                                     semester=course_info[5],
-                                                                     course_hour=course_info[6],
-                                                                     course_degree=course_info[7],
-                                                                     course_type=course_info[8],
-                                                                     allow_teachers=course_info[9],
-                                                                     times_every_week=course_info[10],
+                                                                     semester=course_info[6],
+                                                                     course_hour=course_info[7],
+                                                                     course_degree=course_info[8],
+                                                                     course_type=course_info[9],
+                                                                     language=course_info[10],
+                                                                     allow_teachers=course_info[11],
+                                                                     times_every_week=course_info[12],
                                                                      # suit_teacher=suit_teacher,
-                                                                     notes=course_info[12],
+                                                                     course_relate=course_info[14],
+                                                                     notes=course_info[15],
                                                                      update_time=now)
     else:
-        combine_class_name = '{}-{}_{}'.format(course_info[2], course_info[3], course_info[4])
-        CourseInfo.objects.create(course_id=course_info[0], course_name=course_info[1], student_type=course_info[2], year=current_school_year,
-                                  class_name=combine_class_name, semester=course_info[5],
-                                  course_hour=course_info[6], course_degree=course_info[7], course_type=course_info[8],
-                                  allow_teachers=course_info[9], times_every_week=course_info[10],
-                                  suit_teacher='', teacher_ordered='', notes=course_info[12], update_time=now)
+        combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
+        CourseInfo.objects.create(course_id=course_info[0],
+                                  course_name=course_info[1],
+                                  major=course_info[2],
+                                  student_type=course_info[3],
+                                  year=current_school_year,
+                                  class_name=combine_class_name,
+                                  semester=course_info[6],
+                                  course_hour=course_info[7],
+                                  course_degree=course_info[8],
+                                  course_type=course_info[9],
+                                  language=course_info[10],
+                                  allow_teachers=course_info[11],
+                                  times_every_week=course_info[12],
+                                  suit_teacher='',
+                                  teacher_ordered='',
+                                  notes=course_info[15],
+                                  update_time=now)
 
-
+# temp use
 def save_course_into_database(course_info):
     now = datetime.now()
     search_result = CourseInfo.objects.all().filter(course_id=course_info[0])
@@ -848,9 +885,24 @@ def class_search_from_course_id(request):
     if search_result:
         class_list = search_result[0].class_name.split(' ')
         tmp_class_grade, tmp_class_name = class_list[0].split('-')[-1].split('_')
-        raw_data.extend([search_result[0].course_name, search_result[0].student_type, tmp_class_grade, tmp_class_name, search_result[0].semester,
-                         str(search_result[0].course_hour), str(search_result[0].course_degree), search_result[0].course_type,
-                         search_result[0].allow_teachers, search_result[0].times_every_week, search_result[0].notes])
+        if search_result[0].major:
+            major = search_result[0].major.strip('学')
+        else:
+            major = ''
+        raw_data.extend([search_result[0].course_name,
+                         major,
+                         search_result[0].student_type,
+                         tmp_class_grade,
+                         tmp_class_name,
+                         search_result[0].semester,
+                         str(search_result[0].course_hour),
+                         str(search_result[0].course_degree),
+                         search_result[0].course_type,
+                         search_result[0].language,
+                         search_result[0].allow_teachers,
+                         search_result[0].times_every_week,
+                         search_result[0].course_relate,
+                         search_result[0].notes])
     if raw_data:
         status = 'Success'
     else:

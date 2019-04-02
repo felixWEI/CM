@@ -42,6 +42,7 @@
         var COURSE_HOUR = ['18', '36', '54', '56', '72']
         var COURSE_DEGREE = ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', '9.0', '10']
         var COURSE_TYPE = ['必修', '选修']
+        var LANGUAGE = ['中文', '英文', '中/英']
       </script>
   </head>
 
@@ -276,14 +277,6 @@
                       <div class="col-sm-10"><input id="a_1" disabled="disabled" class="form-control" type="text" placeholder="课程名称"></div>
                   </div>
                   <div class="row form-group">
-                      <label for="a_2" class="col-sm-2 control-label">{{ table_head.2 }}</label>
-                      <div class="col-sm-4">
-                          <select id="a_2" disabled="disabled" class="form-control">
-                            {% for row in table_default.2 %}
-                            <option>{{row}}</option>
-                            {% endfor %}
-                          </select>
-                      </div>
                       <label for="a_3" class="col-sm-2 control-label">{{ table_head.3 }}</label>
                       <div class="col-sm-4">
                           <select id="a_3" disabled="disabled" class="form-control">
@@ -292,26 +285,44 @@
                             {% endfor %}
                           </select>
                       </div>
+                      <label for="a_4" class="col-sm-2 control-label">{{ table_head.4 }}</label>
+                      <div class="col-sm-4">
+                          <select id="a_4" disabled="disabled" class="form-control">
+                            {% for row in table_default.4 %}
+                            <option>{{row}}</option>
+                            {% endfor %}
+                          </select>
+                      </div>
                   </div>
                   <div class="row form-group">
-                      <label for="a_4" class="col-sm-2 control-label">{{ table_head.4 }}</label>
+                        <label for="a_2" class="col-sm-2 control-label">{{ table_head.2 }}</label>
+                        <div class="col-sm-4">
+                            <select id="a_2" disabled="disabled" class="form-control">
+                              {% for row in table_default.2 %}
+                              <option>{{row}}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                        <label for="a_10" class="col-sm-2 control-label">{{ table_head.10 }}</label>
+                        <div class="col-sm-4">
+                            <select id="a_10" disabled="disabled" class="form-control">
+                              {% for row in table_default.10 %}
+                              <option>{{row}}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                  </div>
+                  <div class="row form-group">
+                      <label for="a_5" class="col-sm-2 control-label">{{ table_head.5 }}</label>
                       <div class="col-sm-10">
-                        <select id="a_4" disabled="disabled" class="form-control">
-                          {% for row in table_default.4 %}
+                        <select id="a_5" disabled="disabled" class="form-control">
+                          {% for row in table_default.5 %}
                           <option>{{row}}</option>
                           {% endfor %}
                         </select>
                       </div>
                   </div>
                   <div class="row form-group">
-                      <label for="a_5" class="col-sm-2 control-label">{{ table_head.5 }}</label>
-                      <div class="col-sm-4">
-                          <select id="a_5" disabled="disabled" class="form-control">
-                            {% for row in table_default.5 %}
-                            <option>{{row}}</option>
-                            {% endfor %}
-                          </select>
-                      </div>
                       <label for="a_6" class="col-sm-2 control-label">{{ table_head.6 }}</label>
                       <div class="col-sm-4">
                           <select id="a_6" disabled="disabled" class="form-control">
@@ -320,43 +331,51 @@
                             {% endfor %}
                           </select>
                       </div>
+                      <label for="a_7" class="col-sm-2 control-label">{{ table_head.7 }}</label>
+                      <div class="col-sm-4">
+                          <select id="a_7" disabled="disabled" class="form-control">
+                            {% for row in table_default.7 %}
+                            <option>{{row}}</option>
+                            {% endfor %}
+                          </select>
+                      </div>
                   </div>
                   <div class="row form-group">
                       <div class="col-sm-6">
                           <div class="row form-group">
-                              <label for="a_7" class="col-sm-4 control-label">{{ table_head.7 }}</label>
+                              <label for="a_8" class="col-sm-4 control-label">{{ table_head.8 }}</label>
                               <div class="col-sm-8">
-                                  <select id="a_7" disabled="disabled" class="form-control">
-                                  {% for row in table_default.7 %}
+                                  <select id="a_8" disabled="disabled" class="form-control">
+                                  {% for row in table_default.8 %}
                                   <option>{{row}}</option>
                                   {% endfor %}
                                   </select>
                               </div>
                             </div>
                           <div class="row form-group">
-                            <label for="a_8" class="col-sm-4 control-label">{{ table_head.8 }}</label>
+                            <label for="a_9" class="col-sm-4 control-label">{{ table_head.9 }}</label>
                             <div class="col-sm-8">
-                              <select id="a_8" disabled="disabled" class="form-control">
-                              {% for row in table_default.8 %}
+                              <select id="a_9" disabled="disabled" class="form-control">
+                              {% for row in table_default.9 %}
                               <option>{{row}}</option>
                               {% endfor %}
                               </select>
                             </div>
                           </div>
                           <div class="row form-group">
-                            <label for="a_9" class="col-sm-4 control-label">{{ table_head.9 }}</label>
-                            <div class="col-sm-8"><input id="a_9" disabled="disabled" class="form-control" type="text" placeholder="教师数"></div>
+                            <label for="a_11" class="col-sm-4 control-label">{{ table_head.11 }}</label>
+                            <div class="col-sm-8"><input id="a_11" disabled="disabled" class="form-control" type="text" placeholder="教师数"></div>
                           </div>
                           <div class="row form-group">
-                            <label for="a_10" class="col-sm-4 control-label">{{ table_head.10 }}</label>
-                            <div class="col-sm-8"><input id="a_10" disabled="disabled" class="form-control" type="text" placeholder="周上课次数"></div>
+                            <label for="a_12" class="col-sm-4 control-label">{{ table_head.12 }}</label>
+                            <div class="col-sm-8"><input id="a_12" disabled="disabled" class="form-control" type="text" placeholder="周上课次数"></div>
                           </div>
                       </div>
                       <div class="col-sm-6" hidden="hidden">
                           <div class="row form-group">
-                              <label for="a_11" class="col-sm-4 control-label">{{ table_head.11 }}</label>
+                              <label for="a_13" class="col-sm-4 control-label">{{ table_head.13 }}</label>
                               <div class="col-sm-8">
-                                  <table id="a_11" class="table table-bordered">
+                                  <table id="a_13" class="table table-bordered">
                                       <tbody>
                                           <tr>
                                               <td></td>
@@ -378,13 +397,17 @@
                       </div>
                   </div>
                   <div class="row form-group">
-                    <label for="a_12" class="col-sm-2 control-label">{{ table_head.12 }}</label>
-                    <div class="col-sm-10"><input id="a_12" disabled="disabled" class="form-control" type="text" placeholder="多代码备注"></div>
+                    <label for="a_14" class="col-sm-2 control-label">{{ table_head.14 }}</label>
+                    <div class="col-sm-10"><input id="a_14" disabled="disabled" class="form-control" type="text" placeholder="打通课程代码"></div>
+                  </div>
+                  <div class="row form-group">
+                    <label for="a_15" class="col-sm-2 control-label">{{ table_head.15 }}</label>
+                    <div class="col-sm-10"><input id="a_15" disabled="disabled" class="form-control" type="text" placeholder="备注"></div>
                   </div>
               </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="button" onclick="add_course_info(13)">提交</button>
+                <button type="button" class="button" onclick="add_course_info(16)">提交</button>
                 <button type="button" class="button" data-dismiss="modal">关闭窗口</button>
             </div>
           </div>
@@ -415,14 +438,6 @@
                       <div class="col-sm-10"><input id="e_1"  class="form-control" type="text" placeholder="课程名称"></div>
                   </div>
                   <div class="row form-group">
-                      <label for="e_2" class="col-sm-2 control-label">{{ table_head.2 }}</label>
-                      <div class="col-sm-4">
-                          <select id="e_2" class="form-control">
-                            {% for row in table_default.2 %}
-                            <option>{{row}}</option>
-                            {% endfor %}
-                          </select>
-                      </div>
                       <label for="e_3" class="col-sm-2 control-label">{{ table_head.3 }}</label>
                       <div class="col-sm-4">
                           <select id="e_3" class="form-control">
@@ -431,26 +446,44 @@
                             {% endfor %}
                           </select>
                       </div>
+                      <label for="e_4" class="col-sm-2 control-label">{{ table_head.4 }}</label>
+                      <div class="col-sm-4">
+                          <select id="e_4" class="form-control">
+                            {% for row in table_default.4 %}
+                            <option>{{row}}</option>
+                            {% endfor %}
+                          </select>
+                      </div>
                   </div>
                   <div class="row form-group">
-                      <label for="e_4" class="col-sm-2 control-label">{{ table_head.4 }}</label>
+                        <label for="e_2" class="col-sm-2 control-label">{{ table_head.2 }}</label>
+                        <div class="col-sm-4">
+                            <select id="e_2" class="form-control">
+                              {% for row in table_default.2 %}
+                              <option>{{row}}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                        <label for="e_10" class="col-sm-2 control-label">{{ table_head.10 }}</label>
+                        <div class="col-sm-4">
+                            <select id="e_10" class="form-control">
+                              {% for row in table_default.10 %}
+                              <option>{{row}}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                  <div class="row form-group">
+                      <label for="e_5" class="col-sm-2 control-label">{{ table_head.5 }}</label>
                       <div class="col-sm-10">
-                        <select id="e_4" class="form-control">
-                          {% for row in table_default.4 %}
+                        <select id="e_5" class="form-control">
+                          {% for row in table_default.5 %}
                           <option>{{row}}</option>
                           {% endfor %}
                         </select>
                       </div>
                   </div>
                   <div class="row form-group">
-                      <label for="e_5" class="col-sm-2 control-label">{{ table_head.5 }}</label>
-                      <div class="col-sm-4">
-                          <select id="e_5" class="form-control">
-                            {% for row in table_default.5 %}
-                            <option>{{row}}</option>
-                            {% endfor %}
-                          </select>
-                      </div>
                       <label for="e_6" class="col-sm-2 control-label">{{ table_head.6 }}</label>
                       <div class="col-sm-4">
                           <select id="e_6" class="form-control">
@@ -459,43 +492,51 @@
                             {% endfor %}
                           </select>
                       </div>
+                      <label for="e_7" class="col-sm-2 control-label">{{ table_head.7 }}</label>
+                      <div class="col-sm-4">
+                          <select id="e_7" class="form-control">
+                            {% for row in table_default.7 %}
+                            <option>{{row}}</option>
+                            {% endfor %}
+                          </select>
+                      </div>
                   </div>
                   <div class="row form-group">
                       <div class="col-sm-6">
                           <div class="row form-group">
-                              <label for="e_7" class="col-sm-4 control-label">{{ table_head.7 }}</label>
+                              <label for="e_8" class="col-sm-4 control-label">{{ table_head.8 }}</label>
                               <div class="col-sm-8">
-                                  <select id="e_7" class="form-control">
-                                  {% for row in table_default.7 %}
+                                  <select id="e_8" class="form-control">
+                                  {% for row in table_default.8 %}
                                   <option>{{row}}</option>
                                   {% endfor %}
                                   </select>
                               </div>
                             </div>
                           <div class="row form-group">
-                            <label for="e_8" class="col-sm-4 control-label">{{ table_head.8 }}</label>
+                            <label for="e_9" class="col-sm-4 control-label">{{ table_head.9 }}</label>
                             <div class="col-sm-8">
-                              <select id="e_8" class="form-control">
-                              {% for row in table_default.8 %}
+                              <select id="e_9" class="form-control">
+                              {% for row in table_default.9 %}
                               <option>{{row}}</option>
                               {% endfor %}
                               </select>
                             </div>
                           </div>
                           <div class="row form-group">
-                            <label for="e_9" class="col-sm-4 control-label">{{ table_head.9 }}</label>
-                            <div class="col-sm-8"><input id="e_9" class="form-control" type="text" placeholder="教师数"></div>
+                            <label for="e_11" class="col-sm-4 control-label">{{ table_head.11 }}</label>
+                            <div class="col-sm-8"><input id="e_11" class="form-control" type="text" placeholder="教师数"></div>
                           </div>
                           <div class="row form-group">
-                            <label for="e_10" class="col-sm-4 control-label">{{ table_head.10 }}</label>
-                            <div class="col-sm-8"><input id="e_10" class="form-control" type="text" placeholder="周上课次数"></div>
+                            <label for="e_12" class="col-sm-4 control-label">{{ table_head.12 }}</label>
+                            <div class="col-sm-8"><input id="e_12" class="form-control" type="text" placeholder="周上课次数"></div>
                           </div>
                       </div>
                       <div class="col-sm-6">
                         <div class="row form-group">
-                          <label for="e_11" class="col-sm-4 control-label">{{ table_head.11 }}</label>
+                          <label for="e_13" class="col-sm-4 control-label">{{ table_head.13 }}</label>
                           <div class="col-sm-8">
-                            <table id="e_11" class="table table-striped">
+                            <table id="e_13" class="table table-striped">
                               <thead>
                                 <tr>
                                   <td>工号</td>
@@ -508,14 +549,18 @@
                           </div>
                         </div>
                         <div class="row form-group">
-                            <div class="col-sm-4 col-sm-offset-4"><button id="add_e_11" class="btn btn-primary" style="width:100%" type="button" data-toggle="modal" data-target="#add_teacher_e_11">添加</button></div>
-                            <div class="col-sm-4"><button id="delete_e_11" class="btn btn-danger" style="width:100%" type="button">删除</button></div>
+                            <div class="col-sm-4 col-sm-offset-4"><button id="add_e_13" class="btn btn-primary" style="width:100%" type="button" data-toggle="modal" data-target="#add_teacher_e_13">添加</button></div>
+                            <div class="col-sm-4"><button id="delete_e_13" class="btn btn-danger" style="width:100%" type="button">删除</button></div>
                         </div>
                       </div>
                   </div>
                   <div class="row form-group">
-                    <label for="e_12" class="col-sm-2 control-label">{{ table_head.12 }}</label>
-                    <div class="col-sm-10"><input id="e_12" class="form-control" type="text" placeholder="多代码备注"></div>
+                    <label for="e_14" class="col-sm-2 control-label">{{ table_head.14 }}</label>
+                    <div class="col-sm-10"><input id="e_14" class="form-control" type="text" placeholder="打通课程代码"></div>
+                  </div>
+                  <div class="row form-group">
+                    <label for="e_15" class="col-sm-2 control-label">{{ table_head.15 }}</label>
+                    <div class="col-sm-10"><input id="e_15" class="form-control" type="text" placeholder="备注"></div>
                   </div>
               </form>
             </div>
@@ -528,7 +573,7 @@
       </div>
     </div>
     <!-- Modal -->
-    <div class="modal fade" id="add_teacher_e_11" tabindex="-1" role="dialog">
+    <div class="modal fade" id="add_teacher_e_13" tabindex="-1" role="dialog">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
@@ -541,7 +586,7 @@
                 <label for="e_0" class="col-sm-2 control-label">工号 或者 姓名</label>
                 <div class="col-sm-10">
                     <div class="input-group">
-                      <input id="e_11_teacher_str"  class="form-control" type="text">
+                      <input id="e_13_teacher_str"  class="form-control" type="text">
                       <span class="input-group-btn">
                         <button id="search_teacher_id" class="btn btn-default" type="button"><span class="glyphicon glyphicon-search" aria-hidden="true"></span> 查找 </button>
                       </span>
