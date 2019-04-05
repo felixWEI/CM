@@ -454,7 +454,7 @@ def class_manage(request):
     major_set = set(major_list)
     major_set.add('综合')
 
-    course_table = CourseInfo.objects.all()
+    course_table = CourseInfo.objects.all().filter()
     search_result = []
     class_name = CLASS_NAME_LIST
     student_type = STUDENT_TYPE
@@ -467,6 +467,7 @@ def class_manage(request):
     current_hour_count = 0
     current_degree_count = 0
     current_course_claim = 0
+    lock_class_count = 0
     for eachItem in course_table:
         if not eachItem.class_name:
             continue
@@ -477,6 +478,11 @@ def class_manage(request):
                 course_relate = eachItem.course_relate.strip(',')
             else:
                 course_relate = ''
+            if eachItem.lock_state == 1:
+                lock_state = '非激活'
+                lock_class_count += 1
+            else:
+                lock_state = ''
             search_result.append([eachItem.course_id,
                                   eachItem.course_name,
                                   eachItem.major,
@@ -492,14 +498,16 @@ def class_manage(request):
                                   eachItem.times_every_week,
                                   eachItem.suit_teacher,
                                   course_relate,
-                                  eachItem.notes])
+                                  eachItem.notes,
+                                  lock_state
+                                  ])
         current_hour_count += float(eachItem.course_hour)
         current_degree_count += float(eachItem.course_degree)
         if eachItem.suit_teacher:
             current_course_claim += 1
-    summary_table = [current_course_count, current_hour_count, current_degree_count, current_course_claim]
+    summary_table = [current_course_count, current_hour_count, current_degree_count, current_course_claim, lock_class_count]
 
-    table_head = ['代码', '名称', '专业', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '可选教师', '打通课程代码','备注']
+    table_head = ['代码', '名称', '专业', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '可选教师', '打通课程代码','备注','状态']
     table_default = ['', '', list(major_set), student_type, year, class_name,
                      semester, course_hour, course_degree, course_type, LANGUAGE, '', '','']
     return render(request, 'class_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
@@ -870,7 +878,7 @@ def class_table_upload(request):
         teacher_ordered = eachLine[13].value
         language = eachLine[14].value
         course_relate = eachLine[17].value
-        if eachLine[19].value and eachLine[19].value == '非激活':
+        if eachLine[19].value and eachLine[19].value == '未激活':
             lock_state = 1
         else:
             lock_state = 0
@@ -1166,6 +1174,7 @@ def start_arrange():
     teacher_without_expect = []
     expect_count = 0
     total_count = 0
+    lock_teacher_count = 0
     for eachTeacher in search_result_teacher:
         if eachTeacher.first_semester_expect != 1.0 or eachTeacher.second_semester_expect != 1.0:
             teacher_with_expect.append(eachTeacher.teacher_id)
@@ -1173,6 +1182,8 @@ def start_arrange():
         else:
             teacher_without_expect.append(eachTeacher.teacher_id)
         total_count += (eachTeacher.first_semester_expect + eachTeacher.second_semester_expect)
+        if eachTeacher.lock_state == 1:
+            lock_teacher_count += 1
     degree_count = [0]*10
     [degree_count_u, degree_count_p1, degree_count_p2, degree_count_d] = [[0]*len(COURSE_DEGREE),
                                                                           [0]*len(COURSE_DEGREE),
@@ -1219,7 +1230,7 @@ def start_arrange():
     degree_count_p2.extend(tmp_p2)
     degree_count_d.extend(tmp_d)
     return [teacher_count, teacher_with_expect_count, total_hours_with_expect, teacher_without_expect_count, round(ave_hours_without_expect, 2),
-            degree_count, total_courses, [degree_count_u, degree_count_p1, degree_count_p2, degree_count_d]]
+            degree_count, total_courses, [degree_count_u, degree_count_p1, degree_count_p2, degree_count_d], lock_teacher_count]
 
 
 def arrange_main():
