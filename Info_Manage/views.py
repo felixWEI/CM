@@ -1325,7 +1325,7 @@ def arrange_main():
     for each_semester in [result_2_firstSemester, result_2_secondSemester]:
         result_1, result_2 = balance_for_high_degree(result_1, each_semester, teacher_1, file_obj)
         show_statistical(result_1, file_obj)
-        result_1, result_2 = balance_for_course_hour(result_1, each_semester, teacher_1, file_obj)
+        result_1, result_2 = balance_for_course_hour(result_1, result_2, teacher_1, file_obj)
         show_statistical(result_1, file_obj)
 
     result_3 = {}
@@ -1356,8 +1356,8 @@ def show_statistical(result_1, file_obj):
         avail_degree_2 = result_1[tmpKey]['expect_degree_2'] - result_1[tmpKey]['total_degree_2']
         print >>file_obj, 'teacher id: {} available hours {} {} available degree {} {}'.format(tmpKey, avail_hours_1, avail_hours_2,
                                                                                    avail_degree_1, avail_degree_2)
-        logging.info('teacher id: {} available hours {} {} available degree {} {}'.format(tmpKey, avail_hours_1, avail_hours_2,
-                                                                                   avail_degree_1, avail_degree_2))
+        # logging.info('teacher id: {} available hours {} {} available degree {} {}'.format(tmpKey, avail_hours_1, avail_hours_2,
+        #                                                                            avail_degree_1, avail_degree_2))
     print >>file_obj, '##########################################################'
 
 
@@ -1397,7 +1397,8 @@ def sort_new_2(result_list, result_all_teacher, key_value_1, key_value_2, key_va
                          result_all_teacher[x]['total_hours_1'] - result_all_teacher[x]['total_hours_2']),
                          reverse=True)
     else:
-        logging.error('unknown string at sort_new_2 {} {}'.format(key_value_1, key_value_2))
+        pass
+        # logging.error('unknown string at sort_new_2 {} {}'.format(key_value_1, key_value_2))
     result_list_tmp = []
     key_value = []
     for eachItem in result_list:
@@ -1439,7 +1440,7 @@ def sort_new_3(result_list, result_all_teacher, key_value_1, key_value_2, teache
             for teacher_id in eachItem:
                 teacher_by_id = TeacherInfo.objects.get(teacher_id=teacher_id)
                 if teacher_info[teacher_by_id.teacher_name]['approaching_retirement'] == True:
-                    logging.info('teacher id: {} is chose with high priority than others {}, because of approaching retirement'.format(teacher_id, eachItem))
+                    # logging.info('teacher id: {} is chose with high priority than others {}, because of approaching retirement'.format(teacher_id, eachItem))
                     eachItem.remove(teacher_id)
                     eachItem.insert(0,teacher_id)
 
@@ -1472,7 +1473,8 @@ def split_semester_from_whole_year(result_courses):
         elif each_course.semester == '二':
             second_semester.append(each_course)
         else:
-            logging.error('this course is abnormal with unknown semester: {}'.format(each_course))
+            pass
+            # logging.error('this course is abnormal with unknown semester: {}'.format(each_course))
     return first_semester, second_semester
 
 
@@ -1836,15 +1838,57 @@ def arrange_change_button_status(request):
 def update_final_result(current_year):
     status = 'Success'
     DEBUG = True
-    result_course_info = CourseInfo.objects.values()
+    result_course_info = CourseInfo.objects.all()
 
     for each_course in result_course_info:
-        if each_course['year'] == current_year or DEBUG:
+        if each_course.year == current_year or DEBUG:
             # if CourseHistoryInfo.objects.filter(course_id=each_course['course_id'], year=current_year):
             #     CourseHistoryInfo.objects.filter(course_id=each_course['course_id'], year=current_year).delete()
-            with connection.cursor() as cursor:
-                cursor.execute('insert into course_history_info select * from course_info where id={}'.format(each_course['id']))
-                row = cursor.fetchone()
+            # with connection.cursor() as cursor:
+            #     cursor.execute('insert into course_history_info select * from course_info where id={}'.format(each_course['id']))
+            #     row = cursor.fetchone()
+            if CourseHistoryInfo.objects.filter(course_id=each_course.course_id, year=current_year):
+                CourseHistoryInfo.objects.update(course_id=each_course.course_id,
+                                                 course_name=each_course.course_name,
+                                                 student_type=each_course.student_type,
+                                                 year=each_course.year,
+                                                 class_name=each_course.class_name,
+                                                 semester=each_course.semester,
+                                                 course_hour=each_course.course_hour,
+                                                 course_degree=each_course.course_degree,
+                                                 course_type=each_course.course_type,
+                                                 allow_teachers=each_course.allow_teachers,
+                                                 times_every_week=each_course.times_every_week,
+                                                 suit_teacher=each_course.suit_teacher,
+                                                 teacher_ordered=each_course.teacher_ordered,
+                                                 teacher_auto_pick=each_course.teacher_auto_pick,
+                                                 teacher_final_pick=each_course.teacher_final_pick,
+                                                 notes=each_course.notes,
+                                                 major=each_course.major,
+                                                 language=each_course.language,
+                                                 course_relate=each_course.course_relate,
+                                                 lock_state=each_course.lock_state)
+            else:
+                CourseHistoryInfo.objects.create(course_id=each_course.course_id,
+                                                 course_name=each_course.course_name,
+                                                 student_type=each_course.student_type,
+                                                 year=each_course.year,
+                                                 class_name=each_course.class_name,
+                                                 semester=each_course.semester,
+                                                 course_hour=each_course.course_hour,
+                                                 course_degree=each_course.course_degree,
+                                                 course_type=each_course.course_type,
+                                                 allow_teachers=each_course.allow_teachers,
+                                                 times_every_week=each_course.times_every_week,
+                                                 suit_teacher=each_course.suit_teacher,
+                                                 teacher_ordered=each_course.teacher_ordered,
+                                                 teacher_auto_pick=each_course.teacher_auto_pick,
+                                                 teacher_final_pick=each_course.teacher_final_pick,
+                                                 notes=each_course.notes,
+                                                 major=each_course.major,
+                                                 language=each_course.language,
+                                                 course_relate=each_course.course_relate,
+                                                 lock_state=each_course.lock_state)
     return status
 
 
