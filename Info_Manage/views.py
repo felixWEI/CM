@@ -1835,10 +1835,11 @@ def arrange_change_button_status(request):
 
 def update_final_result(current_year):
     status = 'Success'
+    DEBUG = True
     result_course_info = CourseInfo.objects.values()
 
     for each_course in result_course_info:
-        if each_course['year'] == current_year:
+        if each_course['year'] == current_year or DEBUG:
             # if CourseHistoryInfo.objects.filter(course_id=each_course['course_id'], year=current_year):
             #     CourseHistoryInfo.objects.filter(course_id=each_course['course_id'], year=current_year).delete()
             with connection.cursor() as cursor:
