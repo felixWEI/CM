@@ -57,7 +57,7 @@
               <li class="nav-item"><a href="/class_manage/">课程信息管理</a></li>
             {% endif %}
             <li class="nav-item"><a class="nav-active" href="/teacher_personal/">教师信息管理</a></li>
-            <!--<li class="nav-item"><a href="#">排课结果查询</a></li>-->
+{#            <li class="nav-item"><a href="/course_info_search/">历史信息管理</a></li>#}
           </ul>
           <ul class="nav navbar-nav navbar-right">
               <li class="nav-item">
@@ -97,6 +97,7 @@
               <a href="#">教师个人</a>
             </li>
           </ul>
+          <!--<form action="/teacher_personal_checkbox/" method="POST"> {% csrf_token %}-->
           <ul class="nav nav-sidebar">
             <li style="padding-left:20px">
               <P><b>课程学位</b></P>
@@ -157,15 +158,20 @@
                 <li>
                   <div class="checkbox" style="padding-left:20px">
                     <label>
-                      <input type="checkbox" checked="checked" id="{{row}}"> {{row}}
+                      {% if row.0 == "1" %}
+                        <input type="checkbox" checked name="major_check_list" value="{{row.1}}"> {{row.1}}
+                      {% else %}
+                        <input type="checkbox" name="major_check_list" value="{{row.1}}"> {{row.1}}
+                      {% endif %}
                     </label>
                   </div>
                 </li>
               {% endfor %}
-              <li>
-                <button type="submit" class="btn btn-default center-block" onclick="submit_checkbox_info()">提交</button>
-              </li>
           </ul>
+          <li>
+            <!--<button type="submit" class="btn btn-default center-block">提交</button>-->
+            <button type="submit" class="btn btn-default center-block" onclick="submit_checkbox_info()">提交</button>
+          </li>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">统计信息</h1>

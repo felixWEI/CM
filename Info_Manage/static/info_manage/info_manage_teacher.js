@@ -1,6 +1,7 @@
 $(document).ready(function () {
 	t = $('#table_teacher').DataTable({
-        dom: 'Bfrtip',
+        dom: 'Blfrtip',
+        lengthMenu: [50,100],
         buttons: [ {
             extend: 'excelHtml5',
             customize: function( xlsx ) {
@@ -47,25 +48,36 @@ $(document).ready(function () {
         document.getElementById('3').value = t.row('.selected').data()[3];
         document.getElementById('4').value = t.row('.selected').data()[4];
         document.getElementById('5').value = t.row('.selected').data()[5];
+        document.getElementById('6').value = t.row('.selected').data()[6];
+        document.getElementById('7').value = t.row('.selected').data()[7];
+        document.getElementById('8').value = t.row('.selected').data()[8];
+        document.getElementById('9').value = t.row('.selected').data()[9];
+        document.getElementById('14').value = t.row('.selected').data()[14];
 	});
 
     $('#edit_teacher_info').click( function(){
         teacher_code = document.getElementById('0').value
         teacher_name = document.getElementById('1').value
-        first_semester_expect = document.getElementById('2').value
-        second_semester_expect = document.getElementById('3').value
-        hours_semester_1 = document.getElementById('4').value
-        hours_semester_2 = document.getElementById('5').value
-        degree_semester_1 = document.getElementById('6').value
-        degree_semester_2 = document.getElementById('7').value
-        teacher_apply_status = document.getElementById('8').value
-        notes = document.getElementById('9').value
-        t.row('.selected').data([teacher_code, teacher_name, first_semester_expect, second_semester_expect, hours_semester_1,hours_semester_2,
-        degree_semester_1, degree_semester_2, teacher_apply_status, notes]).draw();
+        major = document.getElementById('2').value
+        teacher_type = document.getElementById('3').value
+        teacher_title = document.getElementById('4').value
+        birthday = document.getElementById('5').value
+        first_semester_expect = document.getElementById('6').value
+        second_semester_expect = document.getElementById('7').value
+        hours_semester_1 = document.getElementById('8').value
+        hours_semester_2 = document.getElementById('9').value
+        degree_semester_1 = document.getElementById('10').value
+        degree_semester_2 = document.getElementById('11').value
+        teacher_apply_status = document.getElementById('12').value
+        notes = document.getElementById('13').value
+        lock_state = document.getElementById('14').value
+        t.row('.selected').data([teacher_code, teacher_name, major, teacher_type, teacher_title, birthday,
+        first_semester_expect, second_semester_expect, hours_semester_1,hours_semester_2,
+        degree_semester_1, degree_semester_2, teacher_apply_status, notes, lock_state]).draw();
         $.ajax({
             type: 'POST',
             url: '/teacher_change_expect/',
-            data: {"modify_0": first_semester_expect, 'modify_1':second_semester_expect, 'teacher_id':teacher_code},
+            data: {"modify_0": first_semester_expect, 'modify_1':second_semester_expect, 'teacher_id':teacher_code, 'lock_state':lock_state},
             dataType: "json",
             success: function(result){
                 if (result['status']=='Success'){

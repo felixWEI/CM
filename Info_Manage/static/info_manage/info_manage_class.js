@@ -1,6 +1,7 @@
 $(document).ready(function () {
 	t = $('#table_course_manage').DataTable({
-        dom: 'Bfrtip',
+        dom: 'Blfrtip',
+        lengthMenu: [50,100],
         buttons: [ {
             extend: 'excelHtml5',
             customize: function( xlsx ) {
@@ -20,12 +21,12 @@ $(document).ready(function () {
             $(this).addClass('selected');
         }
     } );
-    $('#e_11 tbody').on( 'click', 'tr', function () {
+    $('#e_13 tbody').on( 'click', 'tr', function () {
         if ( $(this).hasClass('selected') ) {
             $(this).removeClass('selected');
         }
         else {
-            $('#e_11').DataTable().$('tr.selected').removeClass('selected');
+            $('#e_13').DataTable().$('tr.selected').removeClass('selected');
             $(this).addClass('selected');
         }
     } );
@@ -55,10 +56,10 @@ $(document).ready(function () {
 
     } );
 
-    $('#delete_e_11').click( function () {
-        teacher_id = $('#e_11').DataTable().row('.selected').data()[0];
-        teacher_name = $('#e_11').DataTable().row('.selected').data()[1];
-        $('#e_11').DataTable().row('.selected').remove().draw( false );
+    $('#delete_e_13').click( function () {
+        teacher_id = $('#e_13').DataTable().row('.selected').data()[0];
+        teacher_name = $('#e_13').DataTable().row('.selected').data()[1];
+        $('#e_13').DataTable().row('.selected').remove().draw( false );
     } );
 
     $('#edit_teacher_info').click( function(){
@@ -124,23 +125,27 @@ $(document).ready(function () {
                     document.getElementById('a_3').value = result['raw_data'][2]
                     document.getElementById('a_4').value = result['raw_data'][3]
                     document.getElementById('a_5').value = result['raw_data'][4]
-                    document.getElementById('a_6').value = Number(result['raw_data'][5])
-                    document.getElementById('a_7').value = result['raw_data'][6]
+                    document.getElementById('a_6').value = result['raw_data'][5]
+                    document.getElementById('a_7').value = Number(result['raw_data'][6])
                     document.getElementById('a_8').value = result['raw_data'][7]
                     document.getElementById('a_9').value = result['raw_data'][8]
                     document.getElementById('a_10').value = result['raw_data'][9]
-                    document.getElementById('a_12').value = result['raw_data'][10]
+                    document.getElementById('a_11').value = result['raw_data'][10]
+                    document.getElementById('a_12').value = result['raw_data'][11]
                     document.getElementById('a_1').setAttribute('disabled', 'disabled')
                     document.getElementById('a_2').removeAttribute('disabled')
                     document.getElementById('a_3').removeAttribute('disabled')
                     document.getElementById('a_4').removeAttribute('disabled')
-                    document.getElementById('a_5').setAttribute('disabled', 'disabled')
+                    document.getElementById('a_5').removeAttribute('disabled')
                     document.getElementById('a_6').setAttribute('disabled', 'disabled')
                     document.getElementById('a_7').setAttribute('disabled', 'disabled')
                     document.getElementById('a_8').setAttribute('disabled', 'disabled')
                     document.getElementById('a_9').setAttribute('disabled', 'disabled')
-                    document.getElementById('a_10').setAttribute('disabled', 'disabled')
-                    document.getElementById('a_12').removeAttribute('disabled')
+                    document.getElementById('a_10').removeAttribute('disabled')
+                    document.getElementById('a_11').setAttribute('disabled', 'disabled')
+                    document.getElementById('a_12').setAttribute('disabled', 'disabled')
+                    document.getElementById('a_14').removeAttribute('disabled')
+                    document.getElementById('a_15').removeAttribute('disabled')
                 }else{
                     document.getElementById('a_1').value = ''
                     document.getElementById('a_2').value = ''
@@ -163,7 +168,10 @@ $(document).ready(function () {
                     document.getElementById('a_8').removeAttribute('disabled')
                     document.getElementById('a_9').removeAttribute('disabled')
                     document.getElementById('a_10').removeAttribute('disabled')
+                    document.getElementById('a_11').removeAttribute('disabled')
                     document.getElementById('a_12').removeAttribute('disabled')
+                    document.getElementById('a_14').removeAttribute('disabled')
+                    document.getElementById('a_15').removeAttribute('disabled')
                 }
             },
             error: function (){
@@ -172,7 +180,7 @@ $(document).ready(function () {
         });
     })
     $("#search_teacher_id").click( function(){
-        teacher_str = document.getElementById('e_11_teacher_str').value;
+        teacher_str = document.getElementById('e_13_teacher_str').value;
         console.log(teacher_str);
         $.ajax({
             type: 'POST',
@@ -195,7 +203,7 @@ $(document).ready(function () {
     $("#add_teacher_id").click( function(){
         teacher_id = document.getElementById('helpBlock1').innerText;
         teacher_name = document.getElementById('helpBlock2').innerText;
-        if ( $.inArray((teacher_id), $("#e_11").DataTable().column(0).data()) != -1){
+        if ( $.inArray((teacher_id), $("#e_13").DataTable().column(0).data()) != -1){
             alert('该教师已经存在!');
             return
         }
@@ -203,8 +211,8 @@ $(document).ready(function () {
             alert('教师工号或教师姓名不能为空!')
             return
         }
-        $("#e_11").DataTable().row.add([teacher_id, teacher_name]).draw();
-        $('#add_teacher_e_11').modal('hide');
+        $("#e_13").DataTable().row.add([teacher_id, teacher_name]).draw();
+        $('#add_teacher_e_13').modal('hide');
     })
     initFileInput("excelFile","/class_table_upload/")
 });
@@ -229,13 +237,19 @@ function submit_checkbox_info(){
     if (document.getElementById('c_semester_2').checked == true){
         str2 += "二 ";
     }
+    var major_list = Array();
+    $("input[name='major_check_list']:checked").each(function(i){
+        major_list[i] = $(this).val();
+    });
+    major_list = JSON.stringify(major_list);
+    console.log(major_list);
     $.ajax({
         type: 'POST',
         url: '/class_filter_by_submit/',
-        data: {'type': str1, 'semester':str2, 'table_id':'table_course_manage'},
+        data: {'type': str1, 'semester':str2, 'table_id':'table_course_manage','major_list': major_list},
         dataType: "json",
         success: function(result){
-            console.log(result['result'])
+            console.log(result['result']);
             $('#table_course_manage').DataTable().clear();
             for (var i = 0; i < result['result'].length; i++){
                 $('#table_course_manage').DataTable().row.add(result['result'][i])
@@ -248,6 +262,7 @@ function submit_checkbox_info(){
     });
 }
 function add_course_info(length){
+    length = length || 16;
     row_data = Array();
     for (var i=0; i < Number(length); i++ ){
         if ( document.getElementById('a_'+String(i)).value !== undefined ){
@@ -261,7 +276,7 @@ function add_course_info(length){
 //        console.log(document.getElementById(i).value);
     }
     t.row.add(row_data).draw();
-    var old_data = ''
+    var old_data = '';
     var row_str = JSON.stringify(row_data);
     $.ajax({
         type: 'POST',
@@ -286,35 +301,38 @@ function edit_course_info(){
     $('#editModal').modal('show');
     document.getElementById('e_0').value = t.row('.selected').data()[0];
     document.getElementById('e_1').value = t.row('.selected').data()[1];
-    document.getElementById('e_2').options.length = 0
     document.getElementById('e_3').options.length = 0
     document.getElementById('e_4').options.length = 0
     document.getElementById('e_5').options.length = 0
     document.getElementById('e_6').options.length = 0
     document.getElementById('e_7').options.length = 0
     document.getElementById('e_8').options.length = 0
+//    for (var i in STUDENT_TYPE){
+//        document.getElementById('e_3').options.add(new Option(STUDENT_TYPE[i]))
+//    }
     for (var i in STUDENT_TYPE){
-        document.getElementById('e_2').options.add(new Option(STUDENT_TYPE[i]))
+        document.getElementById('e_3').options.add(new Option(STUDENT_TYPE[i]))
     }
     for (var i=0; i < 4; i++){
         year = Number(current_year) - i
-        document.getElementById('e_3').options.add(new Option(year))
+        document.getElementById('e_4').options.add(new Option(year))
     }
     for (var i in CLASS_NAME_LIST){
-        document.getElementById('e_4').options.add(new Option(CLASS_NAME_LIST[i]))
+        document.getElementById('e_5').options.add(new Option(CLASS_NAME_LIST[i]))
     }
     for (var i in SEMESTER){
-        document.getElementById('e_5').options.add(new Option(SEMESTER[i]))
+        document.getElementById('e_6').options.add(new Option(SEMESTER[i]))
     }
     for (var i in COURSE_HOUR){
-        document.getElementById('e_6').options.add(new Option(COURSE_HOUR[i]))
+        document.getElementById('e_7').options.add(new Option(COURSE_HOUR[i]))
     }
     for (var i in COURSE_DEGREE){
-        document.getElementById('e_7').options.add(new Option(COURSE_DEGREE[i]))
+        document.getElementById('e_8').options.add(new Option(COURSE_DEGREE[i]))
     }
     for (var i in COURSE_TYPE){
-        document.getElementById('e_8').options.add(new Option(COURSE_TYPE[i]))
+        document.getElementById('e_9').options.add(new Option(COURSE_TYPE[i]))
     }
+
     document.getElementById('e_2').innerHTML = '<option>'+t.row('.selected').data()[2]+'</option>'+document.getElementById('e_2').innerHTML;
     document.getElementById('e_3').innerHTML = '<option>'+t.row('.selected').data()[3]+'</option>'+document.getElementById('e_3').innerHTML;
     document.getElementById('e_4').innerHTML = '<option>'+t.row('.selected').data()[4]+'</option>'+document.getElementById('e_4').innerHTML;
@@ -323,8 +341,11 @@ function edit_course_info(){
     document.getElementById('e_7').innerHTML = '<option>'+t.row('.selected').data()[7]+'</option>'+document.getElementById('e_7').innerHTML;
     document.getElementById('e_8').innerHTML = '<option>'+t.row('.selected').data()[8]+'</option>'+document.getElementById('e_8').innerHTML;
     document.getElementById('e_9').value = t.row('.selected').data()[9];
-    document.getElementById('e_10').value = t.row('.selected').data()[10];
+    document.getElementById('e_10').innerHTML = '<option>'+t.row('.selected').data()[10]+'</option>'+document.getElementById('e_10').innerHTML;
+    document.getElementById('e_11').value = t.row('.selected').data()[11];
     document.getElementById('e_12').value = t.row('.selected').data()[12];
+    document.getElementById('e_14').value = t.row('.selected').data()[14];
+    document.getElementById('e_15').value = t.row('.selected').data()[15];
 	$.ajax({
 	    type: 'POST',
         url:'/class_get_suit_teacher/',
@@ -333,7 +354,7 @@ function edit_course_info(){
         success: function (result) {
             var teacher_list = result['result_list'];
 //            $('#e_11').DataTable().clear();
-            $('#e_11').DataTable({
+            $('#e_13').DataTable({
                 dom: '<"top">rt<"bottom"><"clear">',
                 "searching": false,
                 "ordering": false,
@@ -390,7 +411,7 @@ function cancel_request(){
 
 function submit_edit_info(){
     row_data = Array();
-    for (var i=0; i < 13; i++ ){
+    for (var i=0; i < 16; i++ ){
         if ( document.getElementById('e_'+String(i)).value !== undefined ){
             row_data[i] = document.getElementById('e_'+String(i)).value;
             if (i==0){
@@ -399,23 +420,24 @@ function submit_edit_info(){
         }else{
             row_data[i] = "";
         }
-//        console.log(document.getElementById(i).value);
+       // console.log(document.getElementById(i).value);
     }
     str = "";
-    for (var j=0; j < $("#e_11").DataTable().rows().data().length; j++){
-        str += $("#e_11").DataTable().rows(j).data()[0][1];
-        if( j <  $("#e_11").DataTable().rows().data().length-1){
+    for (var j=0; j < $("#e_13").DataTable().rows().data().length; j++){
+        str += $("#e_13").DataTable().rows(j).data()[0][1];
+        if( j <  $("#e_13").DataTable().rows().data().length-1){
             str += ',';
         }
     }
     course_id = t.row('.selected').data()[0]
-    student_type = t.row('.selected').data()[2]
-    class_grade = t.row('.selected').data()[3]
-    class_name = t.row('.selected').data()[4]
+    major =  t.row('.selected').data()[2]
+    student_type = t.row('.selected').data()[3]
+    class_grade = t.row('.selected').data()[4]
+    class_name = t.row('.selected').data()[5]
     combine_data = student_type+'-'+class_grade+'_'+class_name
     console.log(combine_data)
-    row_data[11] = str;
-    t.row('.selected').data(row_data).draw();
+    row_data[13] = str;
+    // t.row('.selected').data(row_data).draw();
     console.log(row_data);
     var row_str = JSON.stringify(row_data);
     $.ajax({
