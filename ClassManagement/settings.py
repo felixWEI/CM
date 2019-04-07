@@ -150,6 +150,7 @@ LOGIN_REDIRECT_URL = "/teacher_personal/"
 LOGOUT_URL = "/"
 ALLOWED_HOSTS = [
     '192.168.0.102',
-    '127.0.0.1'
+    '127.0.0.1',
+    '10.100.14.164',
 ]
 
