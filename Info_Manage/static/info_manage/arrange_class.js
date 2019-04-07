@@ -377,7 +377,7 @@ function arrange_start() {
         dataType: "json",
         success: function(result){
             page_info = result['result']['info'];
-            // console.log(page_info);
+            console.log(page_info);
             initialize_arrange_class(page_info);
         },
         error: function (){
@@ -388,10 +388,12 @@ function arrange_start() {
 
 function initialize_arrange_class(page_info) {
     document.getElementById('teacher_count').innerText = page_info[0];
+    document.getElementById('lock_teacher_count').innerText = page_info[8];
     document.getElementById('teacher_with_expect').innerText = page_info[1];
     document.getElementById('total_hours_with_expect').innerText = page_info[2];
     document.getElementById('teacher_without_expect').innerText = page_info[3];
     document.getElementById('ave_hours_without_expect').innerText = page_info[4];
+
     course_degree_info = document.getElementById('course_degree_info');
     str = '<tr><td>人均课程数</td>';
     for(var index in page_info[5]){

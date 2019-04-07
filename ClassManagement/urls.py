@@ -60,5 +60,6 @@ urlpatterns = [
     url(r'^arrange_change_by_course_id/', arrange_change_by_course_id),
     url(r'^arrange_change_button_status/', arrange_change_button_status),
     url(r'^arrange_step_5/', arrange_step_5),
+    url(r'^course_info_search/', views.course_info_history_main),
     url(r'^info_search/', info_search_main),
 ]
