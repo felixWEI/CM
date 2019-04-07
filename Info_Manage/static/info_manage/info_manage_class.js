@@ -249,7 +249,7 @@ function submit_checkbox_info(){
         data: {'type': str1, 'semester':str2, 'table_id':'table_course_manage','major_list': major_list},
         dataType: "json",
         success: function(result){
-            console.log(result['result'])
+            console.log(result['result']);
             $('#table_course_manage').DataTable().clear();
             for (var i = 0; i < result['result'].length; i++){
                 $('#table_course_manage').DataTable().row.add(result['result'][i])
@@ -262,6 +262,7 @@ function submit_checkbox_info(){
     });
 }
 function add_course_info(length){
+    length = length || 16;
     row_data = Array();
     for (var i=0; i < Number(length); i++ ){
         if ( document.getElementById('a_'+String(i)).value !== undefined ){
@@ -275,7 +276,7 @@ function add_course_info(length){
 //        console.log(document.getElementById(i).value);
     }
     t.row.add(row_data).draw();
-    var old_data = ''
+    var old_data = '';
     var row_str = JSON.stringify(row_data);
     $.ajax({
         type: 'POST',
@@ -419,7 +420,7 @@ function submit_edit_info(){
         }else{
             row_data[i] = "";
         }
-//        console.log(document.getElementById(i).value);
+       // console.log(document.getElementById(i).value);
     }
     str = "";
     for (var j=0; j < $("#e_13").DataTable().rows().data().length; j++){
@@ -436,7 +437,7 @@ function submit_edit_info(){
     combine_data = student_type+'-'+class_grade+'_'+class_name
     console.log(combine_data)
     row_data[13] = str;
-    t.row('.selected').data(row_data).draw();
+    // t.row('.selected').data(row_data).draw();
     console.log(row_data);
     var row_str = JSON.stringify(row_data);
     $.ajax({

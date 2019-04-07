@@ -19,6 +19,8 @@ import math
 import random
 from datetime import datetime
 import xlwt
+import logging
+from logging.handlers import TimedRotatingFileHandler
 from io import StringIO, BytesIO
 reload(sys)
 sys.setdefaultencoding('utf-8')
@@ -35,6 +37,13 @@ COURSE_TYPE = ['必修', '选修']
 LANGUAGE = ['中文', '英文', '中/英']
 current_school_year = '{}-{}'.format(datetime.now().year, datetime.now().year+1)
 
+#######################################################
+log_file_handler = TimedRotatingFileHandler(filename="test.log", when="M", interval=1, backupCount=10)
+LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
+logging.basicConfig(filename='test.log', level=logging.DEBUG, format=LOG_FORMAT)
+log = logging.getLogger()
+log.addHandler(log_file_handler)
+#######################################################
 
 @login_required()
 def teacher_manage(request):
@@ -531,7 +540,7 @@ def class_filter_by_submit(request):
                         search_result.append([eachItem.course_id, eachItem.course_name, eachItem.major, eachClass.split('-')[0],
                                               eachClass.split('-')[-1].split('_')[0], eachClass.split('-')[-1].split('_')[-1], eachItem.semester,
                                               eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
-                                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher, eachItem.notes])
+                                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher, eachItem.notes,eachItem.lock_state])
                 elif table_id == 'table_course_personal':
                     teacher_list = eachItem.teacher_ordered.split(',') if eachItem.teacher_ordered else []
                     if request.user.username in teacher_list:
@@ -1167,14 +1176,14 @@ def arrange_step_3(request):
 
 
 def start_arrange():
-    search_result_course = CourseInfo.objects.all()
-    search_result_teacher = TeacherInfo.objects.all()
+    search_result_course = CourseInfo.objects.all().filter(lock_state=0)
+    search_result_teacher = TeacherInfo.objects.all().filter(lock_state=0)
     teacher_count = len(search_result_teacher)
     teacher_with_expect = []
     teacher_without_expect = []
     expect_count = 0
     total_count = 0
-    lock_teacher_count = 0
+    lock_teacher_count = len(TeacherInfo.objects.all().filter(lock_state=1))
     for eachTeacher in search_result_teacher:
         if eachTeacher.first_semester_expect != 1.0 or eachTeacher.second_semester_expect != 1.0:
             teacher_with_expect.append(eachTeacher.teacher_id)
@@ -1182,8 +1191,7 @@ def start_arrange():
         else:
             teacher_without_expect.append(eachTeacher.teacher_id)
         total_count += (eachTeacher.first_semester_expect + eachTeacher.second_semester_expect)
-        if eachTeacher.lock_state == 1:
-            lock_teacher_count += 1
+
     degree_count = [0]*10
     [degree_count_u, degree_count_p1, degree_count_p2, degree_count_d] = [[0]*len(COURSE_DEGREE),
                                                                           [0]*len(COURSE_DEGREE),
@@ -1234,9 +1242,10 @@ def start_arrange():
 
 
 def arrange_main():
+    now = datetime.now().strftime("%Y-%m-%d %H-%M")
     file_obj = open('analysis_result.txt', 'w+')
-    search_result_course = CourseInfo.objects.all()
-    search_result_teacher = TeacherInfo.objects.all()
+    search_result_course = CourseInfo.objects.all().filter(lock_state=0)
+    search_result_teacher = TeacherInfo.objects.all().filter(lock_state=0)
     teacher_1 = {}
     teacher_2 = {}
     result_1 = {}
@@ -1244,10 +1253,21 @@ def arrange_main():
     # 权重值
     total_weight = [0, 0]
     for eachTeacher in search_result_teacher:
+        birthday_date = eachTeacher.birthday
         tmp_dict = {'id': eachTeacher.teacher_id, 'expect_1': eachTeacher.first_semester_expect,
-                    'expect_2': eachTeacher.second_semester_expect, 'total_1': 0, 'total_2': 0}
-        total_weight[0] += float(eachTeacher.first_semester_expect)
-        total_weight[1] += float(eachTeacher.second_semester_expect)
+                    'expect_2': eachTeacher.second_semester_expect, 'total_1': 0, 'total_2': 0,
+                    'birthday':birthday_date, 'sex':eachTeacher.sex, 'approaching_retirement':False}
+        if eachTeacher.first_semester_expect != 0:
+            total_weight[0] += float(eachTeacher.first_semester_expect)
+        if eachTeacher.second_semester_expect != 0:
+            total_weight[1] += float(eachTeacher.second_semester_expect)
+        if eachTeacher.sex == '女' and (eachTeacher.teacher_title == '讲师'):
+            if (datetime.now().date() - birthday_date).days >= 53*365:
+                tmp_dict['approaching_retirement'] = True
+        if eachTeacher.sex == '男':
+            if (datetime.now().date() - birthday_date).days >= 58*365:
+                tmp_dict['approaching_retirement'] = True
+
         teacher_1[eachTeacher.teacher_name] = tmp_dict
         teacher_2[eachTeacher.teacher_id] = eachTeacher.teacher_name
 
@@ -1267,38 +1287,47 @@ def arrange_main():
     # # 关于一个学分取整
     # hours_ave_1 = (hours_ave_1 / 18 + 1) * 18
     # hours_ave_2 = (hours_ave_2 / 18 + 1) * 18
+    print >>file_obj, '<STEP0 Initial teacher state>'
     for eachTeacher in search_result_teacher:
         expect_hours_1 = math.ceil(eachTeacher.first_semester_expect * hours_ave_1 / 18) * 18
         expect_hours_2 = math.ceil(eachTeacher.first_semester_expect * hours_ave_2 / 18) * 18
         expect_degree_1 = eachTeacher.first_semester_expect * degree_ave_1
         expect_degree_2 = eachTeacher.first_semester_expect * degree_ave_2
+        print >>file_obj, "工号:{} 姓名:{} 第一学期期望学时:{} 第二学期期望学时:{} 第一学期期望难度:{} 第二学期期望难度:{}".format(
+            eachTeacher.teacher_id, eachTeacher.teacher_name, expect_hours_1, expect_hours_2, expect_degree_1, expect_degree_2)
         tmp_dict = {'course_list': [], 'degree_list': [], 'total_hours_1': 0, 'expect_hours_1': expect_hours_1, 'total_hours_2': 0,
                     'expect_hours_2': expect_hours_2, 'expect_degree_1': expect_degree_1, 'expect_degree_2': expect_degree_2,
                     'total_degree_1': 0, 'total_degree_2': 0}
         result_1[eachTeacher.teacher_id] = tmp_dict
-    print >>file_obj, '<STEP 1 Limitation for teacher list>'
-    for eachCourse in search_result_course:
-        teacher_list = eachCourse.suit_teacher.split(',')
-        if len(teacher_list) == int(eachCourse.allow_teachers):
-            for eachTeacher in teacher_list:
-                # print eachTeacher
-                result_1[teacher_1[eachTeacher]['id']]['course_list'].append(eachCourse.course_id)
-                result_1[teacher_1[eachTeacher]['id']]['degree_list'].append(eachCourse.course_degree)
-                if eachCourse.semester == '一':
-                    tmp_str1 = 'total_hours_1'
-                    tmp_str2 = 'total_degree_1'
-                else:
-                    tmp_str1 = 'total_hours_2'
-                    tmp_str2 = 'total_degree_2'
-                result_1[teacher_1[eachTeacher]['id']][tmp_str1] += int(eachCourse.course_hour)/int(eachCourse.allow_teachers)
-                result_1[teacher_1[eachTeacher]['id']][tmp_str2] += int(eachCourse.course_degree)/float(eachCourse.allow_teachers)
-        else:
-            result_2.append(eachCourse)
+
+    result_1, result_2 = first_allocation_for_limit_teacher_list(result_1, search_result_course, teacher_1, file_obj)
+
+    # print >>file_obj, '<STEP 1 Limitation for teacher list>'
+    # for eachCourse in search_result_course:
+    #     teacher_list = eachCourse.suit_teacher.split(',')
+    #     if len(teacher_list) == int(eachCourse.allow_teachers):
+    #         for eachTeacher in teacher_list:
+    #             # print eachTeacher
+    #             result_1[teacher_1[eachTeacher]['id']]['course_list'].append(eachCourse.course_id)
+    #             result_1[teacher_1[eachTeacher]['id']]['degree_list'].append(eachCourse.course_degree)
+    #             if eachCourse.semester == '一':
+    #                 tmp_str1 = 'total_hours_1'
+    #                 tmp_str2 = 'total_degree_1'
+    #             else:
+    #                 tmp_str1 = 'total_hours_2'
+    #                 tmp_str2 = 'total_degree_2'
+    #             result_1[teacher_1[eachTeacher]['id']][tmp_str1] += int(eachCourse.course_hour)/int(eachCourse.allow_teachers)
+    #             result_1[teacher_1[eachTeacher]['id']][tmp_str2] += int(eachCourse.course_degree)/float(eachCourse.allow_teachers)
+    #     else:
+    #         result_2.append(eachCourse)
     show_statistical(result_1, file_obj)
-    result_1, result_2 = balance_for_high_degree(result_1, result_2, teacher_1, file_obj)
-    show_statistical(result_1, file_obj)
-    result_1, result_2 = balance_for_course_hour(result_1, result_2, teacher_1, file_obj)
-    show_statistical(result_1, file_obj)
+    result_2_firstSemester, result_2_secondSemester = split_semester_from_whole_year(result_2)
+    for each_semester in [result_2_firstSemester, result_2_secondSemester]:
+        result_1, result_2 = balance_for_high_degree(result_1, each_semester, teacher_1, file_obj)
+        show_statistical(result_1, file_obj)
+        result_1, result_2 = balance_for_course_hour(result_1, each_semester, teacher_1, file_obj)
+        show_statistical(result_1, file_obj)
+
     result_3 = {}
     for tmpKey in result_1.keys():
         for eachCourse in result_1[tmpKey]['course_list']:
@@ -1327,6 +1356,8 @@ def show_statistical(result_1, file_obj):
         avail_degree_2 = result_1[tmpKey]['expect_degree_2'] - result_1[tmpKey]['total_degree_2']
         print >>file_obj, 'teacher id: {} available hours {} {} available degree {} {}'.format(tmpKey, avail_hours_1, avail_hours_2,
                                                                                    avail_degree_1, avail_degree_2)
+        logging.info('teacher id: {} available hours {} {} available degree {} {}'.format(tmpKey, avail_hours_1, avail_hours_2,
+                                                                                   avail_degree_1, avail_degree_2))
     print >>file_obj, '##########################################################'
 
 
@@ -1354,9 +1385,19 @@ def sort_new_1(result_list):
     return result_list
 
 
-# 先available学时 再 available难度
-def sort_new_2(result_list, result_all_teacher, key_value_1, key_value_2, key_value_3, key_value_4):
-    result_list = sorted(result_list, key=lambda x: (result_all_teacher[x][key_value_1]-result_all_teacher[x][key_value_2]), reverse=True)
+# 先available学时排序 再 available难度排序
+def sort_new_2(result_list, result_all_teacher, key_value_1, key_value_2, key_value_3, key_value_4, teacher_info):
+    if key_value_2 == 'total_hours_1' and key_value_1 == 'expect_hours_1':
+        result_list = sorted(result_list, key=lambda x: (result_all_teacher[x][key_value_1]-result_all_teacher[x][key_value_2]), reverse=True)
+    # available 学时考虑另外一个学期。如果目前是第二学期，学时均衡需要考虑到第一学期的负荷
+    elif key_value_2 == 'total_hours_2' and key_value_1 == 'expect_hours_2':
+        result_list = sorted(result_list,
+                         key=lambda x: (
+                         result_all_teacher[x]['expect_hours_1'] + result_all_teacher[x]['expect_hours_2'] -
+                         result_all_teacher[x]['total_hours_1'] - result_all_teacher[x]['total_hours_2']),
+                         reverse=True)
+    else:
+        logging.error('unknown string at sort_new_2 {} {}'.format(key_value_1, key_value_2))
     result_list_tmp = []
     key_value = []
     for eachItem in result_list:
@@ -1370,6 +1411,7 @@ def sort_new_2(result_list, result_all_teacher, key_value_1, key_value_2, key_va
     for eachItem in result_list_tmp:
         if len(eachItem) > 1:
             tmp = sorted(eachItem, key=lambda x: (result_all_teacher[x][key_value_3]-result_all_teacher[x][key_value_4]), reverse=True)
+            tmp = sort_new_3(tmp, result_all_teacher, key_value_3, key_value_4,teacher_info)
             result_list.extend(tmp)
         else:
             result_list.append(eachItem[0])
@@ -1377,6 +1419,34 @@ def sort_new_2(result_list, result_all_teacher, key_value_1, key_value_2, key_va
     #     print 'teacher id {}'.format(eachItem)
     #     print 'left course hour {}'.format((result_all_teacher[eachItem][key_value_1]-result_all_teacher[eachItem][key_value_2]))
     #     print 'left degree {}'.format((result_all_teacher[eachItem][key_value_3]-result_all_teacher[eachItem][key_value_4]))
+    return result_list
+
+# 再剩余难度和剩余学时都一样的情况下，优先选择临近退休的老师。女讲师55岁，其余60岁
+def sort_new_3(result_list, result_all_teacher, key_value_1, key_value_2, teacher_info):
+    result_list_tmp = []
+    key_value = []
+
+    for eachItem in result_list:
+        available = result_all_teacher[eachItem][key_value_1]-result_all_teacher[eachItem][key_value_2]
+        if available in key_value:
+            result_list_tmp[key_value.index(available)].append(eachItem)
+        else:
+            result_list_tmp.append([eachItem])
+            key_value.append(available)
+    result_list = []
+    for eachItem in result_list_tmp:
+        if len(eachItem) > 1:
+            for teacher_id in eachItem:
+                teacher_by_id = TeacherInfo.objects.get(teacher_id=teacher_id)
+                if teacher_info[teacher_by_id.teacher_name]['approaching_retirement'] == True:
+                    logging.info('teacher id: {} is chose with high priority than others {}, because of approaching retirement'.format(teacher_id, eachItem))
+                    eachItem.remove(teacher_id)
+                    eachItem.insert(0,teacher_id)
+
+            result_list.extend(eachItem)
+        else:
+            result_list.append(eachItem[0])
+
     return result_list
 
 
@@ -1391,6 +1461,19 @@ def find_high_degree_course_count(result_list, count, result_all_teachers):
         if tmp_count <= count:
             tmp_list.append(eachItem)
     return tmp_list
+
+
+def split_semester_from_whole_year(result_courses):
+    first_semester = []
+    second_semester = []
+    for each_course in result_courses:
+        if each_course.semester == '一':
+            first_semester.append(each_course)
+        elif each_course.semester == '二':
+            second_semester.append(each_course)
+        else:
+            logging.error('this course is abnormal with unknown semester: {}'.format(each_course))
+    return first_semester, second_semester
 
 
 def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_info, file_obj):
@@ -1440,24 +1523,24 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
             high_degree_count = 0
             for eachTeacher in teacher_id_list:
                 print >>file_obj, 'teacher id {}'.format(eachTeacher)
-                print >>file_obj, 'course list {}'.format(result_all_teachers[eachTeacher]['course_list'])
-                print >>file_obj, 'degree list {}'.format(result_all_teachers[eachTeacher]['degree_list'])
-                print >>file_obj, 'hour left {}'.format(
+                print >>file_obj, '<current> course list {}'.format(result_all_teachers[eachTeacher]['course_list'])
+                print >>file_obj, '<current> degree list {}'.format(result_all_teachers[eachTeacher]['degree_list'])
+                print >>file_obj, '<current> hour left {}'.format(
                     (result_all_teachers[eachTeacher][tmp_str2] - result_all_teachers[eachTeacher][tmp_str1]))
-                print >>file_obj, 'degree left {}'.format(
+                print >>file_obj, '<current> degree left {}'.format(
                     (result_all_teachers[eachTeacher][tmp_str4] - result_all_teachers[eachTeacher][tmp_str3]))
             while all_teachers > 0:
                 current_list = find_high_degree_course_count(teacher_id_list, high_degree_count, result_all_teachers)
                 if len(current_list) > 1:
-                    current_list = sort_new_2(current_list, result_all_teachers, tmp_str2, tmp_str1, tmp_str4, tmp_str3)
+                    current_list = sort_new_2(current_list, result_all_teachers, tmp_str2, tmp_str1, tmp_str4, tmp_str3,teacher_info)
                 if len(current_list) == 0:
                     high_degree_count += 1
                     continue
-                print >>file_obj, 'current teacher list {}. high degree count {}'.format(current_list, high_degree_count)
+                print >>file_obj, '<current> teacher list {}. high degree count {}'.format(current_list, high_degree_count)
                 if result_all_teachers[current_list[0]][tmp_str1] + eachCourse.course_hour <= result_all_teachers[current_list[0]][tmp_str2]:
-                    print >>file_obj, 'teacher id {}'.format(current_list[0])
-                    print >>file_obj, 'total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
-                    print >>file_obj, 'degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
+                    print >>file_obj, '<choose> teacher id {}'.format(current_list[0])
+                    print >>file_obj, '<before choose> total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
+                    print >>file_obj, '<before choose> degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
                     result_all_teachers[current_list[0]]['course_list'].append(eachCourse.course_id)
                     result_all_teachers[current_list[0]]['degree_list'].append(eachCourse.course_degree)
                     result_all_teachers[current_list[0]][tmp_str1] += eachCourse.course_hour / float(eachCourse.allow_teachers)
@@ -1465,23 +1548,23 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                     all_teachers -= 1
                     teacher_id_list.remove(current_list[0])
                     high_degree_count = 0
-                    print >>file_obj, 'new total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
-                    print >>file_obj, 'new degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
+                    print >>file_obj, '<after choose> total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
+                    print >>file_obj, '<after choose> degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
                 else:
                     high_degree_count += 1
                     if len(current_list) == len(teacher_id_list):
+                        print >> file_obj, '<BAD 1> all teacher hours are exceed expect'
                         for i in range(all_teachers):
-                            print >>file_obj, '<BAD SITUATION>'
-                            print >>file_obj, 'teacher id {}'.format(current_list[i])
-                            print >>file_obj, 'total hours {}'.format(result_all_teachers[current_list[i]][tmp_str1])
-                            print >>file_obj, 'degree list {}'.format(result_all_teachers[current_list[i]]['degree_list'])
+                            print >>file_obj, '<BAD 1>teacher id {}'.format(current_list[i])
+                            print >>file_obj, '<BAD 1>total hours {}'.format(result_all_teachers[current_list[i]][tmp_str1])
+                            print >>file_obj, '<BAD 1>degree list {}'.format(result_all_teachers[current_list[i]]['degree_list'])
                             result_all_teachers[current_list[i]]['course_list'].append(eachCourse.course_id)
                             result_all_teachers[current_list[i]]['degree_list'].append(eachCourse.course_degree)
                             result_all_teachers[current_list[i]][tmp_str1] += eachCourse.course_hour / float(eachCourse.allow_teachers)
                             result_all_teachers[current_list[i]][tmp_str3] += eachCourse.course_degree / float(eachCourse.allow_teachers)
                             all_teachers -= 1
-                            print >>file_obj, 'new total hours {}'.format(result_all_teachers[current_list[i]][tmp_str1])
-                            print >>file_obj, 'new degree list {}'.format(result_all_teachers[current_list[i]]['degree_list'])
+                            print >>file_obj, '<BAD 1>new total hours {}'.format(result_all_teachers[current_list[i]][tmp_str1])
+                            print >>file_obj, '<BAD 1>new degree list {}'.format(result_all_teachers[current_list[i]]['degree_list'])
 
             print >>file_obj, '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
     for eachItem in tmp_teacher_in_high_degree_course:
@@ -1504,7 +1587,8 @@ def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_in
     print >>file_obj, '<STEP 3 course hour balance>'
     for eachCourse in result_left_courses:
         print >>file_obj, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
-        print eachCourse.course_id
+        print >>file_obj, eachCourse.course_id
+        logging.info(eachCourse.course_id)
         all_teachers = int(eachCourse.allow_teachers)
         if eachCourse.semester == '一':
             tmp_str1 = 'total_hours_1'
@@ -1522,26 +1606,52 @@ def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_in
             teacher_list.append(teacher_info[eachTeacher]['id'])
         for eachTeacher in teacher_list:
             print >>file_obj, 'teacher id {}'.format(eachTeacher)
-            print >>file_obj, 'course list {}'.format(result_all_teachers[eachTeacher]['course_list'])
-            print >>file_obj, 'degree list {}'.format(result_all_teachers[eachTeacher]['degree_list'])
-            print >>file_obj, 'hour left {}'.format(
+            print >>file_obj, '<current> course list {}'.format(result_all_teachers[eachTeacher]['course_list'])
+            print >>file_obj, '<current> degree list {}'.format(result_all_teachers[eachTeacher]['degree_list'])
+            print >>file_obj, '<current> hour left {}'.format(
                 (result_all_teachers[eachTeacher][tmp_str2] - result_all_teachers[eachTeacher][tmp_str1]))
-            print >>file_obj, 'degree left {}'.format(
+            print >>file_obj, '<current> total hour 1:{} 2:{}'.format(result_all_teachers[eachTeacher]['total_hours_1'],result_all_teachers[eachTeacher]['total_hours_2'])
+            print >>file_obj, '<current> degree left {}'.format(
                 (result_all_teachers[eachTeacher][tmp_str4] - result_all_teachers[eachTeacher][tmp_str3]))
-        teacher_list = sort_new_2(teacher_list, result_all_teachers, tmp_str2, tmp_str1, tmp_str4, tmp_str3)
+        teacher_list = sort_new_2(teacher_list, result_all_teachers, tmp_str2, tmp_str1, tmp_str4, tmp_str3,teacher_info)
         for i in range(all_teachers):
-            print >>file_obj, 'teacher id {}'.format(teacher_list[i])
-            print >>file_obj, 'total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1])
-            print >>file_obj, 'degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
+            print >>file_obj, '<choose> teacher id {}'.format(teacher_list[i])
+            print >>file_obj, '<before> total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1])
+            print >>file_obj, '<before> degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
             result_all_teachers[teacher_list[i]]['course_list'].append(eachCourse.course_id)
             result_all_teachers[teacher_list[i]]['degree_list'].append(eachCourse.course_degree)
             result_all_teachers[teacher_list[i]][tmp_str1] += eachCourse.course_hour / float(eachCourse.allow_teachers)
             result_all_teachers[teacher_list[i]][tmp_str3] += eachCourse.course_degree / float(eachCourse.allow_teachers)
             all_teachers -= 1
-            print >>file_obj, 'new total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1])
-            print >>file_obj, 'new degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
+            print >>file_obj, '<after choose> new total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1])
+            print >>file_obj, '<after choose> new degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
 
     return result_all_teachers, result_left_courses
+
+
+def first_allocation_for_limit_teacher_list(result_all_teachers, result_left_courses, teacher_info, file_obj):
+    print >> file_obj, '<STEP 1 Limitation for teacher list>'
+    result_2 = []
+    for eachCourse in result_left_courses:
+        teacher_list = eachCourse.suit_teacher.split(',')
+        if len(teacher_list) == int(eachCourse.allow_teachers):
+            for eachTeacher in teacher_list:
+                print eachTeacher
+                result_all_teachers[teacher_info[eachTeacher]['id']]['course_list'].append(eachCourse.course_id)
+                result_all_teachers[teacher_info[eachTeacher]['id']]['degree_list'].append(eachCourse.course_degree)
+                if eachCourse.semester == '一':
+                    tmp_str1 = 'total_hours_1'
+                    tmp_str2 = 'total_degree_1'
+                else:
+                    tmp_str1 = 'total_hours_2'
+                    tmp_str2 = 'total_degree_2'
+                result_all_teachers[teacher_info[eachTeacher]['id']][tmp_str1] += int(eachCourse.course_hour) / int(
+                    eachCourse.allow_teachers)
+                result_all_teachers[teacher_info[eachTeacher]['id']][tmp_str2] += int(eachCourse.course_degree) / float(
+                    eachCourse.allow_teachers)
+        else:
+            result_2.append(eachCourse)
+    return result_all_teachers, result_2
 
 
 @csrf_exempt
