@@ -168,6 +168,8 @@ def teacher_personal(request):
         course_table = CourseInfo.objects.all().filter(major__contains=each_major)
         tmp = ''
         for eachItem in course_table:
+            if eachItem.course_relate and eachItem.student_type != '本科':
+                continue
             if request.user.last_name+request.user.first_name in eachItem.teacher_ordered.split(',') \
                     and request.user.last_name+request.user.first_name != '':
                 tmp = '已申报'
@@ -177,6 +179,7 @@ def teacher_personal(request):
                 course_relate = eachItem.course_relate.strip(',')
             else:
                 course_relate = ''
+
             search_result.append([eachItem.course_id,
                                   eachItem.course_name,
                                   eachItem.major,
@@ -300,6 +303,7 @@ def teacher_table_upload(request):
 
 @csrf_exempt
 def teacher_help_declare_upload(request):
+    # todo format not sure
     input_file = request.FILES.get("file_data", None)
     work_book = xlrd.open_workbook(filename=None, file_contents=input_file.read())
     # TODO: result part
@@ -739,6 +743,7 @@ def save_course_into_database(course_info):
                                                                  language=course_info[15],
                                                                  course_relate=course_info[16],
                                                                  lock_state=course_info[17],
+                                                                 course_parallel=course_info[18],
                                                                  update_time=now)
     else:
         CourseInfo.objects.create(course_id=course_info[0],
@@ -759,6 +764,7 @@ def save_course_into_database(course_info):
                                   language=course_info[15],
                                   course_relate=course_info[16],
                                   lock_state=course_info[17],
+                                  course_parallel=course_info[18],
                                   update_time=now)
 
 
@@ -891,6 +897,7 @@ def class_table_upload(request):
             lock_state = 1
         else:
             lock_state = 0
+        course_parallel = int(eachLine[20].value)
         if eachLine[21].value and eachLine[21].value == '是':
             notes = '精品课程'
         else:
@@ -898,11 +905,11 @@ def class_table_upload(request):
         # todo add new col
         if eachLine[20].value:
             # print allow_teachers, eachLine[20].value
-            allow_teachers = allow_teachers*int(eachLine[20].value)
+            allow_teachers = allow_teachers*course_parallel
 
         class_info_to_save.append([course_id, course_name, student_type, year, class_name, semester, course_hour,
                                    course_degree, course_type, allow_teachers, times_every_week, suit_teacher,
-                                   teacher_ordered, notes, major, language, course_relate, lock_state])
+                                   teacher_ordered, notes, major, language, course_relate, lock_state,course_parallel])
 
     save_course_table_into_database(class_info_to_save)
     result = 'Pass'
@@ -1342,6 +1349,11 @@ def arrange_main():
     for tmpKey in result_3.keys():
         tmp = ",".join(result_3[tmpKey])
         CourseInfo.objects.filter(course_id=tmpKey).update(teacher_auto_pick=tmp, teacher_final_pick=tmp)
+        current_course = CourseInfo.objects.filter(course_id=tmpKey)
+        if current_course.course_relate:
+            course_relate = current_course.course_relate.split(',')
+            for eachCourse in course_relate:
+                CourseInfo.objects.filter(course_id=eachCourse).update(teacher_auto_pick=tmp, teacher_final_pick=tmp)
     file_obj.close()
     HttpResponse('Pass')
 
@@ -1451,6 +1463,38 @@ def sort_new_3(result_list, result_all_teacher, key_value_1, key_value_2, teache
     return result_list
 
 
+def high_level_factor_involve(result_list, result_all_teacher, key_value_1, key_value_2, key_value_3, key_value_4,
+                              teacher_info, current_course_hour, current_course_degree):
+    teacher_candidate_list1 = []
+    teacher_left1 = []
+    for each_teacher in result_list:
+        if result_all_teacher[each_teacher][key_value_1] - result_all_teacher[each_teacher][key_value_2] - current_course_hour > 0:
+            if result_all_teacher[each_teacher][key_value_3] - result_all_teacher[each_teacher][key_value_4] - current_course_degree > 0:
+                logging.info(
+                    'teacher id: {} is chose with high priority than others {}, because of approaching retirement'.format(
+                        each_teacher, teacher_candidate_list1))
+                teacher_candidate_list1.append(each_teacher)
+            else:
+                teacher_left1.append(each_teacher)
+        else:
+            teacher_left1.append(each_teacher)
+    teacher_candidate_list2 = []
+    teacher_left2 = []
+    for each_teacher in teacher_candidate_list1:
+        teacher_by_id = TeacherInfo.objects.get(teacher_id=each_teacher)
+        if teacher_info[teacher_by_id.teacher_name]['approaching_retirement'] == True:
+            logging.info('teacher id: {} is chose with high priority than others {}, because of approaching retirement'.format(
+                each_teacher, teacher_candidate_list1))
+            teacher_candidate_list2.append(each_teacher)
+        else:
+            teacher_left2.append(each_teacher)
+    # teacher_candidate_list1(teacher_candidate_list2+teacher_left2) + teacher_left1
+    result_list = teacher_candidate_list2 + teacher_left2 + teacher_left1
+
+    return result_list
+
+
+
 def find_high_degree_course_count(result_list, count, result_all_teachers):
     tmp_list = []
     for eachItem in result_list:
@@ -1534,19 +1578,25 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
             while all_teachers > 0:
                 current_list = find_high_degree_course_count(teacher_id_list, high_degree_count, result_all_teachers)
                 if len(current_list) > 1:
-                    current_list = sort_new_2(current_list, result_all_teachers, tmp_str2, tmp_str1, tmp_str4, tmp_str3,teacher_info)
+                    current_list = sort_new_2(current_list, result_all_teachers, tmp_str2, tmp_str1, tmp_str4, tmp_str3, teacher_info)
                 if len(current_list) == 0:
                     high_degree_count += 1
                     continue
                 print >>file_obj, '<current> teacher list {}. high degree count {}'.format(current_list, high_degree_count)
                 if result_all_teachers[current_list[0]][tmp_str1] + eachCourse.course_hour <= result_all_teachers[current_list[0]][tmp_str2]:
+                    # high level factor design
+                    current_list = high_level_factor_involve(current_list, result_all_teachers, tmp_str2, tmp_str1,
+                                                             tmp_str4, tmp_str3, teacher_info, eachCourse.hour,
+                                                             eachCourse.course_degree)
                     print >>file_obj, '<choose> teacher id {}'.format(current_list[0])
                     print >>file_obj, '<before choose> total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
                     print >>file_obj, '<before choose> degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
                     result_all_teachers[current_list[0]]['course_list'].append(eachCourse.course_id)
                     result_all_teachers[current_list[0]]['degree_list'].append(eachCourse.course_degree)
-                    result_all_teachers[current_list[0]][tmp_str1] += eachCourse.course_hour / float(eachCourse.allow_teachers)
-                    result_all_teachers[current_list[0]][tmp_str3] += eachCourse.course_degree / float(eachCourse.allow_teachers)
+                    # 平行课程和非平行课程的计算方法不同
+                    allow_teachers = float(eachCourse.allow_teachers)/float(eachCourse.course_parallel) if eachCourse.course_parallel else float(eachCourse.allow_teachers)
+                    result_all_teachers[current_list[0]][tmp_str1] += eachCourse.course_hour / allow_teachers
+                    result_all_teachers[current_list[0]][tmp_str3] += eachCourse.course_degree / allow_teachers
                     all_teachers -= 1
                     teacher_id_list.remove(current_list[0])
                     high_degree_count = 0
@@ -1562,8 +1612,12 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                             print >>file_obj, '<BAD 1>degree list {}'.format(result_all_teachers[current_list[i]]['degree_list'])
                             result_all_teachers[current_list[i]]['course_list'].append(eachCourse.course_id)
                             result_all_teachers[current_list[i]]['degree_list'].append(eachCourse.course_degree)
-                            result_all_teachers[current_list[i]][tmp_str1] += eachCourse.course_hour / float(eachCourse.allow_teachers)
-                            result_all_teachers[current_list[i]][tmp_str3] += eachCourse.course_degree / float(eachCourse.allow_teachers)
+                            # 平行课程和非平行课程的计算方法不同
+                            allow_teachers = float(eachCourse.allow_teachers) / float(
+                                eachCourse.course_parallel) if eachCourse.course_parallel else float(
+                                eachCourse.allow_teachers)
+                            result_all_teachers[current_list[i]][tmp_str1] += eachCourse.course_hour / allow_teachers
+                            result_all_teachers[current_list[i]][tmp_str3] += eachCourse.course_degree / allow_teachers
                             all_teachers -= 1
                             print >>file_obj, '<BAD 1>new total hours {}'.format(result_all_teachers[current_list[i]][tmp_str1])
                             print >>file_obj, '<BAD 1>new degree list {}'.format(result_all_teachers[current_list[i]]['degree_list'])
@@ -1616,14 +1670,24 @@ def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_in
             print >>file_obj, '<current> degree left {}'.format(
                 (result_all_teachers[eachTeacher][tmp_str4] - result_all_teachers[eachTeacher][tmp_str3]))
         teacher_list = sort_new_2(teacher_list, result_all_teachers, tmp_str2, tmp_str1, tmp_str4, tmp_str3,teacher_info)
+        print >> file_obj, '<current> after sort_new_2 course list {}'.format(teacher_list)
+        # high level factor design
+        teacher_list = high_level_factor_involve(teacher_list, result_all_teachers, tmp_str2, tmp_str1,
+                                                 tmp_str4, tmp_str3, teacher_info, eachCourse.hour,
+                                                 eachCourse.course_degree)
+        print >> file_obj, '<current> after high_level_factor_involve course list {}'.format(teacher_list)
+
         for i in range(all_teachers):
             print >>file_obj, '<choose> teacher id {}'.format(teacher_list[i])
             print >>file_obj, '<before> total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1])
             print >>file_obj, '<before> degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
             result_all_teachers[teacher_list[i]]['course_list'].append(eachCourse.course_id)
             result_all_teachers[teacher_list[i]]['degree_list'].append(eachCourse.course_degree)
-            result_all_teachers[teacher_list[i]][tmp_str1] += eachCourse.course_hour / float(eachCourse.allow_teachers)
-            result_all_teachers[teacher_list[i]][tmp_str3] += eachCourse.course_degree / float(eachCourse.allow_teachers)
+            allow_teachers = float(eachCourse.allow_teachers) / float(
+                eachCourse.course_parallel) if eachCourse.course_parallel else float(
+                eachCourse.allow_teachers)
+            result_all_teachers[teacher_list[i]][tmp_str1] += eachCourse.course_hour / allow_teachers
+            result_all_teachers[teacher_list[i]][tmp_str3] += eachCourse.course_degree / allow_teachers
             all_teachers -= 1
             print >>file_obj, '<after choose> new total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1])
             print >>file_obj, '<after choose> new degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
@@ -1635,6 +1699,9 @@ def first_allocation_for_limit_teacher_list(result_all_teachers, result_left_cou
     print >> file_obj, '<STEP 1 Limitation for teacher list>'
     result_2 = []
     for eachCourse in result_left_courses:
+        # 本科 - 硕士 打通课程的时候，排课时以本科的课程为主进行排课
+        if eachCourse.course_relate and eachCourse.student_type != '本科':
+            continue
         teacher_list = eachCourse.suit_teacher.split(',')
         if len(teacher_list) == int(eachCourse.allow_teachers):
             for eachTeacher in teacher_list:

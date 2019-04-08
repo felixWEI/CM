@@ -51,6 +51,7 @@ class CourseInfo(models.Model):
     language = models.CharField(db_column='language', max_length=45, blank=True, null=True)
     course_relate = models.CharField(db_column='course_relate', max_length=45, blank=True, null=True)
     lock_state = models.IntegerField(db_column='lock_state', default=0)
+    course_parallel = models.CharField(db_column='course_parallel', max_length=45, blank=True, null=True)
     update_time = models.DateTimeField(db_column='update_time', blank=True, null=True)
 
     class Meta:
