@@ -570,6 +570,10 @@ function apply_complete_2(teacher_id){
         }
     })
 }
+$('#major_check_list_all').click(function () {
+    var choose = $(this).prop("checked");
+    var ck = $("input[name='major_check_list']").prop('checked', choose)
+})
 //function initFileInput(ctrlName, uploadUrl) {
 //    var control = $('#' + ctrlName);
 //    control.fileinput({

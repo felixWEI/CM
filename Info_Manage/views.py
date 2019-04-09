@@ -136,19 +136,17 @@ def teacher_personal(request):
         if search_result[0].teacher_apply_done:
             status = 'lock'
     now = datetime.now().replace()
-    search_result_major = TeacherInfo.objects.values('teacher_id', 'major')
+    search_result_major = CourseInfo.objects.values('major')
+    search_result_teacher_major = TeacherInfo.objects.filter(teacher_id=request.user.username)
     major_list = []
-    current_teacher_major = []
     for row_major in search_result_major:
         if row_major['major']:
-            temp_list = row_major['major'].split('、')
-            major_list.extend(temp_list)
-        if row_major['teacher_id'] == request.user.username:
-            current_teacher_major = temp_list
+            major_list.append(row_major['major'])
     major_set = set(major_list)
     major_list = []
-    current_teacher_major.append('综合')
-    major_set.add('综合')
+    current_teacher_major = []
+    if search_result_teacher_major:
+        current_teacher_major = search_result_teacher_major[0].major.split(',')
     for each_set in major_set:
         if each_set in current_teacher_major:
             major_list.append(["1", each_set])
@@ -165,7 +163,7 @@ def teacher_personal(request):
         year = 'None'
     search_result = []
     for each_major in current_teacher_major:
-        course_table = CourseInfo.objects.all().filter(major__contains=each_major)
+        course_table = CourseInfo.objects.all().filter(major__contains=each_major, lock_state=0)
         tmp = ''
         for eachItem in course_table:
             if eachItem.course_relate and eachItem.student_type != '本科':
@@ -193,6 +191,8 @@ def teacher_personal(request):
                                   eachItem.allow_teachers,
                                   eachItem.times_every_week,
                                   course_relate,
+                                  eachItem.course_parallel,
+                                  eachItem.notes,
                                   tmp])
 
     search_result_teacher = TeacherInfo.objects.filter(teacher_id=request.user.username)
@@ -203,7 +203,7 @@ def teacher_personal(request):
         expect_semester1 = 0
         expect_semester2 = 0
     summary_table = [expect_semester1, expect_semester2]
-    table_head = ['代码', '名称', '专业','学位', '班级', '学期', '学时', '难度', '必/选', '语言','教师数', '周上课次数','打通课程代码','课程状态']
+    table_head = ['代码', '名称', '专业','学位', '班级', '学期', '学时', '难度', '必/选', '语言','教师数', '周上课次数','打通课程代码','平行班级','是否精品课程','课程状态']
     table_default = ['', '', major_set, STUDENT_TYPE, CLASS_NAME_LIST, ['一', '二'], COURSE_HOUR, COURSE_DEGREE, ['必修', '选修'], LANGUAGE, '', '', '']
     return render(request, 'teacher_personal.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
@@ -458,14 +458,12 @@ def class_manage(request):
         current_year = search_result[0].s1_year_info
     else:
         current_year = 'None'
-    search_result_major = TeacherInfo.objects.values('teacher_id', 'major')
+    search_result_major = CourseInfo.objects.values('major')
     major_list = []
     for row_major in search_result_major:
         if row_major['major']:
-            temp_list = row_major['major'].split('、')
-            major_list.extend(temp_list)
+            major_list.append(row_major['major'])
     major_set = set(major_list)
-    major_set.add('综合')
 
     course_table = CourseInfo.objects.all().filter()
     search_result = []
@@ -514,11 +512,12 @@ def class_manage(request):
                                   eachItem.notes,
                                   lock_state
                                   ])
-        current_hour_count += float(eachItem.course_hour)
-        current_degree_count += float(eachItem.course_degree)
-        if eachItem.suit_teacher:
-            current_course_claim += 1
-    summary_table = [current_course_count, current_hour_count, current_degree_count, current_course_claim, lock_class_count]
+            if lock_state != '非激活':
+                current_hour_count += float(eachItem.course_hour)
+                current_degree_count += float(eachItem.course_degree)
+                if eachItem.suit_teacher:
+                    current_course_claim += 1
+    summary_table = [current_course_count-lock_class_count, current_hour_count, current_degree_count, current_course_claim, lock_class_count]
 
     table_head = ['代码', '名称', '专业', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '可选教师', '打通课程代码','备注','状态']
     table_default = ['', '', list(major_set), student_type, year, class_name,
@@ -538,13 +537,13 @@ def class_filter_by_submit(request):
     search_result = []
     for eachItem in course_table:
         if eachItem.semester in semester and eachItem.student_type in student_type:
-            if eachItem.major and eachItem.major.strip('学') in major_list:
+            if eachItem.major and eachItem.major in major_list:
                 if table_id == 'table_course_manage':
                     for eachClass in eachItem.class_name.split(' '):
                         search_result.append([eachItem.course_id, eachItem.course_name, eachItem.major, eachClass.split('-')[0],
                                               eachClass.split('-')[-1].split('_')[0], eachClass.split('-')[-1].split('_')[-1], eachItem.semester,
-                                              eachItem.course_hour, eachItem.course_degree, eachItem.course_type,
-                                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher, eachItem.notes,eachItem.lock_state])
+                                              eachItem.course_hour, eachItem.course_degree, eachItem.course_type,eachItem.language,
+                                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher, eachItem.course_relate, eachItem.notes,eachItem.lock_state])
                 elif table_id == 'table_course_personal':
                     teacher_list = eachItem.teacher_ordered.split(',') if eachItem.teacher_ordered else []
                     if request.user.username in teacher_list:
@@ -553,8 +552,8 @@ def class_filter_by_submit(request):
                         tmp = ''
                     search_result.append([eachItem.course_id, eachItem.course_name, eachItem.major,eachItem.student_type,
                                           eachItem.class_name, eachItem.semester, eachItem.course_hour,
-                                          eachItem.course_degree, eachItem.course_type,
-                                          eachItem.allow_teachers, eachItem.times_every_week, tmp])
+                                          eachItem.course_degree, eachItem.course_type,eachItem.language,
+                                          eachItem.allow_teachers, eachItem.times_every_week, eachItem.course_relate, eachItem.course_parallel, eachItem.notes, tmp])
     result = json.dumps({'result': search_result})
     return HttpResponse(result)
 
@@ -856,7 +855,7 @@ def class_table_upload(request):
     input_file = request.FILES.get("file_data", None)
     work_book = xlrd.open_workbook(filename=None, file_contents=input_file.read())
     # TODO: result part
-    work_sheet = work_book.sheet_by_name('课程信息汇总')
+    work_sheet = work_book.sheet_by_name('课程信息')
     line_length = work_sheet.nrows
     line_content = []
     for line_number in range(line_length):
@@ -866,46 +865,44 @@ def class_table_upload(request):
     class_info_to_save = []
     for eachLine in line_content:
         print eachLine
-        major = eachLine[0].value
-        course_id = eachLine[1].value
-        course_name = eachLine[2].value
-        student_type = eachLine[3].value
-        year = eachLine[4].value
-        class_name = '{}-{}_{}'.format(student_type, int(eachLine[15].value) if eachLine[15].value else '',
-                                       eachLine[5].value)
+        major = eachLine[5].value
+        course_id = eachLine[6].value
+        course_name = eachLine[7].value
+        student_type = eachLine[2].value
+        year = eachLine[0].value
+        class_name = '{}-{}_{}'.format(student_type, int(eachLine[3].value) if eachLine[3].value else '',
+                                       eachLine[4].value)
         # class_name = eachLine[5].value
-        semester = eachLine[6].value
-        course_hour = eachLine[8].value
-        if not eachLine[9].value:
+        semester = eachLine[1].value
+        course_hour = eachLine[9].value
+        if not eachLine[10].value:
             course_degree = 0
         else:
-            course_degree = eachLine[9].value
-        course_type = eachLine[10].value
-        if not eachLine[11].value:
+            course_degree = eachLine[10].value
+        course_type = eachLine[11].value
+        if not eachLine[13].value:
             allow_teachers = 0
         else:
-            allow_teachers = int(eachLine[11].value)
-        if not eachLine[12].value:
+            allow_teachers = int(eachLine[13].value)
+        if not eachLine[14].value:
             times_every_week = 0
         else:
-            times_every_week = int(eachLine[12].value)
-        suit_teacher = eachLine[13].value
-        teacher_ordered = eachLine[13].value
-        language = eachLine[14].value
-        course_relate = eachLine[17].value
+            times_every_week = int(eachLine[14].value)
+        suit_teacher = eachLine[15].value
+        teacher_ordered = eachLine[15].value
+        language = eachLine[12].value
+        course_relate = eachLine[16].value
         if eachLine[19].value and eachLine[19].value == '未激活':
             lock_state = 1
         else:
             lock_state = 0
-        course_parallel = int(eachLine[20].value)
-        if eachLine[21].value and eachLine[21].value == '是':
+        course_parallel = int(eachLine[18].value)
+        if eachLine[17].value and eachLine[17].value == '是':
             notes = '精品课程'
         else:
             notes = '非精品课程'
-        # todo add new col
-        if eachLine[20].value:
-            # print allow_teachers, eachLine[20].value
-            allow_teachers = allow_teachers*course_parallel
+
+        allow_teachers = allow_teachers*course_parallel
 
         class_info_to_save.append([course_id, course_name, student_type, year, class_name, semester, course_hour,
                                    course_degree, course_type, allow_teachers, times_every_week, suit_teacher,

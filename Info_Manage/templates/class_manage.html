@@ -159,6 +159,13 @@
                   </div>
                 </li>
               {% endfor %}
+                <li>
+                      <div class="checkbox" style="padding-left:20px">
+                          <label>
+                              <input type="checkbox" id="major_check_list_all"> 全选
+                          </label>
+                      </div>
+                  </li>
             </ul>
           <li>
             <button type="submit" class="btn btn-default center-block" onclick="submit_checkbox_info()">提交</button>
@@ -174,7 +181,7 @@
           <div class="row">
             <div class="col-sm-2">
                 <div class="placeholders2">
-                  <span class="">课程总数</span>
+                  <span class="">激活课程总数</span>
                   <div>{{ summary_table.0 }}</div>
                 </div>
             </div>
@@ -186,19 +193,19 @@
             </div>
             <div class="col-sm-2">
                 <div class="placeholders2">
-                  <span class="">学时总数</span>
+                  <span class="">学时总数（激活）</span>
                   <div>{{ summary_table.1 }}</div>
                 </div>
             </div>
             <div class="col-sm-2">
                 <div class="placeholders2">
-                  <span class="">难度总数</span>
+                  <span class="">总难度（激活）</span>
                   <div>{{ summary_table.2 }}</div>
                 </div>
             </div>
             <div class="col-sm-2">
                 <div class="placeholders2">
-                  <span class="">被申报课程数</span>
+                  <span class="">已申报课程数（激活）</span>
                   <div>{{ summary_table.3 }}</div>
                 </div>
             </div>

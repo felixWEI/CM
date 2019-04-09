@@ -555,3 +555,7 @@ $("#excelFile").on("fileuploaded", function (event, data, previewId, index) {
     $('#excelFile').fileinput('enable');
     }
 })
+$('#major_check_list_all').click(function () {
+    var choose = $(this).prop("checked");
+    var ck = $("input[name='major_check_list']").prop('checked', choose)
+})
