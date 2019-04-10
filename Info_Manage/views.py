@@ -1583,7 +1583,7 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                 if result_all_teachers[current_list[0]][tmp_str1] + eachCourse.course_hour <= result_all_teachers[current_list[0]][tmp_str2]:
                     # high level factor design
                     current_list = high_level_factor_involve(current_list, result_all_teachers, tmp_str2, tmp_str1,
-                                                             tmp_str4, tmp_str3, teacher_info, eachCourse.hour,
+                                                             tmp_str4, tmp_str3, teacher_info, eachCourse.course_hour,
                                                              eachCourse.course_degree)
                     print >>file_obj, '<choose> teacher id {}'.format(current_list[0])
                     print >>file_obj, '<before choose> total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
