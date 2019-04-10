@@ -146,6 +146,7 @@ $(document).ready(function () {
                     document.getElementById('a_12').setAttribute('disabled', 'disabled')
                     document.getElementById('a_14').removeAttribute('disabled')
                     document.getElementById('a_15').removeAttribute('disabled')
+                    document.getElementById('a_16').removeAttribute('disabled')
                 }else{
                     document.getElementById('a_1').value = ''
                     document.getElementById('a_2').value = ''
@@ -172,10 +173,11 @@ $(document).ready(function () {
                     document.getElementById('a_12').removeAttribute('disabled')
                     document.getElementById('a_14').removeAttribute('disabled')
                     document.getElementById('a_15').removeAttribute('disabled')
+                    document.getElementById('a_16').removeAttribute('disabled')
                 }
             },
             error: function (){
-                alert('No');
+                alert('添加课程失败');
             }
         });
     })
@@ -346,6 +348,7 @@ function edit_course_info(){
     document.getElementById('e_12').value = t.row('.selected').data()[12];
     document.getElementById('e_14').value = t.row('.selected').data()[14];
     document.getElementById('e_15').value = t.row('.selected').data()[15];
+    document.getElementById('e_16').value = t.row('.selected').data()[16];
 	$.ajax({
 	    type: 'POST',
         url:'/class_get_suit_teacher/',
@@ -411,7 +414,7 @@ function cancel_request(){
 
 function submit_edit_info(){
     row_data = Array();
-    for (var i=0; i < 16; i++ ){
+    for (var i=0; i < 17; i++ ){
         if ( document.getElementById('e_'+String(i)).value !== undefined ){
             row_data[i] = document.getElementById('e_'+String(i)).value;
             if (i==0){

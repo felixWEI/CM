@@ -106,7 +106,7 @@ $(document).ready(function () {
                 }
             },
             error: function (){
-                alert('No');
+                alert('修改期望失败');
             }
         });
     });
@@ -460,11 +460,12 @@ function check_apply_status(teacher_id){
 function init_modal_content(result){
     HIGH_DEGREE = 8;
     CRITICAL_VALUE = 2;
-    total_high_degree_count = 0
+    total_high_degree_count = 0;
     list_1 = result['list_1'];
     list_2 = result['list_2'];
     list_3 = result['list_3'];
     list_4 = result['list_4'];
+    total_high_course_count = list_1.length + list_2.length + list_3.length + list_4.length;
     obj_list_1_a = document.getElementById('list_1_a')
     obj_list_2_a = document.getElementById('list_2_a')
     obj_list_3_a = document.getElementById('list_3_a')
@@ -521,6 +522,7 @@ function init_modal_content(result){
     obj_list_4_a.innerText = str1;
     obj_list_4_p.innerText = str2;
     document.getElementById('total_high_degree_count').innerText = total_high_degree_count
+    document.getElementById('total_high_course_count').innerText = total_high_course_count
     document.getElementById('require_high_degree_count').innerText = CRITICAL_VALUE
     console.log(total_high_degree_count)
     console.log(CRITICAL_VALUE)
