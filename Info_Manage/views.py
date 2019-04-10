@@ -246,7 +246,7 @@ def teacher_request_course(request):
 def teacher_change_expect(request):
     modify_0 = request.POST['modify_0']
     modify_1 = request.POST['modify_1']
-    lock_state = request.POST['lock_state']
+    lock_state = request.POST['lock_state'] if 'lock_state' in request.POST else 0
     modify_0 = float(modify_0) / 100.0
     modify_1 = float(modify_1) / 100.0
     if 'teacher_id' in request.POST.keys():
@@ -568,7 +568,7 @@ def class_filter_by_submit(request):
     semester = request.POST['semester'].strip().split(' ')
     table_id = request.POST['table_id']
     major_list = json.loads(request.POST['major_list'])
-    course_table = CourseInfo.objects.all()
+    course_table = CourseInfo.objects.filter(lock_state=0)
     search_result = []
     for eachItem in course_table:
         if eachItem.semester in semester and eachItem.student_type in student_type:
@@ -1330,12 +1330,13 @@ def arrange_main():
     total_hours = [0, 0]
     total_degrees = [0, 0]
     for eachCourse in search_result_course:
+        tmp_hour, tmp_degree = get_course_effective_point(eachCourse)
         if eachCourse.semester == '一':
-            total_hours[0] += eachCourse.course_hour
-            total_degrees[0] += eachCourse.course_degree
+            total_hours[0] += tmp_hour
+            total_degrees[0] += tmp_degree
         else:
-            total_hours[1] += eachCourse.course_hour
-            total_degrees[1] += eachCourse.course_degree
+            total_hours[1] += tmp_hour
+            total_degrees[1] += tmp_degree
     hours_ave_1 = total_hours[0]/total_weight[0]
     hours_ave_2 = total_hours[1]/total_weight[1]
     degree_ave_1 = total_degrees[0]/total_weight[0]
@@ -1513,7 +1514,7 @@ def sort_new_3(result_list, result_all_teacher, key_value_1, key_value_2, teache
 
 
 def high_level_factor_involve(result_list, result_all_teacher, key_value_1, key_value_2, key_value_3, key_value_4,
-                              teacher_info, current_course_hour, current_course_degree):
+                              teacher_info, current_course_hour, current_course_degree, current_course_id):
     teacher_candidate_list1 = []
     teacher_left1 = []
     for each_teacher in result_list:
@@ -1527,18 +1528,52 @@ def high_level_factor_involve(result_list, result_all_teacher, key_value_1, key_
                 teacher_left1.append(each_teacher)
         else:
             teacher_left1.append(each_teacher)
+    # 轮替
     teacher_candidate_list2 = []
     teacher_left2 = []
+    search_course_history = CourseHistoryInfo.objects.filter(course_id=current_course_id)
+    if search_course_history:
+        teacher_final_pick_list = []
+        for each_year in search_course_history:
+            year = each_year.year
+            teacher_final_pick = each_year.teacher_final_pick.split(',')
+            teacher_id_list = []
+            for each_teacher in teacher_final_pick:
+                search_result = TeacherInfo.objects.filter(teacher_name=each_teacher)
+                if search_result:
+                    teacher_id_list.append(search_result[0].teacher_id)
+            teacher_final_pick_list.append([year.split('-')[0], teacher_id_list])
+        tmp = sorted(teacher_final_pick_list, key=lambda x: x[0], reverse=True)
+        for each_teacher in teacher_candidate_list1:
+            teachered = True
+            for each_year in tmp:
+                if each_teacher not in each_year[1]:
+                    teachered = False
+                else:
+                    teachered = True
+            if not teachered:
+                logging.info('{} is priority because of not teacher this course {} before'.format(each_teacher, current_course_id))
+                teacher_candidate_list2.append(each_teacher)
+            else:
+                teacher_left2.append(each_teacher)
+
+    # 临近退休
+    teacher_candidate_list3 = []
+    teacher_left3 = []
     for each_teacher in teacher_candidate_list1:
         teacher_by_id = TeacherInfo.objects.get(teacher_id=each_teacher)
         if teacher_info[teacher_by_id.teacher_name]['approaching_retirement'] == True:
             logging.info('teacher id: {} is chose with high priority than others {}, because of approaching retirement'.format(
                 each_teacher, teacher_candidate_list1))
-            teacher_candidate_list2.append(each_teacher)
+            teacher_candidate_list3.append(each_teacher)
         else:
-            teacher_left2.append(each_teacher)
-    # teacher_candidate_list1(teacher_candidate_list2+teacher_left2) + teacher_left1
-    result_list = teacher_candidate_list2 + teacher_left2 + teacher_left1
+            teacher_left3.append(each_teacher)
+    if len(teacher_candidate_list3) != 0:
+        # teacher_candidate_list1(teacher_candidate_list2+teacher_left2) + teacher_left1
+        result_list = teacher_candidate_list3 + teacher_left3 + teacher_left1
+    else:
+        # teacher_candidate_list1(teacher_candidate_list2+teacher_left2) + teacher_left1
+        result_list = teacher_candidate_list2 + teacher_left2 + teacher_left1
 
     return result_list
 
@@ -1636,7 +1671,7 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                     # high level factor design
                     current_list = high_level_factor_involve(current_list, result_all_teachers, tmp_str2, tmp_str1,
                                                              tmp_str4, tmp_str3, teacher_info, eachCourse.course_hour,
-                                                             eachCourse.course_degree)
+                                                             eachCourse.course_degree, eachCourse.course_id)
                     print >>file_obj, '<choose> teacher id {}'.format(current_list[0])
                     print >>file_obj, '<before choose> total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
                     print >>file_obj, '<before choose> degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
@@ -1723,7 +1758,7 @@ def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_in
         # high level factor design
         teacher_list = high_level_factor_involve(teacher_list, result_all_teachers, tmp_str2, tmp_str1,
                                                  tmp_str4, tmp_str3, teacher_info, eachCourse.course_hour,
-                                                 eachCourse.course_degree)
+                                                 eachCourse.course_degree, eachCourse.course_id)
         print >> file_obj, '<current> after high_level_factor_involve course list {}'.format(teacher_list)
 
         for i in range(all_teachers):
