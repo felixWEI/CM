@@ -84,7 +84,7 @@ class CourseHistoryInfo(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'course_info'
+        db_table = 'course_history_info'
 
 
 class CurrentStepInfo(models.Model):

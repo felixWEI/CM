@@ -556,7 +556,10 @@ def get_course_effective_point(course_object):
         else:
             return 0, 0
     else:
-        return float(course_object.course_hour), float(course_object.course_degree)
+        if course_object.course_parallel:
+            return float(course_object.course_hour)*int(course_object.course_parallel), float(course_object.course_degree)*int(course_object.course_parallel)
+        else:
+            return float(course_object.course_hour), float(course_object.course_degree)
 
 
 @csrf_exempt
@@ -1254,19 +1257,20 @@ def start_arrange():
     total_courses = len(search_result_course)
     for eachCourse in search_result_course:
         degree_count[int(eachCourse.course_degree)-1] += 1
-        total_hours += eachCourse.course_hour
+        tmp_hour, tmp_degree = get_course_effective_point(eachCourse)
+        total_hours += tmp_hour
         if eachCourse.student_type == STUDENT_TYPE[3]:
             degree_count_d[int(eachCourse.course_degree)-1] += 1
-            hours_d.append(eachCourse.course_hour)
+            hours_d.append(tmp_hour)
         elif eachCourse.student_type == STUDENT_TYPE[2]:
             degree_count_p2[int(eachCourse.course_degree)-1] += 1
-            hours_p2.append(eachCourse.course_hour)
+            hours_p2.append(tmp_hour)
         elif eachCourse.student_type == STUDENT_TYPE[1]:
             degree_count_p1[int(eachCourse.course_degree) - 1] += 1
-            hours_p1.append(eachCourse.course_hour)
+            hours_p1.append(tmp_hour)
         elif eachCourse.student_type == STUDENT_TYPE[0]:
             degree_count_u[int(eachCourse.course_degree) - 1] += 1
-            hours_u.append(eachCourse.course_hour)
+            hours_u.append(tmp_hour)
         else:
             continue
     teacher_with_expect_count = len(teacher_with_expect)
