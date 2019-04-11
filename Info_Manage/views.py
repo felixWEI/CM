@@ -1517,9 +1517,12 @@ def high_level_factor_involve(result_list, result_all_teacher, key_value_1, key_
                               teacher_info, current_course_hour, current_course_degree, current_course_id):
     teacher_candidate_list1 = []
     teacher_left1 = []
+    logging.info('teacher list: {}'.format(result_list))
     for each_teacher in result_list:
-        if result_all_teacher[each_teacher][key_value_1] - result_all_teacher[each_teacher][key_value_2] - current_course_hour > 0:
-            if result_all_teacher[each_teacher][key_value_3] - result_all_teacher[each_teacher][key_value_4] - current_course_degree > 0:
+        if result_all_teacher[each_teacher][key_value_1] - result_all_teacher[each_teacher][
+            key_value_2] - current_course_hour > 0:
+            if result_all_teacher[each_teacher][key_value_3] - result_all_teacher[each_teacher][
+                key_value_4] - current_course_degree > 0:
                 logging.info(
                     'teacher id: {} is chose with high priority than others {}, because of approaching retirement'.format(
                         each_teacher, teacher_candidate_list1))
@@ -1528,6 +1531,7 @@ def high_level_factor_involve(result_list, result_all_teacher, key_value_1, key_
                 teacher_left1.append(each_teacher)
         else:
             teacher_left1.append(each_teacher)
+    logging.info('teacher candidate list1: {}; left1: {}'.format(teacher_candidate_list1, teacher_left1))
     # 轮替
     teacher_candidate_list2 = []
     teacher_left2 = []
@@ -1552,28 +1556,34 @@ def high_level_factor_involve(result_list, result_all_teacher, key_value_1, key_
                 else:
                     teachered = True
             if not teachered:
-                logging.info('{} is priority because of not teacher this course {} before'.format(each_teacher, current_course_id))
+                logging.info('{} is priority because of not teacher this course {} before'.format(each_teacher,
+                                                                                                  current_course_id))
                 teacher_candidate_list2.append(each_teacher)
             else:
                 teacher_left2.append(each_teacher)
 
+    logging.info('teacher candidate list2: {}; left2: {}'.format(teacher_candidate_list2, teacher_left2))
     # 临近退休
     teacher_candidate_list3 = []
     teacher_left3 = []
     for each_teacher in teacher_candidate_list1:
         teacher_by_id = TeacherInfo.objects.get(teacher_id=each_teacher)
         if teacher_info[teacher_by_id.teacher_name]['approaching_retirement'] == True:
-            logging.info('teacher id: {} is chose with high priority than others {}, because of approaching retirement'.format(
-                each_teacher, teacher_candidate_list1))
+            logging.info(
+                'teacher id: {} is chose with high priority than others {}, because of approaching retirement'.format(
+                    each_teacher, teacher_candidate_list1))
             teacher_candidate_list3.append(each_teacher)
         else:
             teacher_left3.append(each_teacher)
+    logging.info('teacher candidate list3: {}; left3: {}'.format(teacher_candidate_list3, teacher_left3))
     if len(teacher_candidate_list3) != 0:
         # teacher_candidate_list1(teacher_candidate_list2+teacher_left2) + teacher_left1
         result_list = teacher_candidate_list3 + teacher_left3 + teacher_left1
-    else:
+    elif len(teacher_candidate_list2) != 0:
         # teacher_candidate_list1(teacher_candidate_list2+teacher_left2) + teacher_left1
         result_list = teacher_candidate_list2 + teacher_left2 + teacher_left1
+    else:
+        result_list = result_list
 
     return result_list
 

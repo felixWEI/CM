@@ -356,12 +356,13 @@ function edit_course_info(){
         dataType: "json",
         success: function (result) {
             var teacher_list = result['result_list'];
-//            $('#e_11').DataTable().clear();
+            console.log(teacher_list);
             $('#e_13').DataTable({
                 dom: '<"top">rt<"bottom"><"clear">',
                 "searching": false,
                 "ordering": false,
                 "destroy": true,
+                "lengthMenu": [50],
                 "data": teacher_list,
                 "column":[
                     {title: '工号'},
