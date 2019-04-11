@@ -187,6 +187,10 @@
             <div><p class="bg-info">当前不再排课当中</p></div>
           {% else %}
             <div><p class="bg-info">当前在排课中：目标学期为{{ year }}学年</p></div>
+          <div>
+            <p class="bg-warning">博士生课程限博士生导师申报，法学硕士必修课程限副高级职称以上者（含教授，副教授，青年副研究员）申报。</p>
+            <p class="bg-warning">申报课程的最低要求：难度为9以上的课程，不少于1门；难度为7以上的课程，不少于4门；合格的申报课程总门数不少于7门（教学岗专任教师不少于10门）</p>
+          </div>
           {% endif %}
           <div class="row">
             <div class="col-sm-2">
@@ -523,13 +527,22 @@
               <p>法律博士: <b id="list_4_a"></b></p>
               <p>申报课程总数: <b id="total_high_course_count"></b></p>
               <br>
-              <p>其中, 高难度课程(难度大于7): </p>
-              <p>本科: <b id="list_1_p"></b></p>
-              <p>法学硕士: <b id="list_2_p"></b></p>
-              <p>法律硕士: <b id="list_3_p"></b></p>
-              <p>法律博士: <b id="list_4_p"></b></p>
-              <p>高难度课程总数: <b id="total_high_degree_count"></b></p>
-              <p>要求: <b id="require_high_degree_count"></b></p>
+              <p>其中, 高难度课程(难度大于等于9): </p>
+              <p>本科: <b id="list_1_p1"></b></p>
+              <p>法学硕士: <b id="list_2_p1"></b></p>
+              <p>法律硕士: <b id="list_3_p1"></b></p>
+              <p>法律博士: <b id="list_4_p1"></b></p>
+              <br>
+              <p>其中, 高难度课程(难度大于等于7小于9): </p>
+              <p>本科: <b id="list_1_p2"></b></p>
+              <p>法学硕士: <b id="list_2_p2"></b></p>
+              <p>法律硕士: <b id="list_3_p2"></b></p>
+              <p>法律博士: <b id="list_4_p2"></b></p>
+              <br>
+              <p>难度大于等于7课程总数: <b id="total_high_degree_count_2"></b></p>
+              <p>要求: <b id="require_high_degree_count_2"></b></p>
+              <p>难度大于等于9课程总数: <b id="total_high_degree_count_1"></b></p>
+              <p>要求: <b id="require_high_degree_count_1"></b></p>
               <p style="display:none" id="p_pass">您的申报符合要求</p>
               <p style="display:none" id="p_fail">您的申报不符合要求, 请简述您的理由</p>
               <textarea style="display:none" id="t_fail" class="form-control" rows="3"></textarea>

@@ -458,9 +458,12 @@ function check_apply_status(teacher_id){
 
 }
 function init_modal_content(result){
-    HIGH_DEGREE = 8;
-    CRITICAL_VALUE = 2;
-    total_high_degree_count = 0;
+    HIGH_DEGREE_1 = 9;
+    HIGH_DEGREE_2 = 7;
+    CRITICAL_VALUE_1 = 1;
+    CRITICAL_VALUE_2 = 4
+    total_high_degree_count_1 = 0;
+    total_high_degree_count_2 = 0;
     list_1 = result['list_1'];
     list_2 = result['list_2'];
     list_3 = result['list_3'];
@@ -470,63 +473,96 @@ function init_modal_content(result){
     obj_list_2_a = document.getElementById('list_2_a')
     obj_list_3_a = document.getElementById('list_3_a')
     obj_list_4_a = document.getElementById('list_4_a')
-    obj_list_1_p = document.getElementById('list_1_p')
-    obj_list_2_p = document.getElementById('list_2_p')
-    obj_list_3_p = document.getElementById('list_3_p')
-    obj_list_4_p = document.getElementById('list_4_p')
+    obj_list_1_p1 = document.getElementById('list_1_p1')
+    obj_list_2_p1 = document.getElementById('list_2_p1')
+    obj_list_3_p1 = document.getElementById('list_3_p1')
+    obj_list_4_p1 = document.getElementById('list_4_p1')
+    obj_list_1_p2 = document.getElementById('list_1_p2')
+    obj_list_2_p2 = document.getElementById('list_2_p2')
+    obj_list_3_p2 = document.getElementById('list_3_p2')
+    obj_list_4_p2 = document.getElementById('list_4_p2')
     var str1 = "";
-    var str2 = "";
+    var str21 = "";
+    var str22 = "";
     for (var i=0; i < list_1.length; i++){
         str1 += list_1[i]+' '
-        if (Number(list_1[i][2]) >= HIGH_DEGREE){
-            str2 += list_1[i]+' '
-            total_high_degree_count += 1
+        if (Number(list_1[i][2]) >= HIGH_DEGREE_2){
+            if (Number(list_1[i][2]) < HIGH_DEGREE_1){
+                str22 += list_1[i]+' '
+                total_high_degree_count_2 += 1}
+            else{
+                str21 += list_1[i]+' '
+                total_high_degree_count_1 += 1
+            }
         }
     }
     obj_list_1_a.innerText = str1;
-    obj_list_1_p.innerText = str2;
+    obj_list_1_p1.innerText = str21;
+    obj_list_1_p2.innerText = str22;
 
-    str1 = "";
-    str2 = "";
+    var str1 = "";
+    var str21 = "";
+    var str22 = "";
     for (var i=0; i < list_2.length; i++){
         str1 += list_2[i]+' '
-        if (Number(list_2[i][2]) >= HIGH_DEGREE){
-            str2 += list_2[i]+' '
-            total_high_degree_count += 1
+        if (Number(list_2[i][2]) >= HIGH_DEGREE_2){
+            if (Number(list_2[i][2]) < HIGH_DEGREE_1){
+                str22 += list_2[i]+' '
+                total_high_degree_count_2 += 1}
+            else{
+                str21 += list_2[i]+' '
+                total_high_degree_count_1 += 1
+            }
         }
     }
     obj_list_2_a.innerText = str1;
-    obj_list_2_p.innerText = str2;
+    obj_list_2_p1.innerText = str21;
+    obj_list_2_p2.innerText = str22;
 
-    str1 = "";
-    str2 = "";
+    var str1 = "";
+    var str21 = "";
+    var str22 = "";
     for (var i=0; i < list_3.length; i++){
         str1 += list_3[i]+' '
-        if (Number(list_3[i][2]) >= HIGH_DEGREE){
-            str2 += list_3[i]+' '
-            total_high_degree_count += 1
+        if (Number(list_3[i][2]) >= HIGH_DEGREE_2){
+            if (Number(list_3[i][2]) < HIGH_DEGREE_1){
+                str22 += list_3[i]+' '
+                total_high_degree_count_2 += 1}
+            else{
+                str21 += list_3[i]+' '
+                total_high_degree_count_1 += 1
+            }
         }
     }
     obj_list_3_a.innerText = str1;
-    obj_list_3_p.innerText = str2;
+    obj_list_3_p1.innerText = str21;
+    obj_list_3_p2.innerText = str22;
 
-    str1 = "";
-    str2 = "";
+    var str1 = "";
+    var str21 = "";
+    var str22 = "";
     for (var i=0; i < list_4.length; i++){
         str1 += list_4[i]+' '
-        if (Number(list_4[i][2]) >= HIGH_DEGREE){
-            str2 += list_4[i]+' '
-            total_high_degree_count += 1
+        if (Number(list_4[i][2]) >= HIGH_DEGREE_2){
+            if (Number(list_4[i][2]) < HIGH_DEGREE_1){
+                str22 += list_4[i]+' '
+                total_high_degree_count_2 += 1}
+            else{
+                str21 += list_4[i]+' '
+                total_high_degree_count_1 += 1
+            }
         }
     }
     obj_list_4_a.innerText = str1;
-    obj_list_4_p.innerText = str2;
-    document.getElementById('total_high_degree_count').innerText = total_high_degree_count
+    obj_list_4_p1.innerText = str21;
+    obj_list_4_p2.innerText = str22;
+    total_high_degree_count_2 += total_high_degree_count_1;
+    document.getElementById('total_high_degree_count_1').innerText = total_high_degree_count_1
+    document.getElementById('total_high_degree_count_2').innerText = total_high_degree_count_2
     document.getElementById('total_high_course_count').innerText = total_high_course_count
-    document.getElementById('require_high_degree_count').innerText = CRITICAL_VALUE
-    console.log(total_high_degree_count)
-    console.log(CRITICAL_VALUE)
-    if (total_high_degree_count >= CRITICAL_VALUE){
+    document.getElementById('require_high_degree_count_1').innerText = CRITICAL_VALUE_1
+    document.getElementById('require_high_degree_count_2').innerText = CRITICAL_VALUE_2
+    if (total_high_degree_count_1 >= CRITICAL_VALUE_1 && total_high_degree_count_2 >= CRITICAL_VALUE_2){
         document.getElementById('p_pass').style.display = "block"
         document.getElementById('p_fail').style.display = "none"
         document.getElementById('t_fail').style.display = "none"

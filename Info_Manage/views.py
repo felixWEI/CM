@@ -438,16 +438,18 @@ def remove_teacher_from_course_info(course_id, user_name):
 def teacher_submit_apply_status(request):
     status_code = request.POST['status']
     teacher_id = request.POST['teacher_id']
-    search_result = TeacherInfo.objects.filter(teacher_id=teacher_id)
+    search_result = TeacherInfo.objects.filter(teacher_id=teacher_id, lock_state=0)
     if search_result:
         teacher_name = search_result[0].teacher_name
     else:
         result = json.dumps({'status': '该老师没有在系统中注册'})
         return HttpResponse(result)
     if status_code == 'check':
-        search_result = CourseInfo.objects.all()
+        search_result = CourseInfo.objects.filter(lock_state=0)
         result_teacher = {STUDENT_TYPE[0]: [], STUDENT_TYPE[1]: [], STUDENT_TYPE[2]: [], STUDENT_TYPE[3]: []}
         for eachCourse in search_result:
+            if eachCourse.course_relate and eachCourse.student_type != '本科':
+                continue
             teacher_list = eachCourse.teacher_ordered.split(',')
             if teacher_name in teacher_list:
                 tmp = [eachCourse.course_id, eachCourse.course_name, eachCourse.course_degree]
