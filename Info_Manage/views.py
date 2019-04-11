@@ -52,13 +52,21 @@ def teacher_manage(request):
         year = search_result[0].s1_year_info
     else:
         year = 'None'
-    teacher_table = TeacherInfo.objects.all()
-    course_table = CourseInfo.objects.all()
+    teacher_table = TeacherInfo.objects.filter(lock_state=0)
+    course_table = CourseInfo.objects.filter(lock_state=0)
     search_result = []
     weight_total_1 = 1
     weight_total_2 = 1
     apply_done = 0
+
     for eachItem in teacher_table:
+        apply_course_count = 0
+        for eachCourse in course_table:
+            if eachCourse.course_relate and eachCourse.student_type != '本科':
+                continue
+            teacher_order_list = eachCourse.teacher_ordered.split(',')
+            if eachItem.teacher_name in teacher_order_list:
+                apply_course_count += 1
         weight_total_1 += eachItem.first_semester_expect
         weight_total_2 += eachItem.second_semester_expect
         if eachItem.teacher_apply_done and eachItem.teacher_apply_done == '申报结束':
@@ -75,7 +83,11 @@ def teacher_manage(request):
                               eachItem.second_semester_hours if eachItem.second_semester_hours else 0,
                               eachItem.first_semester_degree if eachItem.first_semester_degree else 0,
                               eachItem.second_semester_degree if eachItem.second_semester_degree else 0,
-                              eachItem.teacher_apply_done, eachItem.notes, eachItem.lock_state])
+                              eachItem.teacher_apply_done,
+                              eachItem.notes,
+                              apply_course_count,
+                              eachItem.lock_state
+                              ])
     current_teacher_count = len(search_result)
     total_hours_1 = 0
     total_hours_2 = 0
@@ -96,7 +108,7 @@ def teacher_manage(request):
     summary_table = [current_teacher_count, apply_done, expect_hours_for_semester1, expect_hours_for_semester2,
                      expect_degree_for_semester1, expect_degree_for_semester2]
     table_head = ['教师代码', '教师姓名', '学科组','职称','导师类型','出生年月','期望学时1(%)', '期望学时2(%)', '已分配学时1', '已分配学时2','已分配难度1',
-                  '已分配难度2' ,'申报完成', '特殊理由', '状态']
+                  '已分配难度2' ,'申报完成', '特殊理由', '已申报课程数','状态']
     return render(request, 'teacher_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username,
                                                    'teacher_table': search_result, 'summary_table': summary_table,
                                                    'table_head': table_head, 'year': year})
@@ -1824,15 +1836,27 @@ def arrange_export_report(request):
     now = datetime.now().strftime("%Y-%m-%d %H-%M")
     ws = xlwt.Workbook(encoding='utf-8')
     w = ws.add_sheet(u"排课结果")
-    course_table = CourseInfo.objects.all()
+    course_table = CourseInfo.objects.filter(lock_state=0)
     search_result = []
     for eachItem in course_table:
-        search_result.append([eachItem.course_id, eachItem.course_name, eachItem.student_type,
-                              eachItem.year, eachItem.class_name, eachItem.semester,
-                              eachItem.course_hour, eachItem.course_degree, eachItem.student_type,
-                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.teacher_final_pick])
+        search_result.append([eachItem.course_id,
+                              eachItem.course_name,
+                              eachItem.major,
+                              eachItem.student_type,
+                              eachItem.year,
+                              eachItem.class_name,
+                              eachItem.semester,
+                              eachItem.course_hour,
+                              eachItem.course_degree,
+                              eachItem.course_type,
+                              eachItem.allow_teachers,
+                              eachItem.times_every_week,
+                              eachItem.teacher_final_pick,
+                              eachItem.course_relate,
+                              eachItem.language,
+                              eachItem.notes])
 
-    table_head = ['代码', '名称', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '上课老师']
+    table_head = ['代码', '名称', '学科', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '上课老师', '打通课程代码','上课语言','是否精品课程']
     for col, eachTitle in enumerate(table_head):
         w.write(0, col, eachTitle)
     for row, eachRow in enumerate(search_result):

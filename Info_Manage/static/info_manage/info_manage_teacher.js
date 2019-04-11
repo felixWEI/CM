@@ -53,6 +53,7 @@ $(document).ready(function () {
         document.getElementById('8').value = t.row('.selected').data()[8];
         document.getElementById('9').value = t.row('.selected').data()[9];
         document.getElementById('14').value = t.row('.selected').data()[14];
+        document.getElementById('15').value = t.row('.selected').data()[15];
 	});
 
     $('#edit_teacher_info').click( function(){
@@ -70,10 +71,11 @@ $(document).ready(function () {
         degree_semester_2 = document.getElementById('11').value
         teacher_apply_status = document.getElementById('12').value
         notes = document.getElementById('13').value
-        lock_state = document.getElementById('14').value
+        apply_course_count = document.getElementById('14').value
+        lock_state = document.getElementById('15').value
         t.row('.selected').data([teacher_code, teacher_name, major, teacher_type, teacher_title, birthday,
         first_semester_expect, second_semester_expect, hours_semester_1,hours_semester_2,
-        degree_semester_1, degree_semester_2, teacher_apply_status, notes, lock_state]).draw();
+        degree_semester_1, degree_semester_2, teacher_apply_status, notes, apply_course_count, lock_state]).draw();
         $.ajax({
             type: 'POST',
             url: '/teacher_change_expect/',
