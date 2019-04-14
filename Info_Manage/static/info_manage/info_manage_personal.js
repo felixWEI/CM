@@ -474,14 +474,15 @@ function init_modal_content(result){
     HIGH_DEGREE_1 = 9;
     HIGH_DEGREE_2 = 7;
     CRITICAL_VALUE_1 = 1;
-    CRITICAL_VALUE_2 = 4;
+    CRITICAL_VALUE_2 = 5;
+    CRITICAL_VALUE_3 = 7;
     total_high_degree_count_1 = 0;
     total_high_degree_count_2 = 0;
     list_1 = result['list_1'];
     list_2 = result['list_2'];
     list_3 = result['list_3'];
     list_4 = result['list_4'];
-    total_high_course_count = list_1.length + list_2.length + list_3.length + list_4.length;
+    total_course_count = list_1.length + list_2.length + list_3.length + list_4.length;
     obj_list_1_a = document.getElementById('list_1_a')
     obj_list_2_a = document.getElementById('list_2_a')
     obj_list_3_a = document.getElementById('list_3_a')
@@ -572,10 +573,11 @@ function init_modal_content(result){
     total_high_degree_count_2 += total_high_degree_count_1;
     document.getElementById('total_high_degree_count_1').innerText = total_high_degree_count_1
     document.getElementById('total_high_degree_count_2').innerText = total_high_degree_count_2
-    document.getElementById('total_high_course_count').innerText = total_high_course_count
+    document.getElementById('total_course_count').innerText = total_course_count
     document.getElementById('require_high_degree_count_1').innerText = CRITICAL_VALUE_1
     document.getElementById('require_high_degree_count_2').innerText = CRITICAL_VALUE_2
-    if (total_high_degree_count_1 >= CRITICAL_VALUE_1 && total_high_degree_count_2 >= CRITICAL_VALUE_2){
+     document.getElementById('require_course_count').innerText = CRITICAL_VALUE_3
+    if (total_high_degree_count_1 >= CRITICAL_VALUE_1 && total_high_degree_count_2 >= CRITICAL_VALUE_2 && total_course_count >= CRITICAL_VALUE_3){
         document.getElementById('p_pass').style.display = "block"
         document.getElementById('p_fail').style.display = "none"
         document.getElementById('t_fail').style.display = "none"

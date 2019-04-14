@@ -1877,7 +1877,7 @@ def arrange_export_report(request):
     now = datetime.now().strftime("%Y-%m-%d %H-%M")
     ws = xlwt.Workbook(encoding='utf-8')
     w = ws.add_sheet(u"排课结果")
-    course_table = CourseInfo.objects.filter(lock_state=0)
+    course_table = CourseInfo.objects.filter()
     search_result = []
     for eachItem in course_table:
         search_result.append([eachItem.course_id,
@@ -1895,9 +1895,11 @@ def arrange_export_report(request):
                               eachItem.teacher_final_pick,
                               eachItem.course_relate,
                               eachItem.language,
-                              eachItem.notes])
+                              eachItem.notes,
+                              eachItem.lock_state,
+                              eachItem.course_parallel])
 
-    table_head = ['代码', '名称', '学科', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '上课老师', '打通课程代码','上课语言','是否精品课程']
+    table_head = ['代码', '名称', '学科', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '上课老师', '打通课程代码','上课语言','是否精品课程','是否激活','平行班级数']
     for col, eachTitle in enumerate(table_head):
         w.write(0, col, eachTitle)
     for row, eachRow in enumerate(search_result):
