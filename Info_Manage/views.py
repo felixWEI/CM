@@ -370,7 +370,7 @@ def insert_teacher_extend_info_into_db(teacher_list):
         major = eachTeacher[1].value
         teacher_id = eachTeacher[3].value
         if eachTeacher[4].value:
-            birthday = xlrd.xldate.xldate_as_datetime(eachTeacher[4].value, 1)
+            birthday = xlrd.xldate.xldate_as_datetime(eachTeacher[4].value, 0)
         else:
             birthday = now
         teacher_title = eachTeacher[5].value
@@ -582,18 +582,38 @@ def class_filter_by_submit(request):
     semester = request.POST['semester'].strip().split(' ')
     table_id = request.POST['table_id']
     major_list = json.loads(request.POST['major_list'])
-    course_table = CourseInfo.objects.filter(lock_state=0)
+    course_table = CourseInfo.objects.filter()
     search_result = []
     for eachItem in course_table:
         if eachItem.semester in semester and eachItem.student_type in student_type:
             if eachItem.major and eachItem.major in major_list:
                 if table_id == 'table_course_manage':
                     for eachClass in eachItem.class_name.split(' '):
-                        search_result.append([eachItem.course_id, eachItem.course_name, eachItem.major, eachClass.split('-')[0],
-                                              eachClass.split('-')[-1].split('_')[0], eachClass.split('-')[-1].split('_')[-1], eachItem.semester,
-                                              eachItem.course_hour, eachItem.course_degree, eachItem.course_type,eachItem.language,
-                                              eachItem.allow_teachers, eachItem.times_every_week, eachItem.suit_teacher, eachItem.course_relate, eachItem.notes,eachItem.lock_state])
+                        if eachItem.lock_state == 1:
+                            lock_state = '非激活'
+                        else:
+                            lock_state = ''
+                        search_result.append([eachItem.course_id,
+                                              eachItem.course_name,
+                                              eachItem.major,
+                                              eachClass.split('-')[0],
+                                              eachClass.split('-')[-1].split('_')[0],
+                                              eachClass.split('-')[-1].split('_')[-1],
+                                              eachItem.semester,
+                                              eachItem.course_hour,
+                                              eachItem.course_degree,
+                                              eachItem.course_type,
+                                              eachItem.language,
+                                              eachItem.allow_teachers,
+                                              eachItem.times_every_week,
+                                              eachItem.suit_teacher,
+                                              eachItem.course_relate,
+                                              eachItem.notes,
+                                              lock_state,
+                                              eachItem.course_parallel])
                 elif table_id == 'table_course_personal':
+                    if eachItem.lock_state == 1:
+                        continue
                     teacher_list = eachItem.teacher_ordered.split(',') if eachItem.teacher_ordered else []
                     if request.user.last_name + request.user.first_name in teacher_list \
                             and request.user.last_name + request.user.first_name != '':
@@ -609,10 +629,22 @@ def class_filter_by_submit(request):
                             if CourseInfo.objects.filter(course_id=eachCourseId):
                                 class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
                     class_name_str = ' '.join(class_name_list)
-                    search_result.append([eachItem.course_id, eachItem.course_name, eachItem.major,eachItem.student_type,
-                                          class_name_str, eachItem.semester, eachItem.course_hour,
-                                          eachItem.course_degree, eachItem.course_type,eachItem.language,
-                                          eachItem.allow_teachers, eachItem.times_every_week, eachItem.course_relate, eachItem.course_parallel, eachItem.notes, tmp])
+                    search_result.append([eachItem.course_id,
+                                          eachItem.course_name,
+                                          eachItem.major,
+                                          eachItem.student_type,
+                                          class_name_str,
+                                          eachItem.semester,
+                                          eachItem.course_hour,
+                                          eachItem.course_degree,
+                                          eachItem.course_type,
+                                          eachItem.language,
+                                          eachItem.allow_teachers,
+                                          eachItem.times_every_week,
+                                          eachItem.course_relate,
+                                          eachItem.course_parallel,
+                                          eachItem.notes,
+                                          tmp])
     result = json.dumps({'result': search_result})
     return HttpResponse(result)
 
@@ -620,6 +652,9 @@ def class_filter_by_submit(request):
 @csrf_exempt
 def class_save_one_row(request):
     course_info = json.loads(request.POST['row_data'])
+    # in case of wrong course lock state input
+    if int(course_info[-2]) != 1:
+        course_info[-2] = 0
     old_class_info = request.POST['old_data']
     if 'old_course_id' in request.POST:
         old_course_id = request.POST['old_course_id']
@@ -650,7 +685,8 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                                                      suit_teacher=course_info[13],
                                                                      course_relate=course_info[14],
                                                                      notes=course_info[15],
-                                                                     course_parallel=course_info[16],
+                                                                     lock_state=course_info[16],
+                                                                     course_parallel=course_info[17],
                                                                      update_time=now)
         else:
             class_list = search_result[0].class_name.split(' ')
@@ -677,7 +713,8 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                                                      suit_teacher=suit_teacher,
                                                                      course_relate=course_info[14],
                                                                      notes=course_info[15],
-                                                                     course_parallel=course_info[16],
+                                                                     lock_state=course_info[16],
+                                                                     course_parallel=course_info[17],
                                                                      update_time=now)
     else:
         # remove class from previous course
@@ -711,7 +748,8 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                   teacher_ordered='',
                                   course_relate=course_info[14],
                                   notes=course_info[15],
-                                  course_parallel=course_info[16],
+                                  lock_state=course_info[16],
+                                  course_parallel=course_info[17],
                                   update_time=now)
 
 
@@ -734,7 +772,8 @@ def save_course_into_database_by_add(course_info, old_class_info):
                                                                      # suit_teacher=course_info[11],
                                                                      course_relate=course_info[14],
                                                                      notes=course_info[15],
-                                                                     course_parallel=course_info[16],
+                                                                     lock_state=course_info[16],
+                                                                     course_parallel=course_info[17],
                                                                      update_time=now)
         else:
             class_list = search_result[0].class_name.split(' ')
@@ -759,7 +798,8 @@ def save_course_into_database_by_add(course_info, old_class_info):
                                                                      # suit_teacher=suit_teacher,
                                                                      course_relate=course_info[14],
                                                                      notes=course_info[15],
-                                                                     course_parallel=course_info[16],
+                                                                     lcok_state=course_info[16],
+                                                                     course_parallel=course_info[17],
                                                                      update_time=now)
     else:
         combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
@@ -779,7 +819,8 @@ def save_course_into_database_by_add(course_info, old_class_info):
                                   suit_teacher='',
                                   teacher_ordered='',
                                   notes=course_info[15],
-                                  course_parallel=course_info[16],
+                                  lock_state=course_info[16],
+                                  course_parallel=course_info[17],
                                   update_time=now)
 
 

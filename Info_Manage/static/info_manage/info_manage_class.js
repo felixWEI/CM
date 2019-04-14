@@ -1,3 +1,4 @@
+CLASS_TABLE_LENGTH = 17;
 $(document).ready(function () {
 	t = $('#table_course_manage').DataTable({
         dom: 'Blfrtip',
@@ -147,6 +148,7 @@ $(document).ready(function () {
                     document.getElementById('a_14').removeAttribute('disabled')
                     document.getElementById('a_15').removeAttribute('disabled')
                     document.getElementById('a_16').removeAttribute('disabled')
+                    document.getElementById('a_17').removeAttribute('disabled')
                 }else{
                     document.getElementById('a_1').value = ''
                     document.getElementById('a_2').value = ''
@@ -174,6 +176,7 @@ $(document).ready(function () {
                     document.getElementById('a_14').removeAttribute('disabled')
                     document.getElementById('a_15').removeAttribute('disabled')
                     document.getElementById('a_16').removeAttribute('disabled')
+                    document.getElementById('a_17').removeAttribute('disabled')
                 }
             },
             error: function (){
@@ -264,9 +267,9 @@ function submit_checkbox_info(){
     });
 }
 function add_course_info(length){
-    length = length || 16;
+    length = length || CLASS_TABLE_LENGTH;
     row_data = Array();
-    for (var i=0; i < Number(length); i++ ){
+    for (var i=0; i <= Number(length); i++ ){
         if ( document.getElementById('a_'+String(i)).value !== undefined ){
             row_data[i] = document.getElementById('a_'+String(i)).value;
             if (i==0){
@@ -349,6 +352,7 @@ function edit_course_info(){
     document.getElementById('e_14').value = t.row('.selected').data()[14];
     document.getElementById('e_15').value = t.row('.selected').data()[15];
     document.getElementById('e_16').value = t.row('.selected').data()[16];
+    document.getElementById('e_17').value = t.row('.selected').data()[17];
 	$.ajax({
 	    type: 'POST',
         url:'/class_get_suit_teacher/',
@@ -415,7 +419,7 @@ function cancel_request(){
 
 function submit_edit_info(){
     row_data = Array();
-    for (var i=0; i < 17; i++ ){
+    for (var i=0; i <= CLASS_TABLE_LENGTH; i++ ){
         if ( document.getElementById('e_'+String(i)).value !== undefined ){
             row_data[i] = document.getElementById('e_'+String(i)).value;
             if (i==0){

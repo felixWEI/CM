@@ -317,14 +317,21 @@ function request_course(){
     $('#requestModal').modal('show');
     document.getElementById('e_0').value = t.row('.selected').data()[0];
     document.getElementById('e_1').value = t.row('.selected').data()[1];
-    document.getElementById('e_2').innerHTML = '<option>'+t.row('.selected').data()[2]+'</option>'+document.getElementById('e_2').innerHTML;
-    document.getElementById('e_4').value = t.row('.selected').data()[3];
-    document.getElementById('e_5').innerHTML = '<option>'+t.row('.selected').data()[4]+'</option>'+document.getElementById('e_5').innerHTML;
-    document.getElementById('e_6').innerHTML = '<option>'+t.row('.selected').data()[5]+'</option>'+document.getElementById('e_6').innerHTML;
-    document.getElementById('e_7').innerHTML = '<option>'+t.row('.selected').data()[6]+'</option>'+document.getElementById('e_7').innerHTML;
-    document.getElementById('e_8').value = t.row('.selected').data()[7];
-    document.getElementById('e_9').value = t.row('.selected').data()[8];
-    document.getElementById('e_10').value = t.row('.selected').data()[9];
+    document.getElementById('e_2').value = t.row('.selected').data()[2];
+    document.getElementById('e_3').value = t.row('.selected').data()[3];
+    document.getElementById('e_4').value = t.row('.selected').data()[4];
+    document.getElementById('e_5').value = t.row('.selected').data()[5];
+    document.getElementById('e_6').value = t.row('.selected').data()[6];
+    document.getElementById('e_7').value = t.row('.selected').data()[7];
+    document.getElementById('e_8').value = t.row('.selected').data()[8];
+    document.getElementById('e_9').value = t.row('.selected').data()[9];
+    document.getElementById('e_10').value = t.row('.selected').data()[10];
+    document.getElementById('e_11').value = t.row('.selected').data()[11];
+    document.getElementById('e_12').value = t.row('.selected').data()[12];
+    document.getElementById('e_13').value = t.row('.selected').data()[13];
+    document.getElementById('e_14').value = t.row('.selected').data()[14];
+    document.getElementById('e_15').value = t.row('.selected').data()[15];
+
 }
 function cancel_request(){
     if ( t.row('.selected').length === 0 ){
@@ -335,19 +342,25 @@ function cancel_request(){
     console.log(t.row('.selected').data());
     document.getElementById('c_0').value = t.row('.selected').data()[0];
     document.getElementById('c_1').value = t.row('.selected').data()[1];
-    document.getElementById('c_2').innerHTML = '<option>'+t.row('.selected').data()[2]+'</option>'+document.getElementById('e_2').innerHTML;
-    document.getElementById('c_4').value = t.row('.selected').data()[3];
-    document.getElementById('c_5').innerHTML = '<option>'+t.row('.selected').data()[4]+'</option>'+document.getElementById('e_5').innerHTML;
-    document.getElementById('c_6').innerHTML = '<option>'+t.row('.selected').data()[5]+'</option>'+document.getElementById('e_6').innerHTML;
-    document.getElementById('c_7').innerHTML = '<option>'+t.row('.selected').data()[6]+'</option>'+document.getElementById('e_7').innerHTML;
-    document.getElementById('c_8').value = t.row('.selected').data()[7];
-    document.getElementById('c_9').value = t.row('.selected').data()[8];
-    document.getElementById('c_10').value = t.row('.selected').data()[9];
+    document.getElementById('c_2').value = t.row('.selected').data()[2];
+    document.getElementById('c_3').value = t.row('.selected').data()[3];
+    document.getElementById('c_4').value = t.row('.selected').data()[4];
+    document.getElementById('c_5').value = t.row('.selected').data()[5];
+    document.getElementById('c_6').value = t.row('.selected').data()[6];
+    document.getElementById('c_7').value = t.row('.selected').data()[7];
+    document.getElementById('c_8').value = t.row('.selected').data()[8];
+    document.getElementById('c_9').value = t.row('.selected').data()[9];
+    document.getElementById('c_10').value = t.row('.selected').data()[10];
+    document.getElementById('c_11').value = t.row('.selected').data()[11];
+    document.getElementById('c_12').value = t.row('.selected').data()[12];
+    document.getElementById('c_13').value = t.row('.selected').data()[13];
+    document.getElementById('c_14').value = t.row('.selected').data()[14];
+    document.getElementById('c_15').value = t.row('.selected').data()[15];
 }
 
 function submit_edit_info(){
     row_data = Array();
-    for (var i=0; i < 12; i++ ){
+    for (var i=0; i <= 17; i++ ){
         if ( document.getElementById('e_'+String(i)).value !== undefined ){
             row_data[i] = document.getElementById('e_'+String(i)).value;
             if (i==0){
@@ -461,7 +474,7 @@ function init_modal_content(result){
     HIGH_DEGREE_1 = 9;
     HIGH_DEGREE_2 = 7;
     CRITICAL_VALUE_1 = 1;
-    CRITICAL_VALUE_2 = 4
+    CRITICAL_VALUE_2 = 4;
     total_high_degree_count_1 = 0;
     total_high_degree_count_2 = 0;
     list_1 = result['list_1'];

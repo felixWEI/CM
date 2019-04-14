@@ -287,100 +287,62 @@
                     <label for="e_0" class="col-sm-2 control-label">{{ table_head.0 }}</label>
                     <div class="col-sm-10">
                         <div class="input-group">
-                            <input id="e_0"  disabled=disabled class="form-control" type="text" placeholder="课程号码">
+                            <input id="e_0"  disabled=disabled class="form-control" type="text" placeholder="{{ table_head.0 }}">
                         </div>
                     </div>
                 </div>
 
                 <div class="row form-group">
                     <label for="e_1" class="col-sm-2 control-label">{{ table_head.1 }}</label>
-                    <div class="col-sm-10"><input id="e_1" disabled=disabled class="form-control" type="text" placeholder="课程名称"></div>
+                    <div class="col-sm-4"><input id="e_1" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.1 }}"></div>
                 </div>
                 <div class="row form-group">
                     <label for="e_2" class="col-sm-2 control-label">{{ table_head.2 }}</label>
-                    <div class="col-sm-4">
-                        <select id="e_2" disabled=disabled class="form-control">
-                          {% for row in table_default.2 %}
-                          <option>{{row}}</option>
-                          {% endfor %}
-                        </select>
-                    </div>
-                    <!--<label for="e_3" class="col-sm-2 control-label">{{ table_head.3 }}</label>-->
-                    <!--<div class="col-sm-4">-->
-                        <!--<select id="e_3" disabled=disabled class="form-control">-->
-                          <!--{% for row in table_default.3 %}-->
-                          <!--<option>{{row}}</option>-->
-                          <!--{% endfor %}-->
-                        <!--</select>-->
-                    <!--</div>-->
+                    <div class="col-sm-4"><input id="e_2" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.2 }}"></div>
                 </div>
                 <div class="row form-group">
-                    <label for="e_4" class="col-sm-2 control-label">{{ table_head.3 }}</label>
-                    <div class="col-sm-10"><input id="e_4" disabled=disabled class="form-control" type="text" placeholder="班级"></div>
+                    <label for="e_3" class="col-sm-2 control-label">{{ table_head.3 }}</label>
+                    <div class="col-sm-4"><input id="e_3" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.3 }}"></div>
                 </div>
                 <div class="row form-group">
-                    <label for="e_5" class="col-sm-2 control-label">{{ table_head.4 }}</label>
-                    <div class="col-sm-4">
-                        <select id="e_5" disabled=disabled class="form-control">
-                          {% for row in table_default.5 %}
-                          <option>{{row}}</option>
-                          {% endfor %}
-                        </select>
-                    </div>
-                    <label for="e_6" class="col-sm-2 control-label">{{ table_head.5 }}</label>
-                    <div class="col-sm-4">
-                        <select id="e_6" disabled=disabled class="form-control">
-                          {% for row in table_default.6 %}
-                          <option>{{row}}</option>
-                          {% endfor %}
-                        </select>
-                    </div>
+                    <label for="e_4" class="col-sm-2 control-label">{{ table_head.4 }}</label>
+                    <div class="col-sm-10"><input id="e_4" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.4 }}"></div>
                 </div>
                 <div class="row form-group">
-                    <div class="col-sm-6">
-                        <div class="row form-group">
-                            <label for="e_7" class="col-sm-4 control-label">{{ table_head.6 }}</label>
-                            <div class="col-sm-8">
-                                <select id="e_7" disabled=disabled class="form-control">
-                                {% for row in table_default.7 %}
-                                <option>{{row}}</option>
-                                {% endfor %}
-                                </select>
-                            </div>
-                          </div>
-                        <div class="row form-group">
-                          <label for="e_8" class="col-sm-4 control-label">{{ table_head.7 }}</label>
-                          <div class="col-sm-8"><input id="e_8" disabled=disabled class="form-control" type="text" placeholder="必/选"></div>
-                        </div>
-                        <div class="row form-group">
-                          <label for="e_9" class="col-sm-4 control-label">{{ table_head.8 }}</label>
-                          <div class="col-sm-8"><input id="e_9" disabled=disabled class="form-control" type="text" placeholder="教师数"></div>
-                        </div>
-                        <div class="row form-group">
-                          <label for="e_10" class="col-sm-4 control-label">{{ table_head.9 }}</label>
-                          <div class="col-sm-8"><input id="e_10" disabled=disabled class="form-control" type="text" placeholder="周上课次数"></div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="row form-group" hidden="hidden">
-                            <label for="e_11" class="col-sm-4 control-label">{{ table_head.10 }}</label>
-                            <div class="col-sm-8">
-                                <table id="e_11" class="table table-bordered">
-                                    <tbody>
-                                        <tr>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    <label for="e_5" class="col-sm-2 control-label">{{ table_head.5 }}</label>
+                    <div class="col-sm-4"><input id="e_5" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.5 }}"></div>
+                    <label for="e_6" class="col-sm-2 control-label">{{ table_head.6 }}</label>
+                    <div class="col-sm-4"><input id="e_6" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.6 }}"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="e_7" class="col-sm-2 control-label">{{ table_head.7 }}</label>
+                    <div class="col-sm-4"><input id="e_7" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.7 }}"></div>
+                    <label for="e_8" class="col-sm-2 control-label">{{ table_head.8 }}</label>
+                    <div class="col-sm-4"><input id="e_8" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.8 }}"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="e_9" class="col-sm-2 control-label">{{ table_head.9 }}</label>
+                    <div class="col-sm-4"><input id="e_9" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.9 }}"></div>
+                    <label for="e_10" class="col-sm-2 control-label">{{ table_head.10 }}</label>
+                    <div class="col-sm-4"><input id="e_10" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.10 }}"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="e_11" class="col-sm-2 control-label">{{ table_head.11 }}</label>
+                    <div class="col-sm-4"><input id="e_11" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.11 }}"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="e_12" class="col-sm-2 control-label">{{ table_head.12 }}</label>
+                    <div class="col-sm-10"><input id="e_12" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.12 }}"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="e_13" class="col-sm-2 control-label">{{ table_head.13 }}</label>
+                    <div class="col-sm-4"><input id="e_13" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.13 }}"></div>
+                    <label for="e_14" class="col-sm-2 control-label">{{ table_head.14 }}</label>
+                    <div class="col-sm-4"><input id="e_14" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.14 }}"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="e_15" class="col-sm-2 control-label">{{ table_head.15 }}</label>
+                    <div class="col-sm-4"><input id="e_15" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.15 }}"></div>
                 </div>
             </form>
           </div>
@@ -405,100 +367,62 @@
                     <label for="c_0" class="col-sm-2 control-label">{{ table_head.0 }}</label>
                     <div class="col-sm-10">
                         <div class="input-group">
-                            <input id="c_0"  disabled=disabled class="form-control" type="text" placeholder="课程号码">
+                            <input id="c_0"  disabled=disabled class="form-control" type="text" placeholder="{{ table_head.0 }}">
                         </div>
                     </div>
                 </div>
 
                 <div class="row form-group">
-                    <label for="e_1" class="col-sm-2 control-label">{{ table_head.1 }}</label>
-                    <div class="col-sm-10"><input id="c_1" disabled=disabled class="form-control" type="text" placeholder="课程名称"></div>
+                    <label for="c_1" class="col-sm-2 control-label">{{ table_head.1 }}</label>
+                    <div class="col-sm-4"><input id="c_1" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.1 }}"></div>
                 </div>
                 <div class="row form-group">
                     <label for="c_2" class="col-sm-2 control-label">{{ table_head.2 }}</label>
-                    <div class="col-sm-4">
-                        <select id="c_2" disabled=disabled class="form-control">
-                          {% for row in table_default.2 %}
-                          <option>{{row}}</option>
-                          {% endfor %}
-                        </select>
-                    </div>
-                    <!--<label for="e_3" class="col-sm-2 control-label">{{ table_head.3 }}</label>-->
-                    <!--<div class="col-sm-4">-->
-                        <!--<select id="e_3" disabled=disabled class="form-control">-->
-                          <!--{% for row in table_default.3 %}-->
-                          <!--<option>{{row}}</option>-->
-                          <!--{% endfor %}-->
-                        <!--</select>-->
-                    <!--</div>-->
+                    <div class="col-sm-4"><input id="c_2" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.2 }}"></div>
                 </div>
                 <div class="row form-group">
-                    <label for="c_4" class="col-sm-2 control-label">{{ table_head.3 }}</label>
-                    <div class="col-sm-10"><input id="c_4" disabled=disabled class="form-control" type="text" placeholder="班级"></div>
+                    <label for="c_3" class="col-sm-2 control-label">{{ table_head.3 }}</label>
+                    <div class="col-sm-4"><input id="e_3" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.3 }}"></div>
                 </div>
                 <div class="row form-group">
-                    <label for="c_5" class="col-sm-2 control-label">{{ table_head.4 }}</label>
-                    <div class="col-sm-4">
-                        <select id="c_5" disabled=disabled class="form-control">
-                          {% for row in table_default.5 %}
-                          <option>{{row}}</option>
-                          {% endfor %}
-                        </select>
-                    </div>
-                    <label for="c_6" class="col-sm-2 control-label">{{ table_head.5 }}</label>
-                    <div class="col-sm-4">
-                        <select id="c_6" disabled=disabled class="form-control">
-                          {% for row in table_default.6 %}
-                          <option>{{row}}</option>
-                          {% endfor %}
-                        </select>
-                    </div>
+                    <label for="c_4" class="col-sm-2 control-label">{{ table_head.4 }}</label>
+                    <div class="col-sm-10"><input id="c_4" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.4 }}"></div>
                 </div>
                 <div class="row form-group">
-                    <div class="col-sm-6">
-                        <div class="row form-group">
-                            <label for="c_7" class="col-sm-4 control-label">{{ table_head.6 }}</label>
-                            <div class="col-sm-8">
-                                <select id="c_7" disabled=disabled class="form-control">
-                                {% for row in table_default.7 %}
-                                <option>{{row}}</option>
-                                {% endfor %}
-                                </select>
-                            </div>
-                          </div>
-                        <div class="row form-group">
-                          <label for="c_8" class="col-sm-4 control-label">{{ table_head.7 }}</label>
-                          <div class="col-sm-8"><input id="c_8" disabled=disabled class="form-control" type="text" placeholder="必/选"></div>
-                        </div>
-                        <div class="row form-group">
-                          <label for="c_9" class="col-sm-4 control-label">{{ table_head.8 }}</label>
-                          <div class="col-sm-8"><input id="c_9" disabled=disabled class="form-control" type="text" placeholder="教师数"></div>
-                        </div>
-                        <div class="row form-group">
-                          <label for="c_10" class="col-sm-4 control-label">{{ table_head.9 }}</label>
-                          <div class="col-sm-8"><input id="c_10" disabled=disabled class="form-control" type="text" placeholder="周上课次数"></div>
-                        </div>
-                    </div>
-                    <div class="col-sm-6">
-                        <div class="row form-group" hidden="hidden">
-                            <label for="c_11" class="col-sm-4 control-label">{{ table_head.10 }}</label>
-                            <div class="col-sm-8">
-                                <table id="c_11" class="table table-bordered">
-                                    <tbody>
-                                        <tr>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                        </tr>
-                                        <tr>
-                                            <td></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
+                    <label for="c_5" class="col-sm-2 control-label">{{ table_head.5 }}</label>
+                    <div class="col-sm-4"><input id="c_5" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.5 }}"></div>
+                    <label for="c_6" class="col-sm-2 control-label">{{ table_head.6 }}</label>
+                    <div class="col-sm-4"><input id="c_6" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.6 }}"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="c_7" class="col-sm-2 control-label">{{ table_head.7 }}</label>
+                    <div class="col-sm-4"><input id="c_7" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.7 }}"></div>
+                    <label for="c_8" class="col-sm-2 control-label">{{ table_head.8 }}</label>
+                    <div class="col-sm-4"><input id="c_8" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.8 }}"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="c_9" class="col-sm-2 control-label">{{ table_head.9 }}</label>
+                    <div class="col-sm-4"><input id="c_9" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.9 }}"></div>
+                    <label for="c_10" class="col-sm-2 control-label">{{ table_head.10 }}</label>
+                    <div class="col-sm-4"><input id="c_10" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.10 }}"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="c_11" class="col-sm-2 control-label">{{ table_head.11 }}</label>
+                    <div class="col-sm-4"><input id="c_11" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.11 }}"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="c_12" class="col-sm-2 control-label">{{ table_head.12 }}</label>
+                    <div class="col-sm-10"><input id="c_12" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.12 }}"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="c_13" class="col-sm-2 control-label">{{ table_head.13 }}</label>
+                    <div class="col-sm-4"><input id="e_13" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.13 }}"></div>
+                    <label for="c_14" class="col-sm-2 control-label">{{ table_head.14 }}</label>
+                    <div class="col-sm-4"><input id="c_14" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.14 }}"></div>
+                </div>
+                <div class="row form-group">
+                    <label for="c_15" class="col-sm-2 control-label">{{ table_head.15 }}</label>
+                    <div class="col-sm-4"><input id="c_15" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.15 }}"></div>
                 </div>
             </form>
           </div>
