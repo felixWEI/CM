@@ -512,8 +512,21 @@ def class_manage(request):
     current_degree_count = 0
     current_course_claim = 0
     lock_class_count = 0
+    unlock_class_count = 0
     course_relate_dict = {}
     for eachItem in course_table:
+        if eachItem.lock_state == 1:
+            lock_state = '非激活'
+            lock_class_count += 1
+        else:
+            lock_state = ''
+
+            tmp_hour, tmp_degree = get_course_effective_point(eachItem)
+            tmp_course_count, tmp_claim_count = get_course_effective_count(eachItem)
+            unlock_class_count += tmp_course_count
+            current_hour_count += tmp_hour
+            current_degree_count += tmp_degree
+            current_course_claim += tmp_claim_count
         if not eachItem.class_name:
             continue
         for eachClass in eachItem.class_name.split(' '):
@@ -523,11 +536,7 @@ def class_manage(request):
                 course_relate = eachItem.course_relate.strip(',')
             else:
                 course_relate = ''
-            if eachItem.lock_state == 1:
-                lock_state = '非激活'
-                lock_class_count += 1
-            else:
-                lock_state = ''
+
             search_result.append([eachItem.course_id,
                                   eachItem.course_name,
                                   eachItem.major,
@@ -547,13 +556,13 @@ def class_manage(request):
                                   lock_state,
                                   eachItem.course_parallel
                                   ])
-        if eachItem.lock_state == 0:
-            tmp_hour, tmp_degree = get_course_effective_point(eachItem)
-            current_hour_count += tmp_hour
-            current_degree_count += tmp_degree
-            if eachItem.suit_teacher:
-                current_course_claim += 1
-    summary_table = [current_course_count-lock_class_count, current_hour_count, current_degree_count, current_course_claim, lock_class_count]
+        # if eachItem.lock_state == 0:
+        #     tmp_hour, tmp_degree = get_course_effective_point(eachItem)
+        #     current_hour_count += tmp_hour
+        #     current_degree_count += tmp_degree
+        #     if eachItem.suit_teacher:
+        #         current_course_claim += 1
+    summary_table = [unlock_class_count, current_hour_count, current_degree_count, current_course_claim, lock_class_count]
 
     table_head = ['代码', '名称', '专业', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '可选教师', '打通课程代码','是否精品课程','状态','平行班级数']
     table_default = ['', '', list(major_set), student_type, year, class_name,
@@ -561,6 +570,20 @@ def class_manage(request):
     return render(request, 'class_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
                                                  'summary_table': summary_table, 'year': current_year, 'major': major_set})
+
+
+def get_course_effective_count(course_object):
+    unlock_course_count = 0
+    claim_teacher_count = 0
+    if course_object.course_relate:
+        if course_object.student_type == '本科':
+            unlock_course_count = 1
+            if course_object.suit_teacher:
+                claim_teacher_count = 1
+    else:
+        unlock_course_count = 1
+        claim_teacher_count = 1
+    return unlock_course_count, claim_teacher_count
 
 
 def get_course_effective_point(course_object):
