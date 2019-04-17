@@ -582,7 +582,8 @@ def get_course_effective_count(course_object):
                 claim_teacher_count = 1
     else:
         unlock_course_count = 1
-        claim_teacher_count = 1
+        if course_object.suit_teacher:
+            claim_teacher_count = 1
     return unlock_course_count, claim_teacher_count
 
 
