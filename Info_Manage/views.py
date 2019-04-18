@@ -1930,7 +1930,7 @@ def arrange_export_report(request):
                               eachItem.lock_state,
                               eachItem.course_parallel])
 
-    table_head = ['代码', '名称', '学科', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '上课老师', '打通课程代码','上课语言','是否精品课程','是否激活','平行班级数']
+    table_head = ['代码', '名称', '学科', '学位', '学年', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '上课老师', '打通课程代码','上课语言','是否精品课程','是否激活','平行班级数']
     for col, eachTitle in enumerate(table_head):
         w.write(0, col, eachTitle)
     for row, eachRow in enumerate(search_result):
