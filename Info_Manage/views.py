@@ -52,13 +52,13 @@ def teacher_manage(request):
         year = search_result[0].s1_year_info
     else:
         year = 'None'
-    teacher_table = TeacherInfo.objects.filter(lock_state=0)
+    teacher_table = TeacherInfo.objects.filter()
     course_table = CourseInfo.objects.filter(lock_state=0)
     search_result = []
     weight_total_1 = 1
     weight_total_2 = 1
     apply_done = 0
-
+    lock_teacher_count = 0
     for eachItem in teacher_table:
         apply_course_count = 0
         for eachCourse in course_table:
@@ -67,10 +67,6 @@ def teacher_manage(request):
             teacher_order_list = eachCourse.teacher_ordered.split(',')
             if eachItem.teacher_name in teacher_order_list:
                 apply_course_count += 1
-        weight_total_1 += eachItem.first_semester_expect
-        weight_total_2 += eachItem.second_semester_expect
-        if eachItem.teacher_apply_done and eachItem.teacher_apply_done == '申报结束':
-            apply_done += 1
         search_result.append([eachItem.teacher_id,
                               eachItem.teacher_name,
                               eachItem.major,
@@ -88,25 +84,33 @@ def teacher_manage(request):
                               apply_course_count,
                               eachItem.lock_state
                               ])
+        if eachItem.lock_state == 1:
+            lock_teacher_count += 1
+        else:
+            if eachItem.teacher_apply_done and eachItem.teacher_apply_done == '申报结束':
+                apply_done += 1
+            weight_total_1 += eachItem.first_semester_expect
+            weight_total_2 += eachItem.second_semester_expect
     current_teacher_count = len(search_result)
     total_hours_1 = 0
     total_hours_2 = 0
     total_degree_1 = 0
     total_degree_2 = 0
     for eachItem in course_table:
+        tmp_hour,tmp_degree = get_course_effective_point(eachItem)
         if eachItem.semester == '一':
-            total_hours_1 += eachItem.course_hour
-            total_degree_1 += eachItem.course_degree
+            total_hours_1 += tmp_hour
+            total_degree_1 += tmp_degree
         else:
-            total_hours_2 += eachItem.course_hour
-            total_degree_2 += eachItem.course_degree
+            total_hours_2 += tmp_hour
+            total_degree_2 += tmp_degree
     expect_hours_for_semester1 = math.ceil((total_hours_1/weight_total_1)/18)*18
     expect_hours_for_semester2 = math.ceil((total_hours_2/weight_total_2)/18)*18
     expect_degree_for_semester1 = round(total_degree_1/weight_total_1, 2)
     expect_degree_for_semester2 = round(total_degree_2/weight_total_2, 2)
 
     summary_table = [current_teacher_count, apply_done, expect_hours_for_semester1, expect_hours_for_semester2,
-                     expect_degree_for_semester1, expect_degree_for_semester2]
+                     expect_degree_for_semester1, expect_degree_for_semester2, lock_teacher_count]
     table_head = ['教师代码', '教师姓名', '学科组','职称','导师类型','出生年月','期望学时1(%)', '期望学时2(%)', '已分配学时1', '已分配学时2','已分配难度1',
                   '已分配难度2' ,'申报完成', '特殊理由', '已申报课程数','状态']
     return render(request, 'teacher_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username,
@@ -677,8 +681,11 @@ def class_filter_by_submit(request):
 def class_save_one_row(request):
     course_info = json.loads(request.POST['row_data'])
     # in case of wrong course lock state input
-    if int(course_info[-2]) != 1:
+    if not course_info[-2]:
         course_info[-2] = 0
+    else:
+        if int(course_info[-2]) != 1:
+            course_info[-2] = 0
     old_class_info = request.POST['old_data']
     if 'old_course_id' in request.POST:
         old_course_id = request.POST['old_course_id']
@@ -1426,7 +1433,7 @@ def arrange_main():
     print >>file_obj, '<STEP0 Initial teacher state>'
     for eachTeacher in search_result_teacher:
         expect_hours_1 = math.ceil(eachTeacher.first_semester_expect * hours_ave_1 / 18) * 18
-        expect_hours_2 = math.ceil(eachTeacher.first_semester_expect * hours_ave_2 / 18) * 18
+        expect_hours_2 = math.ceil(eachTeacher.second_semester_expect * hours_ave_2 / 18) * 18
         expect_degree_1 = eachTeacher.first_semester_expect * degree_ave_1
         expect_degree_2 = eachTeacher.first_semester_expect * degree_ave_2
         print >>file_obj, "工号:{} 姓名:{} 第一学期期望学时:{} 第二学期期望学时:{} 第一学期期望难度:{} 第二学期期望难度:{}".format(
