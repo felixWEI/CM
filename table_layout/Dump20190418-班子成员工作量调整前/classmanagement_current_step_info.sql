@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 5.7.9, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 5.7.17, for Win64 (x86_64)
 --
 -- Host: 127.0.0.1    Database: classmanagement
 -- ------------------------------------------------------
--- Server version	5.7.12-log
+-- Server version	5.7.21-log
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -53,7 +53,7 @@ CREATE TABLE `current_step_info` (
 
 LOCK TABLES `current_step_info` WRITE;
 /*!40000 ALTER TABLE `current_step_info` DISABLE KEYS */;
-INSERT INTO `current_step_info` VALUES (1,'start','2018-2019','2','2','2','2','2','2019-04-05 20:56:00','2','2','2','2','arrange over','adjustment start','0','0','0','0','lock done');
+INSERT INTO `current_step_info` VALUES (1,'start','2019-2020','2','2','2','2','2','2019-04-17 16:01:00','2','2','2','2','start arrange',NULL,NULL,NULL,NULL,NULL,NULL);
 /*!40000 ALTER TABLE `current_step_info` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -66,4 +66,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-04-07 21:41:23
+-- Dump completed on 2019-04-18 15:29:56
