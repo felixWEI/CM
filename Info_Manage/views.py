@@ -700,6 +700,10 @@ def class_save_one_row(request):
 def save_course_into_database_by_edit(course_info, old_class_info, old_course_id=None):
     now = datetime.now()
     search_result = CourseInfo.objects.all().filter(course_id=course_info[0])
+    allow_teachers = course_info[11]
+    course_parallel = course_info[17]
+    if course_parallel:
+        allow_teachers = int(course_parallel) * int(allow_teachers)
     if search_result:
         combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
         if combine_class_name in search_result[0].class_name:
@@ -711,13 +715,13 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                                                      course_degree=course_info[8],
                                                                      course_type=course_info[9],
                                                                      language=course_info[10],
-                                                                     allow_teachers=course_info[11],
+                                                                     allow_teachers=allow_teachers,
                                                                      times_every_week=course_info[12],
                                                                      suit_teacher=course_info[13],
                                                                      course_relate=course_info[14],
                                                                      notes=course_info[15],
                                                                      lock_state=course_info[16],
-                                                                     course_parallel=course_info[17],
+                                                                     course_parallel=course_parallel,
                                                                      update_time=now)
         else:
             class_list = search_result[0].class_name.split(' ')
@@ -739,13 +743,13 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                                                      course_degree=course_info[8],
                                                                      course_type=course_info[9],
                                                                      language=course_info[10],
-                                                                     allow_teachers=course_info[11],
+                                                                     allow_teachers=allow_teachers,
                                                                      times_every_week=course_info[12],
                                                                      suit_teacher=suit_teacher,
                                                                      course_relate=course_info[14],
                                                                      notes=course_info[15],
                                                                      lock_state=course_info[16],
-                                                                     course_parallel=course_info[17],
+                                                                     course_parallel=course_parallel,
                                                                      update_time=now)
     else:
         # remove class from previous course
@@ -773,20 +777,24 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                   course_degree=course_info[8],
                                   course_type=course_info[9],
                                   language=course_info[10],
-                                  allow_teachers=course_info[11],
+                                  allow_teachers=allow_teachers,
                                   times_every_week=course_info[12],
                                   suit_teacher='',
                                   teacher_ordered='',
                                   course_relate=course_info[14],
                                   notes=course_info[15],
                                   lock_state=course_info[16],
-                                  course_parallel=course_info[17],
+                                  course_parallel=course_parallel,
                                   update_time=now)
 
 
 def save_course_into_database_by_add(course_info, old_class_info):
     now = datetime.now()
     search_result = CourseInfo.objects.all().filter(course_id=course_info[0])
+    allow_teachers = course_info[11]
+    course_parallel = course_info[17]
+    if course_parallel:
+        allow_teachers = int(course_parallel) * int(allow_teachers)
     if search_result:
         combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
         if combine_class_name in search_result[0].class_name:
@@ -798,13 +806,13 @@ def save_course_into_database_by_add(course_info, old_class_info):
                                                                      course_degree=course_info[8],
                                                                      course_type=course_info[9],
                                                                      language=course_info[10],
-                                                                     allow_teachers=course_info[11],
+                                                                     allow_teachers=allow_teachers,
                                                                      times_every_week=course_info[12],
                                                                      # suit_teacher=course_info[11],
                                                                      course_relate=course_info[14],
                                                                      notes=course_info[15],
                                                                      lock_state=course_info[16],
-                                                                     course_parallel=course_info[17],
+                                                                     course_parallel=course_parallel,
                                                                      update_time=now)
         else:
             class_list = search_result[0].class_name.split(' ')
@@ -824,13 +832,13 @@ def save_course_into_database_by_add(course_info, old_class_info):
                                                                      course_degree=course_info[8],
                                                                      course_type=course_info[9],
                                                                      language=course_info[10],
-                                                                     allow_teachers=course_info[11],
+                                                                     allow_teachers=allow_teachers,
                                                                      times_every_week=course_info[12],
                                                                      # suit_teacher=suit_teacher,
                                                                      course_relate=course_info[14],
                                                                      notes=course_info[15],
                                                                      lcok_state=course_info[16],
-                                                                     course_parallel=course_info[17],
+                                                                     course_parallel=course_parallel,
                                                                      update_time=now)
     else:
         combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
@@ -845,13 +853,13 @@ def save_course_into_database_by_add(course_info, old_class_info):
                                   course_degree=course_info[8],
                                   course_type=course_info[9],
                                   language=course_info[10],
-                                  allow_teachers=course_info[11],
+                                  allow_teachers=allow_teachers,
                                   times_every_week=course_info[12],
                                   suit_teacher='',
                                   teacher_ordered='',
                                   notes=course_info[15],
                                   lock_state=course_info[16],
-                                  course_parallel=course_info[17],
+                                  course_parallel=course_parallel,
                                   update_time=now)
 
 
@@ -1435,7 +1443,7 @@ def arrange_main():
         expect_hours_1 = math.ceil(eachTeacher.first_semester_expect * hours_ave_1 / 18) * 18
         expect_hours_2 = math.ceil(eachTeacher.second_semester_expect * hours_ave_2 / 18) * 18
         expect_degree_1 = eachTeacher.first_semester_expect * degree_ave_1
-        expect_degree_2 = eachTeacher.first_semester_expect * degree_ave_2
+        expect_degree_2 = eachTeacher.second_semester_expect * degree_ave_2
         print >>file_obj, "工号:{} 姓名:{} 第一学期期望学时:{} 第二学期期望学时:{} 第一学期期望难度:{} 第二学期期望难度:{}".format(
             eachTeacher.teacher_id, eachTeacher.teacher_name, expect_hours_1, expect_hours_2, expect_degree_1, expect_degree_2)
         tmp_dict = {'course_list': [], 'degree_list': [], 'total_hours_1': 0, 'expect_hours_1': expect_hours_1, 'total_hours_2': 0,
@@ -2062,7 +2070,14 @@ def arrange_change_by_course_id(request):
                 value2 = float(teacher_result[0].second_semester_degree if teacher_result[0].second_semester_degree else 0) + float(course_degree)
                 TeacherInfo.objects.filter(teacher_name=eachTeacher).update(second_semester_hours=value1,
                                                                             second_semester_degree=value2)
+
         CourseInfo.objects.filter(course_id=course_id).update(teacher_final_pick=to_change_teacher)
+        search_result_course = CourseInfo.objects.filter(course_id=course_id)
+        if search_result_course[0].course_relate:
+            if search_result_course[0].student_type == '本科':
+                course_list = search_result_course[0].course_relate.split(',')
+                for eachCourse in course_list:
+                    CourseInfo.objects.filter(course_id=eachCourse).update(teacher_final_pick=to_change_teacher)
         status = 'Success'
     except Exception, e:
         print e
