@@ -110,3 +110,15 @@ class CurrentStepInfo(models.Model):
     class Meta:
         managed = False
         db_table = 'current_step_info'
+
+class CourseAdjustInfo(models.Model):
+    course_id = models.CharField(db_column='course_id', max_length=45, blank=True, null=True)
+    course_name = models.CharField(db_column='course_name', max_length=45, blank=True, null=True)
+    status = models.CharField(db_column='status', max_length=45, blank=True, null=True)
+    teacher_before = models.CharField(db_column='teacher_before', max_length=200, blank=True, null=True)
+    teacher_after = models.CharField(db_column='teacher_after', max_length=200, blank=True, null=True)
+    notes = models.CharField(db_column='notes', max_length=1000, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'course_adjust_info'

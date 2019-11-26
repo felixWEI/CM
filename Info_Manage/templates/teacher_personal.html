@@ -93,6 +93,11 @@
                 <a href="\teacher_manage\" style="color: black">教务员</a>
               {% endif %}
             </li>
+            <li>
+              {% if user_type == 'leader' %}
+                <a href="\teacher_leader\" style="color: black">主管领导</a>
+              {% endif %}
+            </li>
             <li class="active">
               <a href="#">教师个人</a>
             </li>

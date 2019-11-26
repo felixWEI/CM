@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
 from django.db import connection
 
-from Info_Manage.models import TeacherInfo, CourseInfo, CurrentStepInfo, CourseHistoryInfo
+from Info_Manage.models import TeacherInfo, CourseInfo, CurrentStepInfo, CourseHistoryInfo, CourseAdjustInfo
 # Create your views here.
 
 import os
@@ -117,6 +117,34 @@ def teacher_manage(request):
                                                    'teacher_table': search_result, 'summary_table': summary_table,
                                                    'table_head': table_head, 'year': year})
 
+@login_required
+def teacher_leader(request):
+    search_result = CurrentStepInfo.objects.all()
+    if search_result:
+        year = search_result[0].s1_year_info
+    else:
+        year = 'None'
+    teacher_table = TeacherInfo.objects.filter()
+    course_table = CourseInfo.objects.filter(lock_state=0)
+    course_adjust_table = CourseAdjustInfo.objects.all()
+    search_result = []
+    weight_total_1 = 1
+    weight_total_2 = 1
+    apply_done = 0
+    lock_teacher_count = 0
+    for eachLine in course_adjust_table:
+        course_id = CourseAdjustInfo.course_id
+        course_name = CourseAdjustInfo.course_name
+        teacher_before = CourseAdjustInfo.teacher_before
+        teacher_after = CourseAdjustInfo.teacher_after
+        status = CourseAdjustInfo.status
+        notes = CourseAdjustInfo.notes
+        search_result.append([course_id, course_name, teacher_before, teacher_after, status, notes])
+    table_head = ['课程代码', '课程名称', '自动分配教师', '微调教师', '申请状态', '补充说明']
+    return render(request, 'teacher_leader.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username,
+                                                   'teacher_table': search_result,
+                                                   'table_head': table_head,
+                                                   'year': year})
 
 @csrf_exempt
 def teacher_save_and_config(request):
@@ -148,9 +176,13 @@ def save_teacher_into_database(all_teacher):
 def teacher_personal(request):
     search_result = TeacherInfo.objects.filter(teacher_id=request.user.username)
     status = 'free'
+    user_type = 'teacher'
     if search_result:
         if search_result[0].teacher_apply_done:
             status = 'lock'
+        if search_result[0].teacher_name in ['教学院长']:
+            user_type = 'leader'
+
     now = datetime.now().replace()
     search_result_major = CourseInfo.objects.values('major')
     search_result_teacher_major = TeacherInfo.objects.filter(teacher_id=request.user.username)
@@ -230,7 +262,7 @@ def teacher_personal(request):
     table_default = ['', '', major_set, STUDENT_TYPE, CLASS_NAME_LIST, ['一', '二'], COURSE_HOUR, COURSE_DEGREE, ['必修', '选修'], LANGUAGE, '', '', '']
     return render(request, 'teacher_personal.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
-                                                 'summary_table': summary_table, 'year': year, 'status': status, 'major_list':major_list})
+                                                 'summary_table': summary_table, 'year': year, 'status': status, 'major_list':major_list, 'user_type': user_type})
 
 
 @csrf_exempt
@@ -2032,6 +2064,11 @@ def arrange_search_by_course_id(request):
 
     result = json.dumps({'course': result, 'status': status})
     return HttpResponse(result)
+
+@csrf_exempt
+def arrange_submit_adjust_request(request):
+    course_id = request.POST['course_id']
+    to_change_teacher = request.POST['to_change_teacher']
 
 
 @csrf_exempt
