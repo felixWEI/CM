@@ -433,6 +433,11 @@ function change_assign_teacher(){
         alert('替换教师数目不对!')
         return
     }
+    notes = document.getElementById('e_11').value;
+    if ( notes.length < 2){
+        alert('请添加微调理由!')
+        return
+    }
     course_id = document.getElementById('e_0').value;
     str = "";
     for (var i = 0; i < $('#e_10').DataTable().rows().data().length; i++){
@@ -445,13 +450,16 @@ function change_assign_teacher(){
     to_change_teacher = str
     $.ajax({
         type: 'POST',
-        url: '/arrange_change_by_course_id/',
-        data: {"course_id": course_id, 'to_change_teacher': to_change_teacher},
+        url: '/arrange_submit_adjust_request/',
+        data: {"course_id": course_id, 'to_change_teacher': to_change_teacher, 'notes': notes},
         dataType: "json",
         success: function(result){
-            if (result['status'] == 'Success'){
-                alert('修改成功')
+            if (result['status'] == 'success'){
+                alert('微调申请提交成功，等待主管领导批准')
                 $('#changeAssignTeacher').modal('hide');
+            }
+            else{
+                alert(result['status'])
             }
         },
         error: function (){
@@ -474,7 +482,7 @@ function search_course_by_id(){
         success: function(result){
             if (result['status'] == 'Success'){
                 course_content = result['course'];
-                for (var i=0; i < course_content.length-1; i++){
+                for (var i=0; i < course_content.length-2; i++){
                     document.getElementById('e_'+String(i+1)).value = course_content[i]
                 }
                 console.log(course_content);
@@ -494,7 +502,7 @@ function search_course_by_id(){
                     "searching": false,
                     "ordering": false,
                     "destroy": true,
-                    "data": course_content[course_content.length-1],
+                    "data": course_content[course_content.length-2],
                     "column":[
                         {title: '工号'},
                         {title: '姓名'}

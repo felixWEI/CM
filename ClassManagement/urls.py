@@ -53,6 +53,7 @@ urlpatterns = [
     url(r'^arrange_export_analysis_2/', Info_Manage_views.arrange_export_analysis_2),
     url(r'^arrange_search_by_course_id/', Info_Manage_views.arrange_search_by_course_id),
     url(r'^arrange_change_by_course_id/', Info_Manage_views.arrange_change_by_course_id),
+    url(r'^arrange_submit_adjust_request/', Info_Manage_views.arrange_submit_adjust_request),
     url(r'^arrange_change_button_status/', Info_Manage_views.arrange_change_button_status),
     url(r'^arrange_step_5/', Info_Manage_views.arrange_step_5),
     url(r'^course_info_search/', Info_Manage_views.course_info_history_main),

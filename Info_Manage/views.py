@@ -133,12 +133,12 @@ def teacher_leader(request):
     apply_done = 0
     lock_teacher_count = 0
     for eachLine in course_adjust_table:
-        course_id = CourseAdjustInfo.course_id
-        course_name = CourseAdjustInfo.course_name
-        teacher_before = CourseAdjustInfo.teacher_before
-        teacher_after = CourseAdjustInfo.teacher_after
-        status = CourseAdjustInfo.status
-        notes = CourseAdjustInfo.notes
+        course_id = eachLine.course_id
+        course_name = eachLine.course_name
+        teacher_before = eachLine.teacher_before
+        teacher_after = eachLine.teacher_after
+        status = eachLine.status
+        notes = eachLine.notes
         search_result.append([course_id, course_name, teacher_before, teacher_after, status, notes])
     table_head = ['课程代码', '课程名称', '自动分配教师', '微调教师', '申请状态', '补充说明']
     return render(request, 'teacher_leader.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username,
@@ -2048,17 +2048,25 @@ def arrange_search_by_course_id(request):
         times_every_week = search_result[0].times_every_week
         allow_teachers = search_result[0].allow_teachers
         teacher_pick = search_result[0].teacher_final_pick
+        teacher_ordered = search_result[0].teacher_ordered
         teacher_list = teacher_pick.split(',')
-        tmp = []
+        teacher_ordered_list = teacher_ordered.split(',')
+        tmp1 = []
         for eachTeacher in teacher_list:
             teacher_table = TeacherInfo.objects.filter(teacher_name=eachTeacher)
             if teacher_table:
                 teacher_id = teacher_table[0].teacher_id
-                tmp.append([teacher_id, eachTeacher])
+                tmp1.append([teacher_id, eachTeacher])
             else:
                 status = '原授课教师信息有误 {}'.format(eachTeacher)
+        tmp2 = []
+        for eachTeacher in teacher_ordered_list:
+            teacher_table = TeacherInfo.objects.filter(teacher_name=eachTeacher)
+            if teacher_table:
+                teacher_id = teacher_table[0].teacher_id
+                tmp2.append([teacher_id, eachTeacher])
         result = [course_name, student_type, semester, class_name, course_degree, course_hour, times_every_week,
-                  allow_teachers, tmp]
+                  allow_teachers, tmp2, tmp1]
     else:
         status = '找不到该课程号码对应的课程'
 
@@ -2069,7 +2077,28 @@ def arrange_search_by_course_id(request):
 def arrange_submit_adjust_request(request):
     course_id = request.POST['course_id']
     to_change_teacher = request.POST['to_change_teacher']
+    notes = request.POST['notes']
+    try:
+        search_result = CourseInfo.objects.filter(course_id=course_id)
+        course_name = search_result[0].course_name
+        teacher_before = search_result[0].teacher_auto_pick
+        if not CourseAdjustInfo.objects.filter(course_id=course_id):
+            CourseAdjustInfo.objects.create(course_id=course_id,
+                                            course_name=course_name,
+                                            teacher_before=teacher_before,
+                                            teacher_after=to_change_teacher,
+                                            status='等待主管领导批准',
+                                            notes=notes)
+        else:
+            CourseAdjustInfo.objects.filter(course_id=course_id).update(teacher_after=to_change_teacher,
+                                                                        notes=notes)
+        status = 'success'
+    except Exception, e:
+        print e
+        status = '修改失败 错误信息{}'.format(e)
 
+    result = json.dumps({'status': status})
+    return HttpResponse(result)
 
 @csrf_exempt
 def arrange_change_by_course_id(request):
