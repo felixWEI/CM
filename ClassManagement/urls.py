@@ -28,6 +28,7 @@ urlpatterns = [
     url(r'^users/', include('django.contrib.auth.urls')),
     url(r'^$', home_page, name='home'),
     url(r'^teacher_leader/', Info_Manage_views.teacher_leader),
+    url(r'^teacher_reject_teacher_adjust', Info_Manage_views.teacher_reject_teacher_adjust),
     url(r'^teacher_manage/', Info_Manage_views.teacher_manage),
     url(r'^teacher_personal/', Info_Manage_views.teacher_personal),
     url(r'^teacher_save_and_config/', Info_Manage_views.teacher_save_and_config),

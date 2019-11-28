@@ -139,12 +139,26 @@ def teacher_leader(request):
         teacher_after = eachLine.teacher_after
         status = eachLine.status
         notes = eachLine.notes
+        if status != '等待主管领导批准':
+            continue
         search_result.append([course_id, course_name, teacher_before, teacher_after, status, notes])
     table_head = ['课程代码', '课程名称', '自动分配教师', '微调教师', '申请状态', '补充说明']
     return render(request, 'teacher_leader.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username,
                                                    'teacher_table': search_result,
                                                    'table_head': table_head,
                                                    'year': year})
+
+@csrf_exempt
+def teacher_reject_teacher_adjust(request):
+    course_id = request.POST['course_id']
+    search_result = CourseAdjustInfo.objects.filter(course_id=course_id)
+    if search_result:
+        CourseAdjustInfo.objects.filter(course_id=course_id).update(status='驳回微调申请')
+        status = '微调申请已经驳回'
+    else:
+        status = '课程代码异常'
+    result = json.dumps({'status': status})
+    return HttpResponse(result)
 
 @csrf_exempt
 def teacher_save_and_config(request):
