@@ -124,14 +124,8 @@ def teacher_leader(request):
         year = search_result[0].s1_year_info
     else:
         year = 'None'
-    teacher_table = TeacherInfo.objects.filter()
-    course_table = CourseInfo.objects.filter(lock_state=0)
     course_adjust_table = CourseAdjustInfo.objects.all()
     search_result = []
-    weight_total_1 = 1
-    weight_total_2 = 1
-    apply_done = 0
-    lock_teacher_count = 0
     for eachLine in course_adjust_table:
         course_id = eachLine.course_id
         course_name = eachLine.course_name
@@ -159,6 +153,64 @@ def teacher_reject_teacher_adjust(request):
         status = '课程代码异常'
     result = json.dumps({'status': status})
     return HttpResponse(result)
+
+@csrf_exempt
+def teacher_approve_teacher_adjust(request):
+    course_id = request.POST['course_id']
+    search_result = CourseAdjustInfo.objects.filter(course_id=course_id)
+    if search_result:
+        CourseAdjustInfo.objects.filter(course_id=course_id).update(status='批准微调申请')
+        to_change_teacher = search_result[0].teacher_after
+        notes = search_result[0].notes
+        try:
+            search_result = CourseInfo.objects.filter(course_id=course_id)
+            final_teacher_list = search_result[0].teacher_final_pick.split(',')
+            course_hour = search_result[0].course_hour / len(final_teacher_list)
+            course_degree = search_result[0].course_degree / len(final_teacher_list)
+            semester = search_result[0].semester
+            for eachTeacher in final_teacher_list:
+                teacher_result = TeacherInfo.objects.filter(teacher_name=eachTeacher)
+                if semester == '一':
+                    value1 = float(teacher_result[0].first_semester_hours) - float(course_hour)
+                    value2 = float(teacher_result[0].first_semester_degree) - float(course_degree)
+                    TeacherInfo.objects.filter(teacher_name=eachTeacher).update(first_semester_hours=value1,
+                                                                                first_semester_degree=value2)
+                else:
+                    value1 = float(teacher_result[0].second_semester_hours) - float(course_hour)
+                    value2 = float(teacher_result[0].second_semester_degree) - float(course_degree)
+                    TeacherInfo.objects.filter(teacher_name=eachTeacher).update(second_semester_hours=value1,
+                                                                                second_semester_degree=value2)
+            to_change_teacher_list = to_change_teacher.split(',')
+            for eachTeacher in to_change_teacher_list:
+                teacher_result = TeacherInfo.objects.filter(teacher_name=eachTeacher)
+                if semester == '一':
+
+                    value1 = float(teacher_result[0].first_semester_hours if teacher_result[0].first_semester_hours else 0) + float(course_hour)
+                    value2 = float(teacher_result[0].first_semester_degree if teacher_result[0].first_semester_degree else 0) + float(course_degree)
+                    TeacherInfo.objects.filter(teacher_name=eachTeacher).update(first_semester_hours=value1,
+                                                                                first_semester_degree=value2)
+                else:
+                    value1 = float(teacher_result[0].second_semester_hours if teacher_result[0].second_semester_hours else 0) + float(course_hour)
+                    value2 = float(teacher_result[0].second_semester_degree if teacher_result[0].second_semester_degree else 0) + float(course_degree)
+                    TeacherInfo.objects.filter(teacher_name=eachTeacher).update(second_semester_hours=value1,
+                                                                                second_semester_degree=value2)
+
+            CourseInfo.objects.filter(course_id=course_id).update(teacher_final_pick=to_change_teacher)
+            search_result_course = CourseInfo.objects.filter(course_id=course_id)
+            if search_result_course[0].course_relate:
+                if search_result_course[0].student_type == '本科':
+                    course_list = search_result_course[0].course_relate.split(',')
+                    for eachCourse in course_list:
+                        CourseInfo.objects.filter(course_id=eachCourse).update(teacher_final_pick=to_change_teacher)
+            status = '微调申请已经批准'
+        except Exception, e:
+            print e
+            status = '修改失败 错误信息{}'.format(e)
+    else:
+        status = '课程代码异常: {}'.format(course_id)
+    result = json.dumps({'status': status})
+    return HttpResponse(result)
+
 
 @csrf_exempt
 def teacher_save_and_config(request):
@@ -2105,6 +2157,7 @@ def arrange_submit_adjust_request(request):
                                             notes=notes)
         else:
             CourseAdjustInfo.objects.filter(course_id=course_id).update(teacher_after=to_change_teacher,
+                                                                        status='等待主管领导批准',
                                                                         notes=notes)
         status = 'success'
     except Exception, e:

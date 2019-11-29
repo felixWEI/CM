@@ -96,60 +96,60 @@
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">统计信息</h1>
+          <!--<h1 class="page-header">统计信息</h1>-->
           {% if year == 'None' %}
             <div><p class="bg-info">当前不再排课当中</p></div>
           {% else %}
             <div><p class="bg-info">当前在排课中：目标学期为{{ year }}学年</p></div>
           {% endif %}
-          <div class="row">
-            <div class="col-sm-2">
-                <div class="placeholders2">
-                  <span class="">教师总数</span>
-                  <div>{{ summary_table.0 }}</div>
-                </div>
-            </div>
-            <div class="col-sm-2">
-                <div class="placeholders2">
-                  <span class="">未激活教师数</span>
-                  <div>{{ summary_table.6 }}</div>
-                </div>
-            </div>
-            <div class="col-sm-2">
-                <div class="placeholders2">
-                  <span class="">申报完成教师数(激活)</span>
-                  <div>{{ summary_table.1 }}</div>
-                </div>
-            </div>
-            <div class="col-sm-2">
-                <div class="placeholders2">
-                  <span class="">第一学期平均学时</span>
-                  <div>{{ summary_table.2 }}</div>
-                </div>
-            </div>
-            <div class="col-sm-2">
-                <div class="placeholders2">
-                  <span class="">第二学期平均学时</span>
-                  <div>{{ summary_table.3 }}</div>
-                </div>
-            </div>
-            <div class="col-sm-2">
-                <div class="placeholders2">
-                  <span class="">第一学期平均难度</span>
-                  <div>{{ summary_table.4 }}</div>
-                </div>
-            </div>
-            <div class="col-sm-2">
-                <div class="placeholders2">
-                  <span class="">第二学期平均难度</span>
-                  <div>{{ summary_table.5 }}</div>
-                </div>
-            </div>
-          </div>
+          <!--<div class="row">-->
+            <!--<div class="col-sm-2">-->
+                <!--<div class="placeholders2">-->
+                  <!--<span class="">教师总数</span>-->
+                  <!--<div>{{ summary_table.0 }}</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="col-sm-2">-->
+                <!--<div class="placeholders2">-->
+                  <!--<span class="">未激活教师数</span>-->
+                  <!--<div>{{ summary_table.6 }}</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="col-sm-2">-->
+                <!--<div class="placeholders2">-->
+                  <!--<span class="">申报完成教师数(激活)</span>-->
+                  <!--<div>{{ summary_table.1 }}</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="col-sm-2">-->
+                <!--<div class="placeholders2">-->
+                  <!--<span class="">第一学期平均学时</span>-->
+                  <!--<div>{{ summary_table.2 }}</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="col-sm-2">-->
+                <!--<div class="placeholders2">-->
+                  <!--<span class="">第二学期平均学时</span>-->
+                  <!--<div>{{ summary_table.3 }}</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="col-sm-2">-->
+                <!--<div class="placeholders2">-->
+                  <!--<span class="">第一学期平均难度</span>-->
+                  <!--<div>{{ summary_table.4 }}</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div class="col-sm-2">-->
+                <!--<div class="placeholders2">-->
+                  <!--<span class="">第二学期平均难度</span>-->
+                  <!--<div>{{ summary_table.5 }}</div>-->
+                <!--</div>-->
+            <!--</div>-->
+          <!--</div>-->
           <h2 class="sub-header">微调申请</h2>
           <div class="table-responsive">
             <div class="pull-right" style="margin-top: 10px;">
-             <button class="btn btn-primary" onclick="approve_request()">批准该次微调</button>
+             <button class="btn btn-primary" onclick="approve_request_show()">批准该次微调</button>
               <button class="btn btn-primary" onclick="cancel_request_show()">驳回该次微调</button>
             </div>
             <table class="table table-striped" id="table_course_adjust">
@@ -180,7 +180,7 @@
         <div class="modal-content">
           <div class="modal-header">
               <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title" id="">驳回微调申请</h4>
+              <h4 class="modal-title">驳回微调申请</h4>
           </div>
           <div class="modal-body ">
             <div class="form-group">
@@ -201,7 +201,32 @@
         </div>
       </div>
     </div>
-
+    <div class="modal fade" id="approveRequestModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">批准微调申请</h4>
+          </div>
+          <div class="modal-body ">
+            <div class="form-group">
+              <p><strong>{{ request.user.last_name }}{{request.user.first_name}}({{request.user.username}})</strong>,  您好:</p>
+              <p>该次微调信息:</p>
+              <p>课程名称: <b id="approve_CourseId"></b></p>
+              <p>课程代码: <b id="approve_CourseName"></b></p>
+              <p>原指定教师: <b id="approve_TeacherBefore"></b></p>
+              <p>微调指定教师: <b id="approve_TeacherAfter"></b></p>
+              <p>补充说明:</p>
+              <textarea style="display" id="approve_notes" class="form-control" rows="3" disabled ></textarea>
+            </div>
+          </div>
+          <div class="modal-footer">
+              <button class="button" onclick="approve_request_submit()">确认批准申请</button>
+              <button type="button" class="button" data-dismiss="modal">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->
