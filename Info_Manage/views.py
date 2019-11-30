@@ -161,6 +161,7 @@ def teacher_approve_teacher_adjust(request):
     if search_result:
         CourseAdjustInfo.objects.filter(course_id=course_id).update(status='批准微调申请')
         to_change_teacher = search_result[0].teacher_after
+
         notes = search_result[0].notes
         try:
             search_result = CourseInfo.objects.filter(course_id=course_id)
@@ -181,7 +182,10 @@ def teacher_approve_teacher_adjust(request):
                     TeacherInfo.objects.filter(teacher_name=eachTeacher).update(second_semester_hours=value1,
                                                                                 second_semester_degree=value2)
             to_change_teacher_list = to_change_teacher.split(',')
+            tmp_change_teacher_list = []
             for eachTeacher in to_change_teacher_list:
+                eachTeacher = eachTeacher.split('(')[0]
+                tmp_change_teacher_list.append(tmp_change_teacher_list)
                 teacher_result = TeacherInfo.objects.filter(teacher_name=eachTeacher)
                 if semester == '一':
 
@@ -195,7 +199,8 @@ def teacher_approve_teacher_adjust(request):
                     TeacherInfo.objects.filter(teacher_name=eachTeacher).update(second_semester_hours=value1,
                                                                                 second_semester_degree=value2)
 
-            CourseInfo.objects.filter(course_id=course_id).update(teacher_final_pick=to_change_teacher)
+            tmp_change_teacher = ','.join(tmp_change_teacher_list)
+            CourseInfo.objects.filter(course_id=course_id).update(teacher_final_pick=tmp_change_teacher)
             search_result_course = CourseInfo.objects.filter(course_id=course_id)
             if search_result_course[0].course_relate:
                 if search_result_course[0].student_type == '本科':
@@ -246,7 +251,7 @@ def teacher_personal(request):
     if search_result:
         if search_result[0].teacher_apply_done:
             status = 'lock'
-        if search_result[0].teacher_name in ['教学院长']:
+        if request.user.nickname == 'leader':
             user_type = 'leader'
 
     now = datetime.now().replace()
@@ -2147,7 +2152,16 @@ def arrange_submit_adjust_request(request):
     try:
         search_result = CourseInfo.objects.filter(course_id=course_id)
         course_name = search_result[0].course_name
-        teacher_before = search_result[0].teacher_auto_pick
+        teacher_before = search_result[0].teacher_final_pick
+        teacher_ordered = search_result[0].teacher_ordered
+        to_change_teacher_list = to_change_teacher.split(',')
+        tmp_list = []
+        for eachTeacher in to_change_teacher_list:
+            if eachTeacher in teacher_ordered:
+                tmp_list.append('{}(已申报)'.format(eachTeacher))
+            else:
+                tmp_list.append('{}(未申报)'.format(eachTeacher))
+        to_change_teacher = ','.join(tmp_list)
         if not CourseAdjustInfo.objects.filter(course_id=course_id):
             CourseAdjustInfo.objects.create(course_id=course_id,
                                             course_name=course_name,
@@ -2156,7 +2170,8 @@ def arrange_submit_adjust_request(request):
                                             status='等待主管领导批准',
                                             notes=notes)
         else:
-            CourseAdjustInfo.objects.filter(course_id=course_id).update(teacher_after=to_change_teacher,
+            CourseAdjustInfo.objects.filter(course_id=course_id).update(teacher_before=teacher_before,
+                                                                        teacher_after=to_change_teacher,
                                                                         status='等待主管领导批准',
                                                                         notes=notes)
         status = 'success'
