@@ -17,13 +17,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from django.contrib.auth.views import login
 from Home.views import home_page, logout_view
-from Info_Manage.views import teacher_manage, teacher_personal, class_manage, teacher_change_expect, teacher_request_course,\
-                        arrange_class, teacher_save_and_config, teacher_table_upload, class_save_one_row, class_delete_one_row, \
-                        class_get_suit_teacher, class_table_upload, arrange_step_1, arrange_step_2, arrange_step_3, \
-                        arrange_export_report, class_get_teacher_name, class_filter_by_submit, arrange_search_by_course_id, \
-                        arrange_change_by_course_id, arrange_change_button_status, arrange_step_5, \
-    class_search_from_course_id, teacher_submit_apply_status, arrange_export_analysis_1, arrange_export_analysis_2
-from Info_Manage import views
+from Info_Manage import views as Info_Manage_views
 from Info_Search.views import info_search_main
 
 urlpatterns = [
@@ -33,33 +27,37 @@ urlpatterns = [
     url(r'^users/', include('users.urls')),
     url(r'^users/', include('django.contrib.auth.urls')),
     url(r'^$', home_page, name='home'),
-    url(r'^teacher_manage/', teacher_manage),
-    url(r'^teacher_personal/', teacher_personal),
-    url(r'^teacher_save_and_config/', teacher_save_and_config),
-    url(r'^teacher_request_course/', teacher_request_course),
-    url(r'^teacher_table_upload/', teacher_table_upload),
-    url(r'^teacher_help_declare_upload/', views.teacher_help_declare_upload, name="teacher_help_declare_upload"),
-    url(r'^teacher_change_expect/', teacher_change_expect),
-    url(r'^teacher_submit_apply_status/', teacher_submit_apply_status),
-    url(r'^class_manage/', class_manage),
-    url(r'^class_save_one_row/', class_save_one_row),
-    url(r'^class_delete_one_row/', class_delete_one_row),
-    url(r'^class_get_suit_teacher/', class_get_suit_teacher),
-    url(r'^class_table_upload/', class_table_upload),
-    url(r'^class_get_teacher_name', class_get_teacher_name),
-    url(r'^class_filter_by_submit/', class_filter_by_submit),
-    url(r'^class_search_from_course_id/', class_search_from_course_id),
-    url(r'^arrange_class/', arrange_class),
-    url(r'^arrange_step_1/', arrange_step_1),
-    url(r'^arrange_step_2/', arrange_step_2),
-    url(r'^arrange_step_3/', arrange_step_3),
-    url(r'^arrange_export_report/', arrange_export_report),
-    url(r'^arrange_export_analysis_1/', arrange_export_analysis_1),
-    url(r'^arrange_export_analysis_2/', arrange_export_analysis_2),
-    url(r'^arrange_search_by_course_id/', arrange_search_by_course_id),
-    url(r'^arrange_change_by_course_id/', arrange_change_by_course_id),
-    url(r'^arrange_change_button_status/', arrange_change_button_status),
-    url(r'^arrange_step_5/', arrange_step_5),
-    url(r'^course_info_search/', views.course_info_history_main),
+    url(r'^teacher_leader/', Info_Manage_views.teacher_leader),
+    url(r'^teacher_reject_teacher_adjust', Info_Manage_views.teacher_reject_teacher_adjust),
+    url(r'^teacher_approve_teacher_adjust', Info_Manage_views.teacher_approve_teacher_adjust),
+    url(r'^teacher_manage/', Info_Manage_views.teacher_manage),
+    url(r'^teacher_personal/', Info_Manage_views.teacher_personal),
+    url(r'^teacher_save_and_config/', Info_Manage_views.teacher_save_and_config),
+    url(r'^teacher_request_course/', Info_Manage_views.teacher_request_course),
+    url(r'^teacher_table_upload/', Info_Manage_views.teacher_table_upload),
+    url(r'^teacher_help_declare_upload/', Info_Manage_views.teacher_help_declare_upload, name="teacher_help_declare_upload"),
+    url(r'^teacher_change_expect/', Info_Manage_views.teacher_change_expect),
+    url(r'^teacher_submit_apply_status/', Info_Manage_views.teacher_submit_apply_status),
+    url(r'^class_manage/', Info_Manage_views.class_manage),
+    url(r'^class_save_one_row/', Info_Manage_views.class_save_one_row),
+    url(r'^class_delete_one_row/', Info_Manage_views.class_delete_one_row),
+    url(r'^class_get_suit_teacher/', Info_Manage_views.class_get_suit_teacher),
+    url(r'^class_table_upload/', Info_Manage_views.class_table_upload),
+    url(r'^class_get_teacher_name', Info_Manage_views.class_get_teacher_name),
+    url(r'^class_filter_by_submit/', Info_Manage_views.class_filter_by_submit),
+    url(r'^class_search_from_course_id/', Info_Manage_views.class_search_from_course_id),
+    url(r'^arrange_class/', Info_Manage_views.arrange_class),
+    url(r'^arrange_step_1/', Info_Manage_views.arrange_step_1),
+    url(r'^arrange_step_2/', Info_Manage_views.arrange_step_2),
+    url(r'^arrange_step_3/', Info_Manage_views.arrange_step_3),
+    url(r'^arrange_export_report/', Info_Manage_views.arrange_export_report),
+    url(r'^arrange_export_analysis_1/', Info_Manage_views.arrange_export_analysis_1),
+    url(r'^arrange_export_analysis_2/', Info_Manage_views.arrange_export_analysis_2),
+    url(r'^arrange_search_by_course_id/', Info_Manage_views.arrange_search_by_course_id),
+    url(r'^arrange_change_by_course_id/', Info_Manage_views.arrange_change_by_course_id),
+    url(r'^arrange_submit_adjust_request/', Info_Manage_views.arrange_submit_adjust_request),
+    url(r'^arrange_change_button_status/', Info_Manage_views.arrange_change_button_status),
+    url(r'^arrange_step_5/', Info_Manage_views.arrange_step_5),
+    url(r'^course_info_search/', Info_Manage_views.course_info_history_main),
     url(r'^info_search/', info_search_main),
 ]

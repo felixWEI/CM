@@ -46,6 +46,7 @@ class CourseInfo(models.Model):
     teacher_ordered = models.CharField(db_column='teacher_ordered', max_length=200, blank=True, null=True)
     teacher_auto_pick = models.CharField(db_column='teacher_auto_pick', max_length=200, blank=True, null=True)
     teacher_final_pick = models.CharField(db_column='teacher_final_pick', max_length=200, blank=True, null=True)
+    excellent_course = models.CharField(db_column='excellent_course', max_length=45, blank=True, null=True)
     notes = models.CharField(db_column='notes', max_length=200, blank=True, null=True)
     major = models.CharField(db_column='major', max_length=45, blank=True, null=True)
     language = models.CharField(db_column='language', max_length=45, blank=True, null=True)
@@ -75,6 +76,7 @@ class CourseHistoryInfo(models.Model):
     teacher_ordered = models.CharField(db_column='teacher_ordered', max_length=200, blank=True, null=True)
     teacher_auto_pick = models.CharField(db_column='teacher_auto_pick', max_length=200, blank=True, null=True)
     teacher_final_pick = models.CharField(db_column='teacher_final_pick', max_length=200, blank=True, null=True)
+    excellent_course = models.CharField(db_column='excellent_course', max_length=45, blank=True, null=True)
     notes = models.CharField(db_column='notes', max_length=200, blank=True, null=True)
     major = models.CharField(db_column='major', max_length=45, blank=True, null=True)
     language = models.CharField(db_column='language', max_length=45, blank=True, null=True)
@@ -110,3 +112,15 @@ class CurrentStepInfo(models.Model):
     class Meta:
         managed = False
         db_table = 'current_step_info'
+
+class CourseAdjustInfo(models.Model):
+    course_id = models.CharField(db_column='course_id', max_length=45, blank=True, null=True)
+    course_name = models.CharField(db_column='course_name', max_length=45, blank=True, null=True)
+    status = models.CharField(db_column='status', max_length=45, blank=True, null=True)
+    teacher_before = models.CharField(db_column='teacher_before', max_length=200, blank=True, null=True)
+    teacher_after = models.CharField(db_column='teacher_after', max_length=200, blank=True, null=True)
+    notes = models.CharField(db_column='notes', max_length=1000, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'course_adjust_info'
