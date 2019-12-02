@@ -154,3 +154,16 @@ ALLOWED_HOSTS = [
     '10.100.14.164',
 ]
 
+
+EMAIL_HOST = 'smtp.qq.com'
+
+EMAIL_HOST_USER = 'helloweifan@qq.com'
+
+EMAIL_HOST_PASSWORD = 'knfswkfmdnuzbbfg'
+
+EMAIL_PORT = 25
+
+EMAIL_USE_TLS = True
+
+DEFAULT_FROM_EMAIL = '<helloweifan@qq.com>'
+
