@@ -470,6 +470,26 @@ function check_apply_status(teacher_id){
     })
 
 }
+function recall_apply_result(teacher_id){
+    var status = 'check'
+    $.ajax({
+        type: 'POST',
+        url:'/teacher_submit_apply_status/',
+        data: {"teacher_id": teacher_id, 'status':status},
+        dataType: "json",
+        success: function (result) {
+            if (result['status'] == 'Success'){
+                $('#recallRequestModal').modal('show')
+            }else{
+                alert(result['status'])
+            }
+        },
+        error: function () {
+            alert('fail');
+        }
+    })
+
+}
 function init_modal_content(result){
     HIGH_DEGREE_1 = 9;
     HIGH_DEGREE_2 = 7;
@@ -613,6 +633,25 @@ function apply_complete_2(teacher_id){
             if (result['status'] == 'Success'){
                 $('#confirmCompleteModal').modal('hide')
                 $('#requestCompleteModal').modal('hide')
+                window.location.reload();
+            }else{
+                alert(result['status'])
+            }
+        },
+        error: function () {
+            alert('fail');
+        }
+    })
+}
+function apply_complete_3(teacher_id){
+    var status = 'recall'
+    $.ajax({
+        type: 'POST',
+        url:'/teacher_submit_apply_status/',
+        data: {"teacher_id": teacher_id, 'status':status},
+        dataType: "json",
+        success: function (result) {
+            if (result['status'] == 'Success'){
                 window.location.reload();
             }else{
                 alert(result['status'])

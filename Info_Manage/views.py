@@ -250,7 +250,7 @@ def teacher_personal(request):
     user_type = 'teacher'
     if search_result:
         if search_result[0].teacher_apply_done:
-            status = 'lock'
+            status = 'recall'
         if request.user.nickname == 'leader':
             user_type = 'leader'
 
@@ -293,7 +293,8 @@ def teacher_personal(request):
                 for eachCourseId in course_relate_list:
                     if CourseInfo.objects.filter(course_id=eachCourseId):
                         class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
-            class_name_str = ' '.join(class_name_list)
+            # todo when class name confirm, may change
+            class_name_str = '/'.join((' '.join(class_name_list)).split(' '))
             if request.user.last_name+request.user.first_name in eachItem.teacher_ordered.split(',') \
                     and request.user.last_name+request.user.first_name != '':
                 tmp = '已申报'
@@ -301,10 +302,11 @@ def teacher_personal(request):
                 tmp = ''
             if eachItem.course_relate:
                 course_relate = eachItem.course_relate.strip(',')
+                course_id_str = '{}/{}'.format(eachItem.course_id, course_relate)
             else:
-                course_relate = ''
+                course_id_str = eachItem.course_id
 
-            search_result.append([eachItem.course_id,
+            search_result.append([course_id_str,
                                   eachItem.course_name,
                                   eachItem.major,
                                   eachItem.student_type,
@@ -316,7 +318,6 @@ def teacher_personal(request):
                                   eachItem.language,
                                   eachItem.allow_teachers,
                                   eachItem.times_every_week,
-                                  course_relate,
                                   eachItem.course_parallel,
                                   eachItem.excellent_course,
                                   tmp])
@@ -329,7 +330,7 @@ def teacher_personal(request):
         expect_semester1 = 0
         expect_semester2 = 0
     summary_table = [expect_semester1, expect_semester2]
-    table_head = ['代码', '名称', '专业','学位', '班级', '学期', '学时', '难度', '必/选', '语言','教师数', '周上课次数','打通课程代码','平行班级','是否精品课程','课程状态']
+    table_head = ['代码', '名称', '专业','学位', '班级', '学期', '学时', '难度', '必/选', '语言','教师数', '周上课次数','平行班级','是否精品课程','课程状态']
     table_default = ['', '', major_set, STUDENT_TYPE, CLASS_NAME_LIST, ['一', '二'], COURSE_HOUR, COURSE_DEGREE, ['必修', '选修'], LANGUAGE, '', '', '']
     return render(request, 'teacher_personal.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
@@ -584,6 +585,10 @@ def teacher_submit_apply_status(request):
             TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='申报结束', notes=notes)
         else:
             TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='申报结束')
+        result = json.dumps({'status': status})
+    elif status_code == 'recall':
+        status = 'Success'
+        TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='')
         result = json.dumps({'status': status})
     else:
         status = 'Unknown status code {}'.format(status_code)

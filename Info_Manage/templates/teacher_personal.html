@@ -222,6 +222,8 @@
                  <button class="btn btn-primary" onclick="request_course()">申报该课程</button>
                  <button class="btn btn-primary" onclick="cancel_request()">取消申报</button>
                  <button class="btn btn-primary" onclick="check_apply_status('{{ request.user.username }}')">完成申报</button>
+               {% elif status == 'recall' %}
+                 <button class="btn btn-primary" onclick="recall_apply_result('{{ request.user.username }}')">撤回申报</button>
                {% endif %}
             </div>
             <table class="table table-striped" id="table_course_personal">
@@ -486,6 +488,26 @@
       </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="recallRequestModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">确认撤销申报</h4>
+          </div>
+          <div class="modal-body ">
+            <div>
+              <p class="bg-danger">您现在是否确认撤销之前的 申报完成!</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+              <button class="button" onclick="apply_complete_3('{{request.user.username}}')">确认提交</button>
+              <button type="button" class="button" data-dismiss="modal">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Modal -->
     <div class="modal fade" id="confirmCompleteModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
       <div class="modal-dialog" role="document">
