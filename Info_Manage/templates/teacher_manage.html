@@ -103,43 +103,49 @@
             <div><p class="bg-info">当前在排课中：目标学期为{{ year }}学年</p></div>
           {% endif %}
           <div class="row">
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <div class="placeholders2">
                   <span class="">教师总数</span>
                   <div>{{ summary_table.0 }}</div>
                 </div>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <div class="placeholders2">
                   <span class="">未激活教师数</span>
                   <div>{{ summary_table.6 }}</div>
                 </div>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <div class="placeholders2">
                   <span class="">申报完成教师数(激活)</span>
                   <div>{{ summary_table.1 }}</div>
                 </div>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
+                <div class="placeholders2">
+                  <span class="">不满足申报要求教师</span>
+                  <div>{{ summary_table.7 }} / {{ summary_table.1 }}</div>
+                </div>
+            </div>
+            <div class="col-sm-3">
                 <div class="placeholders2">
                   <span class="">第一学期平均学时</span>
                   <div>{{ summary_table.2 }}</div>
                 </div>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <div class="placeholders2">
                   <span class="">第二学期平均学时</span>
                   <div>{{ summary_table.3 }}</div>
                 </div>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <div class="placeholders2">
                   <span class="">第一学期平均难度</span>
                   <div>{{ summary_table.4 }}</div>
                 </div>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <div class="placeholders2">
                   <span class="">第二学期平均难度</span>
                   <div>{{ summary_table.5 }}</div>

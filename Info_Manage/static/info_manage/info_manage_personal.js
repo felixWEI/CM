@@ -596,7 +596,7 @@ function init_modal_content(result){
     document.getElementById('total_course_count').innerText = total_course_count
     document.getElementById('require_high_degree_count_1').innerText = CRITICAL_VALUE_1
     document.getElementById('require_high_degree_count_2').innerText = CRITICAL_VALUE_2
-     document.getElementById('require_course_count').innerText = CRITICAL_VALUE_3
+    document.getElementById('require_course_count').innerText = CRITICAL_VALUE_3
     if (total_high_degree_count_1 >= CRITICAL_VALUE_1 && total_high_degree_count_2 >= CRITICAL_VALUE_2 && total_course_count >= CRITICAL_VALUE_3){
         document.getElementById('p_pass').style.display = "block"
         document.getElementById('p_fail').style.display = "none"
