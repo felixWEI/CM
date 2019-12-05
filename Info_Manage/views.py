@@ -637,7 +637,14 @@ def teacher_submit_apply_status(request):
         result = json.dumps({'status': status})
     elif status_code == 'recall':
         status = 'Success'
-        TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='')
+        TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='申报结束/申请取消申报')
+        result = json.dumps({'status': status})
+    elif status_code == 'approve':
+        if search_result[0].teacher_apply_done == '申报结束/申请取消申报':
+            status = 'Success'
+            TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='')
+        else:
+            status = '该教师无撤销申报的申请'
         result = json.dumps({'status': status})
     else:
         status = 'Unknown status code {}'.format(status_code)

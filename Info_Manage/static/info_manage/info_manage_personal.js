@@ -340,22 +340,10 @@ function cancel_request(){
     }
     $('#cancelModal').modal('show');
     console.log(t.row('.selected').data());
-    document.getElementById('c_0').value = t.row('.selected').data()[0];
-    document.getElementById('c_1').value = t.row('.selected').data()[1];
-    document.getElementById('c_2').value = t.row('.selected').data()[2];
-    document.getElementById('c_3').value = t.row('.selected').data()[3];
-    document.getElementById('c_4').value = t.row('.selected').data()[4];
-    document.getElementById('c_5').value = t.row('.selected').data()[5];
-    document.getElementById('c_6').value = t.row('.selected').data()[6];
-    document.getElementById('c_7').value = t.row('.selected').data()[7];
-    document.getElementById('c_8').value = t.row('.selected').data()[8];
-    document.getElementById('c_9').value = t.row('.selected').data()[9];
-    document.getElementById('c_10').value = t.row('.selected').data()[10];
-    document.getElementById('c_11').value = t.row('.selected').data()[11];
-    document.getElementById('c_12').value = t.row('.selected').data()[12];
-    document.getElementById('c_13').value = t.row('.selected').data()[13];
-    document.getElementById('c_14').value = t.row('.selected').data()[14];
-    document.getElementById('c_15').value = t.row('.selected').data()[15];
+    for (var i=0; i < t.row('.selected').data().length; i++){
+        id = 'c_'+i.toString()
+        document.getElementById(id).value = t.row('.selected').data()[i];
+    }
 }
 
 function submit_edit_info(){
@@ -435,7 +423,7 @@ function submit_cancel(){
         dataType: "json",
         success: function (result) {
             if (result['status'] == 'Success'){
-                alert('取消申报成功')
+                alert('取消申报申请,提交成功!')
                 t.row('.selected').data()[t.row('.selected').data().length-1] = '';
                 t.row('.selected').data(t.row('.selected').data()).draw();
             }else{
