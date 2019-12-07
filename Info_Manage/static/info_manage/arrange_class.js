@@ -482,16 +482,18 @@ function search_course_by_id(){
         success: function(result){
             if (result['status'] == 'Success'){
                 course_content = result['course'];
-                for (var i=0; i < course_content.length-2; i++){
+                for (var i=0; i < course_content.length; i++){
+                    if ( i == 8  ||  i == 9 ){
+                        continue;
+                    }
                     document.getElementById('e_'+String(i+1)).value = course_content[i]
                 }
-                console.log(course_content);
                 $('#e_9').DataTable({
                     dom: '<"top">rt<"bottom"><"clear">',
                     "searching": false,
                     "ordering": false,
                     "destroy": true,
-                    "data": course_content[course_content.length-1],
+                    "data": course_content[course_content.length-2],
                     "column":[
                         {title: '工号'},
                         {title: '姓名'}
@@ -502,7 +504,7 @@ function search_course_by_id(){
                     "searching": false,
                     "ordering": false,
                     "destroy": true,
-                    "data": course_content[course_content.length-2],
+                    "data": course_content[course_content.length-3],
                     "column":[
                         {title: '工号'},
                         {title: '姓名'}

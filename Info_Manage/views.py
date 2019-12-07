@@ -80,7 +80,7 @@ def teacher_manage(request):
                               eachItem.first_semester_degree if eachItem.first_semester_degree else 0,
                               eachItem.second_semester_degree if eachItem.second_semester_degree else 0,
                               eachItem.teacher_apply_done,
-                              eachItem.excellent_course,
+                              eachItem.notes,
                               apply_course_count,
                               eachItem.lock_state
                               ])
@@ -145,9 +145,10 @@ def teacher_leader(request):
 @csrf_exempt
 def teacher_reject_teacher_adjust(request):
     course_id = request.POST['course_id']
+    reject_notes = request.POST['notes']
     search_result = CourseAdjustInfo.objects.filter(course_id=course_id)
     if search_result:
-        CourseAdjustInfo.objects.filter(course_id=course_id).update(status='驳回微调申请')
+        CourseAdjustInfo.objects.filter(course_id=course_id).update(status='驳回微调申请', notes=reject_notes)
         status = '微调申请已经驳回'
     else:
         status = '课程代码异常'
@@ -251,8 +252,8 @@ def teacher_personal(request):
     if search_result:
         if search_result[0].teacher_apply_done:
             status = 'lock'
-        if request.user.nickname == 'leader':
-            user_type = 'leader'
+    if request.user.nickname == 'leader':
+        user_type = 'leader'
 
     now = datetime.now().replace()
     search_result_major = CourseInfo.objects.values('major')
@@ -2137,10 +2138,16 @@ def arrange_search_by_course_id(request):
             if teacher_table:
                 teacher_id = teacher_table[0].teacher_id
                 tmp2.append([teacher_id, eachTeacher])
+        search_result = CourseAdjustInfo.objects.filter(course_id=course_id)
+        if search_result:
+            notes = search_result[0].notes
+        else:
+            notes = ''
         result = [course_name, student_type, semester, class_name, course_degree, course_hour, times_every_week,
-                  allow_teachers, tmp2, tmp1]
+                  allow_teachers, tmp2, tmp1,notes]
     else:
         status = '找不到该课程号码对应的课程'
+        result = []
 
     result = json.dumps({'course': result, 'status': status})
     return HttpResponse(result)
