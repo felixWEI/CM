@@ -113,9 +113,33 @@ def teacher_manage(request):
                      expect_degree_for_semester1, expect_degree_for_semester2, lock_teacher_count]
     table_head = ['教师代码', '教师姓名', '学科组','职称','导师类型','出生年月','期望学时1(%)', '期望学时2(%)', '已分配学时1', '已分配学时2','已分配难度1',
                   '已分配难度2' ,'申报完成', '特殊理由', '已申报课程数','状态']
-    return render(request, 'teacher_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username,
+    return render(request, 'teacher_manage_apply.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username,
                                                    'teacher_table': search_result, 'summary_table': summary_table,
                                                    'table_head': table_head, 'year': year})
+
+@login_required
+def teacher_manage_adjusst(request):
+    search_result = CurrentStepInfo.objects.all()
+    if search_result:
+        year = search_result[0].s1_year_info
+    else:
+        year = 'None'
+    course_adjust_table = CourseAdjustInfo.objects.all()
+    search_result = []
+    for eachLine in course_adjust_table:
+        course_id = eachLine.course_id
+        course_name = eachLine.course_name
+        teacher_before = eachLine.teacher_before
+        teacher_after = eachLine.teacher_after
+        status = eachLine.status
+        notes = eachLine.notes
+        search_result.append([course_id, course_name, teacher_before, teacher_after, status, notes])
+    table_head = ['课程代码', '课程名称', '自动分配教师', '微调教师', '申请状态', '补充说明']
+    return render(request, 'teacher_manage_adjust.html',
+                  {'UserName': request.user.last_name + request.user.first_name + request.user.username,
+                   'teacher_table': search_result,
+                   'table_head': table_head,
+                   'year': year})
 
 @login_required
 def teacher_leader(request):
