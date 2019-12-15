@@ -159,6 +159,13 @@
             <li style="padding-left:20px">
               <P><b>学科组</b></P>
             </li>
+              <li>
+                <div class="checkbox" style="padding-left:20px">
+                  <label>
+                    <input type="checkbox" id="major_check_list_all"> 全选
+                  </label>
+                </div>
+              </li>
               {% for row in major_list %}
                 <li>
                   <div class="checkbox" style="padding-left:20px">
@@ -172,13 +179,6 @@
                   </div>
                 </li>
               {% endfor %}
-              <li>
-                  <div class="checkbox" style="padding-left:20px">
-                      <label>
-                          <input type="checkbox" id="major_check_list_all"> 全选
-                      </label>
-                  </div>
-              </li>
 
           </ul>
           <li>
@@ -222,6 +222,8 @@
                  <button class="btn btn-primary" onclick="request_course()">申报该课程</button>
                  <button class="btn btn-primary" onclick="cancel_request()">取消申报</button>
                  <button class="btn btn-primary" onclick="check_apply_status('{{ request.user.username }}')">完成申报</button>
+               {% elif status == 'recall' %}
+                 <button class="btn btn-primary" onclick="recall_apply_result('{{ request.user.username }}')">撤回申报</button>
                {% endif %}
             </div>
             <table class="table table-striped" id="table_course_personal">
@@ -387,7 +389,7 @@
                 </div>
                 <div class="row form-group">
                     <label for="c_3" class="col-sm-2 control-label">{{ table_head.3 }}</label>
-                    <div class="col-sm-4"><input id="e_3" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.3 }}"></div>
+                    <div class="col-sm-4"><input id="c_3" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.3 }}"></div>
                 </div>
                 <div class="row form-group">
                     <label for="c_4" class="col-sm-2 control-label">{{ table_head.4 }}</label>
@@ -421,7 +423,7 @@
                 </div>
                 <div class="row form-group">
                     <label for="c_13" class="col-sm-2 control-label">{{ table_head.13 }}</label>
-                    <div class="col-sm-4"><input id="e_13" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.13 }}"></div>
+                    <div class="col-sm-4"><input id="c_13" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.13 }}"></div>
                     <label for="c_14" class="col-sm-2 control-label">{{ table_head.14 }}</label>
                     <div class="col-sm-4"><input id="c_14" disabled=disabled class="form-control" type="text" placeholder="{{ table_head.14 }}"></div>
                 </div>
@@ -486,6 +488,26 @@
       </div>
     </div>
 
+    <!-- Modal -->
+    <div class="modal fade" id="recallRequestModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title">确认撤销申报</h4>
+          </div>
+          <div class="modal-body ">
+            <div>
+              <p class="bg-danger">您现在是否确认撤销之前的 申报完成!</p>
+            </div>
+          </div>
+          <div class="modal-footer">
+              <button class="button" onclick="apply_complete_3('{{request.user.username}}')">确认提交</button>
+              <button type="button" class="button" data-dismiss="modal">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <!-- Modal -->
     <div class="modal fade" id="confirmCompleteModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
       <div class="modal-dialog" role="document">

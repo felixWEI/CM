@@ -108,43 +108,49 @@
             <div><p class="bg-info">当前在排课中：目标学期为{{ year }}学年</p></div>
           {% endif %}
           <div class="row">
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <div class="placeholders2">
                   <span class="">教师总数</span>
                   <div>{{ summary_table.0 }}</div>
                 </div>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <div class="placeholders2">
                   <span class="">未激活教师数</span>
                   <div>{{ summary_table.6 }}</div>
                 </div>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <div class="placeholders2">
                   <span class="">申报完成教师数(激活)</span>
                   <div>{{ summary_table.1 }}</div>
                 </div>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
+                <div class="placeholders2">
+                  <span class="">不满足申报要求教师</span>
+                  <div>{{ summary_table.7 }} / {{ summary_table.1 }}</div>
+                </div>
+            </div>
+            <div class="col-sm-3">
                 <div class="placeholders2">
                   <span class="">第一学期平均学时</span>
                   <div>{{ summary_table.2 }}</div>
                 </div>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <div class="placeholders2">
                   <span class="">第二学期平均学时</span>
                   <div>{{ summary_table.3 }}</div>
                 </div>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <div class="placeholders2">
                   <span class="">第一学期平均难度</span>
                   <div>{{ summary_table.4 }}</div>
                 </div>
             </div>
-            <div class="col-sm-2">
+            <div class="col-sm-3">
                 <div class="placeholders2">
                   <span class="">第二学期平均难度</span>
                   <div>{{ summary_table.5 }}</div>
@@ -157,6 +163,7 @@
                 <button id="import" class="btn btn-primary" data-toggle="modal" data-target="#importModal">教师信息导入</button>
                 <!--<button id="delete" class="btn btn-danger">删除该行</button>-->
                 <button id="edit_table" class="btn btn-primary">编辑教师信息</button>
+               <button id="approve_table" class="btn btn-primary">批准教师撤销申请</button>
                 <button id="import_help_to_declare" class="btn btn-primary" data-toggle="modal" data-target="#helpDeclareModal">代理申报导入</button>
             </div>
             <table class="table table-striped" id="table_teacher">
@@ -227,35 +234,60 @@
         </div>
       </div>
     </div>
-      <!-- Modal -->
-      <div class="modal fade" id="editModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myEditModalLabel">编辑教师信息</h4>
-            </div>
-            <div class="modal-body " id="edit_modal_body">
-              <form class="form-horizontal">
-                {% for row in table_head %}
-                  <div class="row form-group">
-                    <label for={{forloop.counter0}} class="col-sm-2 control-label">{{ row }}</label>
-                    {% if forloop.counter0 < 8 and forloop.counter0 > 5 or forloop.last %}
-                      <div class="col-sm-10"><input id="{{forloop.counter0}}"  class="form-control" type="text" placeholder="{{ row }} "></div>
-                    {% else %}
-                      <div class="col-sm-10"><input id="{{forloop.counter0}}" class="form-control" type="text" disabled="disabled" placeholder="{{ row }} "></div>
-                    {% endif %}
-                  </div>
-                {% endfor %}
-              </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="button" id="edit_teacher_info">提交</button>
-                <button type="button" class="button" data-dismiss="modal">关闭</button>
-            </div>
+    <!-- Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myEditModalLabel">编辑教师信息</h4>
+          </div>
+          <div class="modal-body " id="edit_modal_body">
+            <form class="form-horizontal">
+              {% for row in table_head %}
+                <div class="row form-group">
+                  <label for={{forloop.counter0}} class="col-sm-2 control-label">{{ row }}</label>
+                  {% if forloop.counter0 < 8 and forloop.counter0 > 5 or forloop.last %}
+                    <div class="col-sm-10"><input id="{{forloop.counter0}}"  class="form-control" type="text" placeholder="{{ row }} "></div>
+                  {% else %}
+                    <div class="col-sm-10"><input id="{{forloop.counter0}}" class="form-control" type="text" disabled="disabled" placeholder="{{ row }} "></div>
+                  {% endif %}
+                </div>
+              {% endfor %}
+            </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="button" id="edit_teacher_info">提交</button>
+              <button type="button" class="button" data-dismiss="modal">关闭</button>
           </div>
         </div>
       </div>
+    </div>
+        <!-- Modal -->
+    <div class="modal fade" id="approveModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myApproveModalLabel"></h4>
+          </div>
+          <div class="modal-body " id="approve_modal_body">
+            <form class="form-horizontal">
+              {% for row in table_head %}
+                <div class="row form-group">
+                  <label for={{forloop.counter0}} class="col-sm-2 control-label">{{ row }}</label>
+                  <div class="col-sm-10"><input id="a_{{forloop.counter0}}" class="form-control" type="text" disabled="disabled" placeholder="{{ row }} "></div>
+                </div>
+              {% endfor %}
+            </form>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="button" id="approve_teacher_request">提交</button>
+              <button type="button" class="button" data-dismiss="modal">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
