@@ -297,9 +297,15 @@ def teacher_personal(request):
         current_teacher_major = search_result_teacher_major[0].major.split(',')
     for each_set in major_set:
         if each_set in current_teacher_major:
-            major_list.append(["1", each_set])
+            if each_set == '综合':
+                major_list.insert(0,['1', each_set])
+            else:
+                major_list.append(["1", each_set])
         else:
-            major_list.append(["0", each_set])
+            if each_set == '综合':
+                major_list.insert(0,['0', each_set])
+            else:
+                major_list.append(["0", each_set])
     search_result = CurrentStepInfo.objects.all()
     if search_result and search_result[0].s2_deadline:
         delta = (search_result[0].s2_deadline.replace(tzinfo=None) - now).total_seconds()
@@ -655,10 +661,12 @@ def teacher_submit_apply_status(request):
     elif status_code == 'save':
         status = 'Success'
         notes = request.POST['notes']
-        if notes:
-            TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='申报结束/不满足申报要求', notes=notes)
+        if notes[:6] == '满足申报要求':
+            TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='申报结束', notes=notes[6:])
+        elif notes[:7] == '不满足申报要求':
+            TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='申报结束/不满足申报要求', notes=notes[7:])
         else:
-            TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='申报结束')
+            status = '申报状态出错，{}'.format(notes)
         result = json.dumps({'status': status})
     elif status_code == 'recall':
         status = 'Success'

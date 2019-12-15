@@ -588,7 +588,7 @@ function init_modal_content(result){
     if (total_high_degree_count_1 >= CRITICAL_VALUE_1 && total_high_degree_count_2 >= CRITICAL_VALUE_2 && total_course_count >= CRITICAL_VALUE_3){
         document.getElementById('p_pass').style.display = "block"
         document.getElementById('p_fail').style.display = "none"
-        document.getElementById('t_fail').style.display = "none"
+        document.getElementById('t_fail').style.display = "block"
 
     }else{
         document.getElementById('p_pass').style.display = "none"
@@ -612,6 +612,12 @@ function apply_complete_1(){
 function apply_complete_2(teacher_id){
     var status = 'save'
     notes = document.getElementById('t_fail').value
+    if ( document.getElementById('p_fail').style.display == 'block' ){
+        notes = '不满足申报要求' + notes
+    }
+    if ( document.getElementById('p_pass').style.display == 'block' ){
+        notes = '满足申报要求' + notes
+    }
     $.ajax({
         type: 'POST',
         url:'/teacher_submit_apply_status/',
