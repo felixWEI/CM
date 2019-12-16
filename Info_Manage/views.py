@@ -696,8 +696,15 @@ def class_manage(request):
     major_list = []
     for row_major in search_result_major:
         if row_major['major']:
-            major_list.append(row_major['major'])
-    major_set = set(major_list)
+            if row_major['major'] == '综合':
+                major_list.insert(0, row_major['major'])
+            else:
+                major_list.append(row_major['major'])
+
+    major_list_temp = []
+    for eachItem in major_list:
+        if eachItem not in major_list_temp:
+            major_list_temp.append(eachItem)
 
     course_table = CourseInfo.objects.all().filter()
     search_result = []
@@ -766,11 +773,11 @@ def class_manage(request):
     summary_table = [unlock_class_count, current_hour_count, current_degree_count, current_course_claim, lock_class_count]
 
     table_head = ['代码', '名称', '专业', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '可选教师', '打通课程代码','是否精品课程','状态','平行班级数']
-    table_default = ['', '', list(major_set), student_type, year, class_name,
+    table_default = ['', '', major_list_temp, student_type, year, class_name,
                      semester, course_hour, course_degree, course_type, LANGUAGE, '', '','']
     return render(request, 'class_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
-                                                 'summary_table': summary_table, 'year': current_year, 'major': major_set})
+                                                 'summary_table': summary_table, 'year': current_year, 'major': major_list_temp})
 
 
 def get_course_effective_count(course_object):

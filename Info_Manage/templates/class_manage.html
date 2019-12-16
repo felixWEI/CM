@@ -150,6 +150,13 @@
               <li style="padding-left:20px">
                 <P><b>学科组</b></P>
               </li>
+              <li>
+                <div class="checkbox" style="padding-left:20px">
+                  <label>
+                      <input type="checkbox" id="major_check_list_all"> 全选
+                  </label>
+                </div>
+              </li>
               {% for row in major %}
                 <li>
                   <div class="checkbox" style="padding-left:20px">
@@ -159,13 +166,6 @@
                   </div>
                 </li>
               {% endfor %}
-                <li>
-                      <div class="checkbox" style="padding-left:20px">
-                          <label>
-                              <input type="checkbox" id="major_check_list_all"> 全选
-                          </label>
-                      </div>
-                  </li>
             </ul>
           <li>
             <button type="submit" class="btn btn-default center-block" onclick="submit_checkbox_info()">提交</button>
