@@ -88,15 +88,22 @@
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li>
-              <a href="\teacher_manage\" style="color: black">申报信息</a>
+              {% if request.user.is_staff or user_type == 'leader' %}
+                <a style="color: black">教务员</a>
+                <a href="\teacher_manage\" style="color: black; text-indent: 2em;">申报信息</a>
+                <li class="active">
+                    <a href="\teacher_manage_adjust\" style="color: black; text-indent: 2em;">微调信息</a>
+                </li>
+              {% endif %}
             </li>
-            <li class="active">
-              <a href="\teacher_manage_adjust\" style="color: black">微调信息</a>
-            </li>
-          </ul>
-          <ul class="nav nav-sidebar">
             <li>
-              <a href="\teacher_personal\" style="color: black">教师个人</a>
+              {% if user_type == 'leader' %}
+                <a style="color: black">主管领导</a>
+                <a href="\teacher_leader\" style="color: black; text-indent: 2em;">微调信息</a>
+              {% endif %}
+            </li>
+            <li>
+              <a href="\teacher_personal\" style="color: black;">教师个人</a>
             </li>
           </ul>
         </div>

@@ -47,6 +47,10 @@ log.addHandler(log_file_handler)
 
 @login_required()
 def teacher_manage(request):
+    if request.user.nickname == 'leader':
+        user_type = 'leader'
+    else:
+        user_type = 'teacher'
     search_result = CurrentStepInfo.objects.all()
     if search_result:
         year = search_result[0].s1_year_info
@@ -118,10 +122,14 @@ def teacher_manage(request):
                   '已分配难度2' ,'申报完成', '特殊理由', '已申报课程数','状态']
     return render(request, 'teacher_manage_apply.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username,
                                                    'teacher_table': search_result, 'summary_table': summary_table,
-                                                   'table_head': table_head, 'year': year})
+                                                   'table_head': table_head, 'year': year, 'user_type':user_type})
 
 @login_required
 def teacher_manage_adjusst(request):
+    if request.user.nickname == 'leader':
+        user_type = 'leader'
+    else:
+        user_type = 'teacher'
     search_result = CurrentStepInfo.objects.all()
     if search_result:
         year = search_result[0].s1_year_info
@@ -142,10 +150,15 @@ def teacher_manage_adjusst(request):
                   {'UserName': request.user.last_name + request.user.first_name + request.user.username,
                    'teacher_table': search_result,
                    'table_head': table_head,
-                   'year': year})
+                   'year': year,
+                   'user_type': user_type})
 
 @login_required
 def teacher_leader(request):
+    if request.user.nickname == 'leader':
+        user_type = 'leader'
+    else:
+        user_type = 'teacher'
     search_result = CurrentStepInfo.objects.all()
     if search_result:
         year = search_result[0].s1_year_info
@@ -167,7 +180,8 @@ def teacher_leader(request):
     return render(request, 'teacher_leader.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username,
                                                    'teacher_table': search_result,
                                                    'table_head': table_head,
-                                                   'year': year})
+                                                   'year': year,
+                                                   'user_type':user_type})
 
 @csrf_exempt
 def teacher_reject_teacher_adjust(request):
