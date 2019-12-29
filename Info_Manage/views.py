@@ -145,7 +145,7 @@ def teacher_manage_adjusst(request):
         status = eachLine.status
         notes = eachLine.notes
         search_result.append([course_id, course_name, teacher_before, teacher_after, status, notes])
-    table_head = ['课程代码', '课程名称', '自动分配教师', '微调教师', '申请状态', '补充说明']
+    table_head = ['课程代码', '课程名称', '原授课教师', '微调教师', '申请状态', '补充说明']
     return render(request, 'teacher_manage_adjust.html',
                   {'UserName': request.user.last_name + request.user.first_name + request.user.username,
                    'teacher_table': search_result,
@@ -294,6 +294,8 @@ def teacher_personal(request):
     if search_result:
         if search_result[0].teacher_apply_done:
             status = 'recall'
+            if search_result[0].teacher_apply_done == '申报结束/申请取消申报':
+                status = 'wait_approve'
     if request.user.nickname == 'leader':
         user_type = 'leader'
 
@@ -1374,7 +1376,13 @@ def class_search_from_course_id(request):
 @login_required()
 def arrange_class(request):
     step_info = []
+    init_info = {}
     step_position = ['active', 'disabled', 'disabled', 'disabled', 'disabled']
+    current_year_init = datetime.now().year
+    select_year = ['{}-{}'.format(current_year_init-1, current_year_init),
+                   '{}-{}'.format(current_year_init, current_year_init+1),
+                   '{}-{}'.format(current_year_init+1, current_year_init+2)]
+    init_info['select_year'] = select_year
     search_result = CurrentStepInfo.objects.all()
     if len(search_result) == 1:
         if search_result[0].arrange_class_status == 'start':
@@ -1436,8 +1444,9 @@ def arrange_class(request):
                 pass
 
     times = [[i for i in range(1, 13)], [i for i in range(1, 32)], [i for i in range(24)], [i for i in range(1, 60)]]
+    init_info['times'] = times
     return render(request, 'arrange_class.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'step_info': step_info,
-                                                  'step_position': step_position, 'times': times})
+                                                  'step_position': step_position, 'times':init_info['times'], 'select_year':init_info['select_year']})
 
 
 @csrf_exempt

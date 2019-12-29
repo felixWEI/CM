@@ -133,8 +133,9 @@
                     <div class="col-md-11 col-md-offset-1">
                       <h4 class="text-left">学年</h4>
                       <select multiple class="form-control" id="step_1_select_list">
-                        <option>2018-2019</option>
-                        <option>2019-2020</option>
+                        {% for item in select_year %}
+                          <option>{{item}}</option>
+                        {% endfor %}
                       </select>
                     </div>
                   </div>

@@ -231,6 +231,8 @@
                  <button class="btn btn-primary" onclick="check_apply_status('{{ request.user.username }}')">完成申报</button>
                {% elif status == 'recall' %}
                  <button class="btn btn-primary" onclick="recall_apply_result('{{ request.user.username }}')">撤回申报</button>
+               {% elif status == 'wait_approve' %}
+                  <button class="btn btn-primary" disabled >撤回申报完成待审批</button>
                {% endif %}
             </div>
             <table class="table table-striped" id="table_course_personal">
