@@ -700,6 +700,30 @@ def teacher_submit_apply_status(request):
         result = json.dumps({'status': status})
     return HttpResponse(result)
 
+@csrf_exempt
+def check_teacher_apply_status(request):
+    course_table = CourseInfo.objects.filter(lock_state=0)
+    final_result = {'status': 'Success', 'message':[]}
+    for eachCourse in course_table:
+        teacher_limit_basic = eachCourse.allow_teachers
+
+        if int(eachCourse.course_parallel) != 1:
+            teacher_limit_final = teacher_limit_basic * int(eachCourse.course_parallel)
+        else:
+            teacher_limit_final = teacher_limit_basic
+        teacher_list = eachCourse.teacher_ordered.split(',')
+        if len(teacher_list) < teacher_limit_final and len(teacher_list) > teacher_limit_basic:
+            notes = '{} {} 申报教师数满足授课最低要求,但是需要某些教师授课多次{}'.format(eachCourse.course_id,eachCourse.course_name,os.linesep)
+            final_result['message'].append(notes)
+        elif len(teacher_list) < teacher_limit_basic:
+            notes = '{} {} 申报教师不满足授课最低要求{}'.format(eachCourse.course_id,eachCourse.course_name,os.linesep)
+            final_result['message'].append(notes)
+        else:
+            pass
+    if len(final_result['message']) == 0:
+        final_result['message'] = ['所有课程的申报教师数均符合要求']
+    result = json.dumps({'status': final_result['status'], 'message': final_result['message']})
+    return HttpResponse(result)
 
 @login_required()
 def class_manage(request):

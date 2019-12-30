@@ -273,7 +273,9 @@ function add_course_info(length){
         if ( document.getElementById('a_'+String(i)).value !== undefined ){
             row_data[i] = document.getElementById('a_'+String(i)).value;
             if (i==0){
-                row_data[i] = row_data[i].toUpperCase();
+                row_data[i] = row_data[i].to
+
+                UpperCase();
             }
         }else{
             row_data[i] = "";

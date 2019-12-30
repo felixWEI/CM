@@ -56,7 +56,28 @@ $(document).ready(function () {
             document.getElementById(id).value = t.row('.selected').data()[i];
         }
 	});
+	$('#check_teacher_apply_status').click( function(){
+	    type = 'all'
+        $.ajax({
+                type: 'POST',
+                url: '/check_teacher_apply_status/',
+                data: {'type': type},
+                dataType: "json",
+                success: function(result){
+                    if (result['status']=='Success'){
+                        $('#checkModal').modal('show')
+                        document.getElementById('check_modal_body').rows = result['message'].length
+                        document.getElementById('check_modal_body').value = result['message']
+                    }else{
+                        alert(result['status'])
+                    }
+                },
+                error: function (){
+                    console.log('No');
+                }
+            });
 
+	});
     $('#edit_teacher_info').click( function(){
         teacher_code = document.getElementById('0').value
         teacher_name = document.getElementById('1').value
