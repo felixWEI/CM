@@ -305,41 +305,12 @@ function edit_course_info(){
         alert('没有选中的课程')
         return
     }
-    $('#editModal').modal('show');
+
     document.getElementById('e_0').value = t.row('.selected').data()[0];
     document.getElementById('e_1').value = t.row('.selected').data()[1];
-    document.getElementById('e_3').options.length = 0
-    document.getElementById('e_4').options.length = 0
-    document.getElementById('e_5').options.length = 0
-    document.getElementById('e_6').options.length = 0
-    document.getElementById('e_7').options.length = 0
-    document.getElementById('e_8').options.length = 0
 //    for (var i in STUDENT_TYPE){
 //        document.getElementById('e_3').options.add(new Option(STUDENT_TYPE[i]))
 //    }
-    for (var i in STUDENT_TYPE){
-        document.getElementById('e_3').options.add(new Option(STUDENT_TYPE[i]))
-    }
-    for (var i=0; i < 4; i++){
-        year = Number(current_year) - i
-        document.getElementById('e_4').options.add(new Option(year))
-    }
-    for (var i in CLASS_NAME_LIST){
-        document.getElementById('e_5').options.add(new Option(CLASS_NAME_LIST[i]))
-    }
-    for (var i in SEMESTER){
-        document.getElementById('e_6').options.add(new Option(SEMESTER[i]))
-    }
-    for (var i in COURSE_HOUR){
-        document.getElementById('e_7').options.add(new Option(COURSE_HOUR[i]))
-    }
-    for (var i in COURSE_DEGREE){
-        document.getElementById('e_8').options.add(new Option(COURSE_DEGREE[i]))
-    }
-    for (var i in COURSE_TYPE){
-        document.getElementById('e_9').options.add(new Option(COURSE_TYPE[i]))
-    }
-
     document.getElementById('e_2').innerHTML = '<option>'+t.row('.selected').data()[2]+'</option>'+document.getElementById('e_2').innerHTML;
     document.getElementById('e_3').innerHTML = '<option>'+t.row('.selected').data()[3]+'</option>'+document.getElementById('e_3').innerHTML;
     document.getElementById('e_4').innerHTML = '<option>'+t.row('.selected').data()[4]+'</option>'+document.getElementById('e_4').innerHTML;
@@ -362,7 +333,36 @@ function edit_course_info(){
         dataType: "json",
         success: function (result) {
             var teacher_list = result['result_list'];
-            console.log(teacher_list);
+            var info_list = result['info_default']
+//            console.log(info_list);
+            document.getElementById('e_3').options.length = 0
+            document.getElementById('e_4').options.length = 0
+            document.getElementById('e_5').options.length = 0
+            document.getElementById('e_6').options.length = 0
+            document.getElementById('e_7').options.length = 0
+            document.getElementById('e_8').options.length = 0
+            document.getElementById('e_9').options.length = 0
+            for (var i in info_list[0]){
+                document.getElementById('e_5').options.add(new Option(info_list[0][i]))
+            }
+            for (var i in info_list[1]){
+                document.getElementById('e_3').options.add(new Option(info_list[1][i]))
+            }
+            for (var i in info_list[2]){
+                document.getElementById('e_4').options.add(new Option(info_list[2][i]))
+            }
+            for (var i in info_list[3]){
+                document.getElementById('e_6').options.add(new Option(info_list[3][i]))
+            }
+            for (var i in info_list[4]){
+                document.getElementById('e_7').options.add(new Option(info_list[4][i]))
+            }
+            for (var i in info_list[5]){
+                document.getElementById('e_8').options.add(new Option(info_list[5][i]))
+            }
+            for (var i in info_list[6]){
+                document.getElementById('e_9').options.add(new Option(info_list[6][i]))
+            }
             $('#e_13').DataTable({
                 dom: '<"top">rt<"bottom"><"clear">',
                 "searching": false,
@@ -375,6 +375,7 @@ function edit_course_info(){
                     {title: '姓名'}
                 ]
             });
+            $('#editModal').modal('show');
         },
         error: function () {
             alert('fail');

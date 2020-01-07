@@ -541,8 +541,7 @@
               <div class="col-sm-3">
                 <div class="input-group">
                   <select class="form-control" id="setYear">
-                    <option>2018</option>
-                    <option>2019</option>
+                    {% for i in times.0 %}<option>{{i}}</option>{% endfor %}
                   </select>
                   <span class="input-group-addon">年</span>
                 </div>
@@ -550,7 +549,7 @@
               <div class="col-sm-2 form-group">
                 <div class="input-group">
                   <select class="form-control" id="setMonth">
-                  {% for i in times.0 %}<option>{{i}}</option>{% endfor %}
+                  {% for i in times.1 %}<option>{{i}}</option>{% endfor %}
                   </select>
                   <span class="input-group-addon">月</span>
                 </div>
@@ -558,7 +557,7 @@
               <div class="col-sm-2 form-group">
                 <div class="input-group">
                   <select class="form-control" id="setDay">
-                  {% for i in times.1 %}<option>{{i}}</option>{% endfor %}
+                  {% for i in times.2 %}<option>{{i}}</option>{% endfor %}
                   </select>
                   <span class="input-group-addon">日</span>
                 </div>
@@ -566,7 +565,7 @@
               <div class="col-sm-2 form-group">
                 <div class="input-group">
                   <select class="form-control" id="setHour">
-                  {% for i in times.2 %}<option>{{i}}</option>{% endfor %}
+                  {% for i in times.3 %}<option>{{i}}</option>{% endfor %}
                   </select>
                   <span class="input-group-addon">时</span>
                 </div>
@@ -574,7 +573,7 @@
               <div class="col-sm-2 form-group">
                 <div class="input-group">
                   <select class="form-control" id="setMin">
-                  {% for i in times.3 %}<option>{{i}}</option>{% endfor %}
+                  {% for i in times.4 %}<option>{{i}}</option>{% endfor %}
                   </select>
                   <span class="input-group-addon">分</span>
                 </div>

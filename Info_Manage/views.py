@@ -741,13 +741,14 @@ def class_manage(request):
 
     course_table = CourseInfo.objects.all().filter()
     search_result = []
-    class_name = CLASS_NAME_LIST
-    student_type = STUDENT_TYPE
-    year = CLASS_GRADE
-    semester = SEMESTER
-    course_hour = COURSE_HOUR
-    course_degree = COURSE_DEGREE
-    course_type = COURSE_TYPE
+
+    class_name = get_class_value_by_key('class_name')#CLASS_NAME_LIST
+    student_type = get_class_value_by_key('student_type')#STUDENT_TYPE
+    year = get_class_value_by_key('year')#CLASS_GRADE
+    semester = get_class_value_by_key('semester')#SEMESTER
+    course_hour = get_class_value_by_key('course_hour')#COURSE_HOUR
+    course_degree = get_class_value_by_key('course_degree')#COURSE_DEGREE
+    course_type = get_class_value_by_key('course_type')#COURSE_TYPE
     current_course_count = len(course_table)
     current_hour_count = 0
     current_degree_count = 0
@@ -811,6 +812,30 @@ def class_manage(request):
     return render(request, 'class_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
                                                  'summary_table': summary_table, 'year': current_year, 'major': major_set})
+
+
+def get_class_value_by_key(key):
+    if key in ['class_name', 'year', 'student_type']:
+        searchKey = 'class_name'
+    else:
+        searchKey = key
+    search_result_key = CourseInfo.objects.values(searchKey)
+    class_value_list = []
+    for row_item in search_result_key:
+        if row_item[searchKey]:
+            if key == 'class_name':
+                tmp_value = row_item[searchKey].split('_')[-1]
+            elif key == 'year':
+                tmp_value = row_item[searchKey].split('_')[0].split('-')[-1]
+                if not tmp_value:
+                    continue
+            elif key == 'student_type':
+                tmp_value = row_item[searchKey].split('_')[0].split('-')[0]
+            else:
+                tmp_value = row_item[searchKey]
+            if tmp_value not in class_value_list:
+                class_value_list.append(tmp_value)
+    return class_value_list
 
 
 def get_course_effective_count(course_object):
@@ -1186,7 +1211,15 @@ def class_get_suit_teacher(request):
         if search_result:
             tmp = [search_result[0].teacher_id, eachTeacher]
             result_list.append(tmp)
-    result = json.dumps({'result_list': result_list})
+    class_name = get_class_value_by_key('class_name')#CLASS_NAME_LIST
+    student_type = get_class_value_by_key('student_type')#STUDENT_TYPE
+    year = get_class_value_by_key('year')#CLASS_GRADE
+    semester = get_class_value_by_key('semester')#SEMESTER
+    course_hour = get_class_value_by_key('course_hour')#COURSE_HOUR
+    course_degree = get_class_value_by_key('course_degree')#COURSE_DEGREE
+    course_type = get_class_value_by_key('course_type')#COURSE_TYPE
+    info_default = [class_name, student_type, year, semester, course_hour, course_degree, course_type]
+    result = json.dumps({'result_list': result_list, 'info_default':info_default})
     return HttpResponse(result)
 
 
@@ -1467,7 +1500,7 @@ def arrange_class(request):
             else:
                 pass
 
-    times = [[i for i in range(1, 13)], [i for i in range(1, 32)], [i for i in range(24)], [i for i in range(1, 60)]]
+    times = [[current_year_init-1,current_year_init,current_year_init+1],[i for i in range(1, 13)], [i for i in range(1, 32)], [i for i in range(24)], [i for i in range(1, 60)]]
     init_info['times'] = times
     return render(request, 'arrange_class.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'step_info': step_info,
                                                   'step_position': step_position, 'times':init_info['times'], 'select_year':init_info['select_year']})
@@ -1719,8 +1752,10 @@ def arrange_main():
     show_statistical(result_1, file_obj)
     result_2_firstSemester, result_2_secondSemester = split_semester_from_whole_year(result_2)
     for each_semester in [result_2_firstSemester, result_2_secondSemester]:
+        # 难度均衡
         result_1, result_2 = balance_for_high_degree(result_1, each_semester, teacher_1, file_obj)
         show_statistical(result_1, file_obj)
+        # 学时均衡
         result_1, result_2 = balance_for_course_hour(result_1, result_2, teacher_1, file_obj)
         show_statistical(result_1, file_obj)
 
@@ -2152,8 +2187,60 @@ def first_allocation_for_limit_teacher_list(result_all_teachers, result_left_cou
                 result_all_teachers[teacher_info[eachTeacher]['id']][tmp_str2] += int(eachCourse.course_degree) / float(
                     eachCourse.allow_teachers)
         else:
-            result_2.append(eachCourse)
+            if int(eachCourse.course_parallel) == 1:
+                result_2.append(eachCourse)
+            else:
+                # 平行班级情况下，如果申报认识不满足最高要求，但是大于最低要求，会先行安排
+                teacher_limit_basic = eachCourse.allow_teachers
+                teacher_limit_final = eachCourse.allow_teachers * int(eachCourse.course_parallel)
+                if len(teacher_list) == teacher_limit_final:
+                    result_2.append(eachCourse)
+                elif teacher_limit_basic < len(teacher_list) < teacher_limit_final:
+                    for eachTeacher in teacher_list:
+                        print eachTeacher
+                        result_all_teachers[teacher_info[eachTeacher]['id']]['course_list'].append(
+                            eachCourse.course_id)
+                        result_all_teachers[teacher_info[eachTeacher]['id']]['degree_list'].append(
+                            eachCourse.course_degree)
+                        if eachCourse.semester == '一':
+                            tmp_str1 = 'total_hours_1'
+                            tmp_str2 = 'total_degree_1'
+                        else:
+                            tmp_str1 = 'total_hours_2'
+                            tmp_str2 = 'total_degree_2'
+                        result_all_teachers[teacher_info[eachTeacher]['id']][tmp_str1] += int(
+                            eachCourse.course_hour) / int(
+                            eachCourse.allow_teachers)
+                        result_all_teachers[teacher_info[eachTeacher]['id']][tmp_str2] += int(
+                            eachCourse.course_degree) / float(
+                            eachCourse.allow_teachers)
+                    left_course_time = teacher_limit_final - len(teacher_list)
+                    for eachTeacher in teacher_list:
+                        print eachTeacher
+                        result_all_teachers[teacher_info[eachTeacher]['id']]['course_list'].append(
+                            eachCourse.course_id)
+                        result_all_teachers[teacher_info[eachTeacher]['id']]['degree_list'].append(
+                            eachCourse.course_degree)
+                        if eachCourse.semester == '一':
+                            tmp_str1 = 'total_hours_1'
+                            tmp_str2 = 'total_degree_1'
+                        else:
+                            tmp_str1 = 'total_hours_2'
+                            tmp_str2 = 'total_degree_2'
+                        result_all_teachers[teacher_info[eachTeacher]['id']][tmp_str1] += int(
+                            eachCourse.course_hour) / int(
+                            eachCourse.allow_teachers)
+                        result_all_teachers[teacher_info[eachTeacher]['id']][tmp_str2] += int(
+                            eachCourse.course_degree) / float(
+                            eachCourse.allow_teachers)
+                        left_course_time -= 1
+                        if left_course_time == 0:
+                            break
+
+
+
     return result_all_teachers, result_2
+
 
 
 @csrf_exempt
@@ -2497,13 +2584,13 @@ def course_info_history_main(request):
 
     course_table = CourseInfo.objects.all()
     search_result = []
-    class_name = CLASS_NAME_LIST
-    student_type = STUDENT_TYPE
-    year = CLASS_GRADE
-    semester = SEMESTER
-    course_hour = COURSE_HOUR
-    course_degree = COURSE_DEGREE
-    course_type = COURSE_TYPE
+    class_name = get_class_value_by_key('class_name')#CLASS_NAME_LIST
+    student_type = get_class_value_by_key('student_type')#STUDENT_TYPE
+    year = get_class_value_by_key('year')#CLASS_GRADE
+    semester = get_class_value_by_key('semester')#SEMESTER
+    course_hour = get_class_value_by_key('course_hour')#COURSE_HOUR
+    course_degree = get_class_value_by_key('course_degree')#COURSE_DEGREE
+    course_type = get_class_value_by_key('course_type')#COURSE_TYPE
     current_course_count = len(course_table)
     current_hour_count = 0
     current_degree_count = 0
