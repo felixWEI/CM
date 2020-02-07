@@ -790,7 +790,7 @@ def class_manage(request):
     student_type = get_class_value_by_key('student_type')#STUDENT_TYPE
     year = get_class_value_by_key('year')#CLASS_GRADE
     semester = SEMESTER
-    course_hour = get_class_value_by_key('course_hour')#COURSE_HOUR
+    course_hour = COURSE_HOUR
     course_degree = COURSE_DEGREE
     course_type = get_class_value_by_key('course_type')#COURSE_TYPE
     current_course_count = len(course_table)
@@ -1380,7 +1380,7 @@ def class_get_suit_teacher(request):
     student_type = get_class_value_by_key('student_type')#STUDENT_TYPE
     year = get_class_value_by_key('year')#CLASS_GRADE
     semester = SEMESTER
-    course_hour = get_class_value_by_key('course_hour')#COURSE_HOUR
+    course_hour = COURSE_HOUR
     course_degree = COURSE_DEGREE
     course_type = get_class_value_by_key('course_type')#COURSE_TYPE
     info_default = [class_name, student_type, year, semester, course_hour, course_degree, course_type]
@@ -1586,7 +1586,7 @@ def class_search_from_course_id(request):
                          tmp_class_grade,
                          tmp_class_name,
                          search_result[0].semester,
-                         str(search_result[0].course_hour),
+                         str(int(search_result[0].course_hour)),
                          str(search_result[0].course_degree),
                          search_result[0].course_type,
                          search_result[0].language,
@@ -2834,7 +2834,7 @@ def course_info_history_main(request):
     student_type = get_class_value_by_key('student_type')#STUDENT_TYPE
     year = get_class_value_by_key('year')#CLASS_GRADE
     semester = SEMESTER
-    course_hour = get_class_value_by_key('course_hour')#COURSE_HOUR
+    course_hour = COURSE_HOUR
     course_degree = COURSE_DEGREE
     course_type = get_class_value_by_key('course_type')#COURSE_TYPE
     current_course_count = len(course_table)

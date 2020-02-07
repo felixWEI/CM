@@ -120,14 +120,14 @@ $(document).ready(function () {
             dataType: "json",
             success: function(result){
                 if (result['status'] == 'Success'){
-                    console.log(result['raw_data'][5])
+                    console.log(result['raw_data'])
                     document.getElementById('a_1').value = result['raw_data'][0]
                     document.getElementById('a_2').value = result['raw_data'][1]
                     document.getElementById('a_3').value = result['raw_data'][2]
                     document.getElementById('a_4').value = result['raw_data'][3]
                     document.getElementById('a_5').value = result['raw_data'][4]
                     document.getElementById('a_6').value = result['raw_data'][5]
-                    document.getElementById('a_7').value = Number(result['raw_data'][6])
+                    document.getElementById('a_7').value = result['raw_data'][6]
                     document.getElementById('a_8').value = result['raw_data'][7]
                     document.getElementById('a_9').value = result['raw_data'][8]
                     document.getElementById('a_10').value = result['raw_data'][9]
@@ -273,9 +273,7 @@ function add_course_info(length){
         if ( document.getElementById('a_'+String(i)).value !== undefined ){
             row_data[i] = document.getElementById('a_'+String(i)).value;
             if (i==0){
-                row_data[i] = row_data[i].to
-
-                UpperCase();
+                row_data[i] = row_data[i].toUpperCase();
             }
         }else{
             row_data[i] = "";
