@@ -250,7 +250,7 @@ def teacher_approve_teacher_adjust(request):
 
             tmp_change_teacher = ','.join(tmp_change_teacher_list)
             CourseInfo.objects.filter(course_id=course_id).update(teacher_final_pick=tmp_change_teacher)
-            module_log_update.data_operate_log(user, 'course_id:{} toChangeFinalPick: {}'.format(course_id, tmp_change_teacher))
+            module_log_update.data_operate_log(user, '[CourseInfo]course_id:{} teacher_final_pick: {}'.format(course_id, tmp_change_teacher))
 
             search_result_course = CourseInfo.objects.filter(course_id=course_id)
             if search_result_course[0].course_relate:
@@ -259,7 +259,7 @@ def teacher_approve_teacher_adjust(request):
                     for eachCourse in course_list:
                         CourseInfo.objects.filter(course_id=eachCourse).update(teacher_final_pick=to_change_teacher)
                         module_log_update.data_operate_log(user,
-                                                   'course_relate:{} toChangeFinalPick: {}'.format(eachCourse,
+                                                   'course_relate:{} teacher_final_pick: {}'.format(eachCourse,
                                                                                                to_change_teacher))
             status = '微调申请已经批准'
         except Exception, e:
@@ -492,7 +492,7 @@ def teacher_change_expect(request):
         TeacherInfo.objects.filter(teacher_id=teacher_id).update(first_semester_expect=modify_0,
                                                                  second_semester_expect=modify_1,
                                                                  lock_state=lock_state)
-        module_log_update.data_operate_log(user, '[TeacherInfo]update:{} {} {}'.format(modify_0, modify_1, lock_state))
+        module_log_update.data_operate_log(user, '[TeacherInfo]update: first_semester_expect {} second_semester_expect {} lock_state {}'.format(modify_0, modify_1, lock_state))
         status = 'Success'
     result = json.dumps({'status': status})
     return HttpResponse(result)
@@ -575,7 +575,7 @@ def teacher_help_declare_upload(request):
                 teacher_ordered_str = ','.join(teacher_ordered_list)
                 CourseInfo.objects.filter(id=search_result[0].id).update(suit_teacher=suit_teacher_str, teacher_ordered=
                                                                          teacher_ordered_str)
-                module_log_update.data_operate_log(user, '[CourseInfo]update: {} {}'.format(suit_teacher_str, teacher_ordered_str))
+                module_log_update.data_operate_log(user, '[CourseInfo]update: suit_teacher {} teacher_ordered {}'.format(suit_teacher_str, teacher_ordered_str))
     status = 'Pass'
     result = json.dumps({'result': status})
     return HttpResponse(result)
@@ -585,12 +585,11 @@ def insert_teacher_list_into_db(teacher_list, user=''):
     for eachTeacher in teacher_list:
         searchResult = TeacherInfo.objects.all().filter(teacher_id=eachTeacher[0])
         if searchResult:
-            module_log_update.data_operate_log(user, '[TeacherInfo]update: {}'.format(eachTeacher[1]))
             TeacherInfo.objects.filter(teacher_id=eachTeacher[0]).update(teacher_name=eachTeacher[1])
-            module_log_update.data_operate_log(user, '[TeacherInfo]update: {}'.format(eachTeacher[1]))
+            module_log_update.data_operate_log(user, '[TeacherInfo]update: teacher_id {} teacher_name {}'.format(eachTeacher[0],eachTeacher[1]))
         else:
             TeacherInfo.objects.create(teacher_id=eachTeacher[0], teacher_name=eachTeacher[1], first_semester_expect=1.0, second_semester_expect=1.0)
-            module_log_update.data_operate_log(user, '[TeacherInfo]create: {} {}'.format(eachTeacher[0],eachTeacher[1]))
+            module_log_update.data_operate_log(user, '[TeacherInfo]create: teacher_id {} teacher_name {}'.format(eachTeacher[0],eachTeacher[1]))
 
 
 def insert_teacher_extend_info_into_db(teacher_list, user=''):
@@ -621,7 +620,7 @@ def insert_teacher_extend_info_into_db(teacher_list, user=''):
                                                                                  sex=sex,
                                                                                  lock_state=lock_state,
                                                                                  update_time=now)
-            module_log_update.data_operate_log(user, '[TeacherInfo]update: {} {} {} {} {} {}'.format(major, birthday, teacher_title, teacher_type, sex, lock_state))
+            module_log_update.data_operate_log(user, '[TeacherInfo]update: teacher_name {} {} {} {} {} {} {}'.format(eachTeacher[2].value, major, birthday, teacher_title, teacher_type, sex, lock_state))
         else:
             TeacherInfo.objects.create(teacher_name=teacher_name,
                                        teacher_id=teacher_id,
@@ -658,13 +657,13 @@ def save_teacher_to_course_info(course_id, user_name, user=''):
                 teacher_list.append(user_name)
             teacher_str = ','.join(teacher_list)
         CourseInfo.objects.filter(course_id=course_id).update(teacher_ordered=teacher_str, suit_teacher=teacher_str)
-        module_log_update.data_operate_log(user, '[CourseInfo]update: {} {} {}'.format(course_id, teacher_str, teacher_str))
+        module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} teacher_ordered {} suit_teacher {}'.format(course_id, teacher_str, teacher_str))
         if search_result[0].course_relate:
             course_relate_list = search_result[0].course_relate.split(',')
             for each_relate_course in course_relate_list:
                 CourseInfo.objects.filter(course_id=each_relate_course).update(teacher_ordered=teacher_str,
                                                                       suit_teacher=teacher_str)
-                module_log_update.data_operate_log(user, '[CourseInfo]update: {} {} {}'.format(each_relate_course, teacher_str, teacher_str))
+                module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} teacher_ordered {} suit_teacher {}'.format(course_id, teacher_str, teacher_str))
     return 'Success'
 
 
@@ -683,13 +682,13 @@ def remove_teacher_from_course_info(course_id, user_name, user=''):
             teacher_str = ','.join(teacher_list)
         CourseInfo.objects.filter(course_id=course_id).update(teacher_ordered=teacher_str, suit_teacher=teacher_str)
         module_log_update.data_operate_log(user,
-                                           '[CourseInfo]update: {} {} {}'.format(course_id, teacher_str, teacher_str))
+                                           '[CourseInfo]update: course_id {} teacher_ordered {} suit_teacher {}'.format(course_id, teacher_str, teacher_str))
         if search_result[0].course_relate:
             course_relate_list = search_result[0].course_relate.split(',')
             for each_relate_course in course_relate_list:
                 CourseInfo.objects.filter(course_id=each_relate_course).update(teacher_ordered=teacher_str,
                                                                       suit_teacher=teacher_str)
-                module_log_update.data_operate_log(user, '[CourseInfo]update: {} {} {}'.format(each_relate_course,
+                module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} teacher_ordered {} suit_teacher {}'.format(each_relate_course,
                                                                                                teacher_str,
                                                                                                teacher_str))
     return status
@@ -1031,7 +1030,23 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                                                      lock_state=course_info[16],
                                                                      course_parallel=course_parallel,
                                                                      update_time=now)
-            module_log_update.data_operate_log(user, '[CourseInfo]update: {}'.format(course_info))
+            module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} course_name {} major {} semester {} course_hour {} course_degree {} course_type {} language {} allow_teachers {} times_every_week {} suit_teacher {} course_relate {} excellent_course {} lock_state {} course_parallel {}'.format(
+                course_info[0],
+                course_info[1],
+                course_info[2],
+                course_info[6],
+                course_info[7],
+                course_info[8],
+                course_info[9],
+                course_info[10],
+                allow_teachers,
+                course_info[12],
+                course_info[13],
+                course_info[14],
+                course_info[15],
+                course_info[16],
+                course_parallel,
+            ))
         else:
             class_list = search_result[0].class_name.split(' ')
             if old_class_info:
@@ -1060,7 +1075,24 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                                                      lock_state=course_info[16],
                                                                      course_parallel=course_parallel,
                                                                      update_time=now)
-            module_log_update.data_operate_log(user, '[CourseInfo]update: {}'.format(course_info))
+            module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} course_name {} major {} class_name {} semester {} course_hour {} course_degree {} course_type {} language {} allow_teachers {} times_every_week {} suit_teacher {} course_relate {} excellent_course {} lock_state {} course_parallel {}'.format(
+                course_info[0],
+                course_info[1],
+                course_info[2],
+                class_name_str,
+                course_info[6],
+                course_info[7],
+                course_info[8],
+                course_info[9],
+                course_info[10],
+                allow_teachers,
+                course_info[12],
+                suit_teacher,
+                course_info[14],
+                course_info[15],
+                course_info[16],
+                course_parallel,
+            ))
     else:
         # remove class from previous course
         search_result = CourseInfo.objects.filter(course_id=old_course_id)
@@ -1071,11 +1103,11 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
             class_list.remove(old_class_info)
             if len(class_list) == 0:
                 CourseInfo.objects.filter(course_id=old_course_id).delete()
-                module_log_update.data_operate_log(user, '[CourseInfo]delete: {}'.format(old_course_id))
+                module_log_update.data_operate_log(user, '[CourseInfo]delete: course_id {}'.format(old_course_id))
             else:
                 class_name_str = ' '.join(class_list)
                 CourseInfo.objects.filter(course_id=old_course_id).update(class_name=class_name_str)
-                module_log_update.data_operate_log(user, '[CourseInfo]update: {} {}'.format(old_course_id, class_name_str))
+                module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} class_name {}'.format(old_course_id, class_name_str))
         # add a new course
         combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
         CourseInfo.objects.create(course_id=course_info[0],
@@ -1098,7 +1130,28 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                   lock_state=course_info[16],
                                   course_parallel=course_parallel,
                                   update_time=now)
-        module_log_update.data_operate_log(user, '[CourseInfo]create: {}'.format(course_info))
+        module_log_update.data_operate_log(user,
+                                           '[CourseInfo]create: course_id {} course_name {} major {} student_type {} year {} class_name {} semester {} course_hour {} course_degree {} course_type {} language {} allow_teachers {} times_every_week {} suit_teacher {} teacher_ordered {} course_relate {} excellent_course {} lock_state {} course_parallel {}'.format(
+                                               course_info[0],
+                                               course_info[1],
+                                               course_info[2],
+                                               course_info[3],
+                                               current_school_year,
+                                               combine_class_name,
+                                               course_info[6],
+                                               course_info[7],
+                                               course_info[8],
+                                               course_info[9],
+                                               course_info[10],
+                                               allow_teachers,
+                                               course_info[12],
+                                               '',
+                                               '',
+                                               course_info[14],
+                                               course_info[15],
+                                               course_info[16],
+                                               course_parallel,
+                                           ))
 
 
 def save_course_into_database_by_add(course_info, old_class_info, user=''):
@@ -1127,7 +1180,23 @@ def save_course_into_database_by_add(course_info, old_class_info, user=''):
                                                                      lock_state=course_info[16],
                                                                      course_parallel=course_parallel,
                                                                      update_time=now)
-            module_log_update.data_operate_log(user, '[CourseInfo]update: {}'.format(course_info))
+            module_log_update.data_operate_log(user,
+                                               '[CourseInfo]update: course_id {} course_name {} major {} semester {} course_hour {} course_degree {} course_type {} language {} allow_teachers {} times_every_week {} course_relate {} excellent_course {} lock_state {} course_parallel {}'.format(
+                                                   course_info[0],
+                                                   course_info[1],
+                                                   course_info[2],
+                                                   course_info[6],
+                                                   course_info[7],
+                                                   course_info[8],
+                                                   course_info[9],
+                                                   course_info[10],
+                                                   allow_teachers,
+                                                   course_info[12],
+                                                   course_info[14],
+                                                   course_info[15],
+                                                   course_info[16],
+                                                   course_parallel,
+                                               ))
         else:
             class_list = search_result[0].class_name.split(' ')
             class_list.append(combine_class_name)
@@ -1154,7 +1223,24 @@ def save_course_into_database_by_add(course_info, old_class_info, user=''):
                                                                      lcok_state=course_info[16],
                                                                      course_parallel=course_parallel,
                                                                      update_time=now)
-            module_log_update.data_operate_log(user, '[CourseInfo]update: {}'.format(course_info))
+            module_log_update.data_operate_log(user,
+                                               '[CourseInfo]update: course_id {} course_name {} major {} class_name {} semester {} course_hour {} course_degree {} course_type {} language {} allow_teachers {} times_every_week {} course_relate {} excellent_course {} lock_state {} course_parallel {}'.format(
+                                                   course_info[0],
+                                                   course_info[1],
+                                                   course_info[2],
+                                                   class_name_str,
+                                                   course_info[6],
+                                                   course_info[7],
+                                                   course_info[8],
+                                                   course_info[9],
+                                                   course_info[10],
+                                                   allow_teachers,
+                                                   course_info[12],
+                                                   course_info[14],
+                                                   course_info[15],
+                                                   course_info[16],
+                                                   course_parallel,
+                                               ))
     else:
         combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
         CourseInfo.objects.create(course_id=course_info[0],
@@ -1172,11 +1258,33 @@ def save_course_into_database_by_add(course_info, old_class_info, user=''):
                                   times_every_week=course_info[12],
                                   suit_teacher='',
                                   teacher_ordered='',
+                                  course_relate=course_info[14],
                                   excellent_course=course_info[15],
                                   lock_state=course_info[16],
                                   course_parallel=course_parallel,
                                   update_time=now)
-        module_log_update.data_operate_log(user, '[CourseInfo]create: {}'.format(course_info))
+        module_log_update.data_operate_log(user,
+                                           '[CourseInfo]create: course_id {} course_name {} major {} student_type {} year {} class_name {} semester {} course_hour {} course_degree {} course_type {} language {} allow_teachers {} times_every_week {} suit_teacher {} teacher_ordered {} course_relate {} excellent_course {} lock_state {} course_parallel {}'.format(
+                                               course_info[0],
+                                               course_info[1],
+                                               course_info[2],
+                                               course_info[3],
+                                               current_school_year,
+                                               combine_class_name,
+                                               course_info[6],
+                                               course_info[7],
+                                               course_info[8],
+                                               course_info[9],
+                                               course_info[10],
+                                               allow_teachers,
+                                               course_info[12],
+                                               '',
+                                               '',
+                                               course_info[14],
+                                               course_info[15],
+                                               course_info[16],
+                                               course_parallel,
+                                           ))
 
 
 # temp use
@@ -1248,7 +1356,7 @@ def delete_course_from_database(course_id, old_class_info, user=''):
             class_list.remove(old_class_info)
             class_name_str = ' '.join(class_list)
             CourseInfo.objects.filter(course_id=course_id).update(class_name=class_name_str)
-            module_log_update.data_operate_log(user, '[CourseInfo]update: {} {}'.format(course_id, class_name_str))
+            module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} class_name {}'.format(course_id, class_name_str))
         else:
             CourseInfo.objects.filter(course_id=course_id).delete()
             module_log_update.data_operate_log(user, '[CourseInfo]delete: {}'.format(course_id))
@@ -1429,7 +1537,7 @@ def save_course_table_extend_info_into_database(class_info_to_save, user=''):
                                                                      language=language,
                                                                      course_relate=eachCourse[4],
                                                                      update_time=now)
-            module_log_update.data_operate_log(user, '[CourseInfo]update: {}'.format(eachCourse))
+            module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} major {} language {} course_relate {}'.format(eachCourse[0], eachCourse[2], language, eachCourse[4]))
         else:
             search_result = CourseInfo.objects.all().filter(course_name=eachCourse[1])
             if search_result:
@@ -1849,13 +1957,13 @@ def arrange_main(user='admin'):
     for tmpKey in result_3.keys():
         tmp = ",".join(result_3[tmpKey])
         CourseInfo.objects.filter(course_id=tmpKey).update(teacher_auto_pick=tmp, teacher_final_pick=tmp)
-        module_log_update.data_operate_log(user, '[CourseInfo]update: {} {} {}'.format(tmpKey, tmp, tmp))
+        module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} teacher_auto_pick {} teacher_final_pick {}'.format(tmpKey, tmp, tmp))
         current_course = CourseInfo.objects.filter(course_id=tmpKey)
         if current_course:
             course_relate = current_course[0].course_relate.split(',')
             for eachCourse in course_relate:
                 CourseInfo.objects.filter(course_id=eachCourse).update(teacher_auto_pick=tmp, teacher_final_pick=tmp)
-                module_log_update.data_operate_log(user, '[CourseInfo]update: {} {} {}'.format(eachCourse, tmp, tmp))
+                module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} teacher_auto_pick {} teacher_final_pick {}'.format(eachCourse, tmp, tmp))
     file_obj.close()
     # HttpResponse('Pass')
 
@@ -2590,7 +2698,7 @@ def arrange_change_by_course_id(request):
                                                                             second_semester_degree=value2)
 
         CourseInfo.objects.filter(course_id=course_id).update(teacher_final_pick=to_change_teacher)
-        module_log_update.data_operate_log(user, '[CourseInfo]update: {} {}'.format(course_id, to_change_teacher))
+        module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} teacher_final_pick {}'.format(course_id, to_change_teacher))
         search_result_course = CourseInfo.objects.filter(course_id=course_id)
         if search_result_course[0].course_relate:
             if search_result_course[0].student_type == '本科':
@@ -2598,7 +2706,7 @@ def arrange_change_by_course_id(request):
                 for eachCourse in course_list:
                     CourseInfo.objects.filter(course_id=eachCourse).update(teacher_final_pick=to_change_teacher)
                     module_log_update.data_operate_log(user,
-                                                       '[CourseInfo]update: {} {}'.format(eachCourse, to_change_teacher))
+                                                       '[CourseInfo]update: course_id {} teacher_final_pick {}'.format(eachCourse, to_change_teacher))
         status = 'Success'
     except Exception, e:
         print e
