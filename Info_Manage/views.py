@@ -1220,7 +1220,7 @@ def save_course_into_database_by_add(course_info, old_class_info, user=''):
                                                                      # suit_teacher=suit_teacher,
                                                                      course_relate=course_info[14],
                                                                      excellent_course=course_info[15],
-                                                                     lcok_state=course_info[16],
+                                                                     lock_state=course_info[16],
                                                                      course_parallel=course_parallel,
                                                                      update_time=now)
             module_log_update.data_operate_log(user,
