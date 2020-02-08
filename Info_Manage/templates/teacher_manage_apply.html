@@ -87,16 +87,25 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li class="active">
-              <a href="\teacher_manage\" style="color: black">申报信息</a>
+            <li>
+              {% if request.user.is_staff or user_type == 'leader' %}
+                <a style="color: black">教务员</a>
+                <li class="active">
+                    <a href="\teacher_manage\" style="color: black; text-indent: 2em;">申报信息</a>
+                </li>
+                <li>
+                    <a href="\teacher_manage_adjust\" style="color: black; text-indent: 2em;">微调信息</a>
+                </li>
+              {% endif %}
             </li>
             <li>
-              <a href="\teacher_manage_adjust\" style="color: black">微调信息</a>
+              {% if user_type == 'leader' %}
+                <a style="color: black">主管领导</a>
+                <a href="\teacher_leader\" style="color: black; text-indent: 2em;">微调信息</a>
+              {% endif %}
             </li>
-          </ul>
-          <ul class="nav nav-sidebar">
             <li>
-              <a href="\teacher_personal\" style="color: black">教师个人</a>
+              <a href="\teacher_personal\" style="color: black;">教师个人</a>
             </li>
           </ul>
         </div>
@@ -163,7 +172,8 @@
                 <button id="import" class="btn btn-primary" data-toggle="modal" data-target="#importModal">教师信息导入</button>
                 <!--<button id="delete" class="btn btn-danger">删除该行</button>-->
                 <button id="edit_table" class="btn btn-primary">编辑教师信息</button>
-               <button id="approve_table" class="btn btn-primary">批准教师撤销申请</button>
+                <button id="approve_table" class="btn btn-primary">批准教师撤销申请</button>
+                <button id="check_teacher_apply_status" class="btn btn-primary">检查全部课程的教师申报情况</button>
                 <button id="import_help_to_declare" class="btn btn-primary" data-toggle="modal" data-target="#helpDeclareModal">代理申报导入</button>
             </div>
             <table class="table table-striped" id="table_teacher">
@@ -284,6 +294,24 @@
           <div class="modal-footer">
               <button type="button" class="button" id="approve_teacher_request">提交</button>
               <button type="button" class="button" data-dismiss="modal">关闭</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="checkModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h4 class="modal-title" id="myCheckModalLabel">课程申报检查</h4>
+          </div>
+          <div class="modal-body ">
+            <textarea style="display" id="check_modal_body" class="form-control col-sm-12">
+            </textarea>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="button" data-dismiss="modal">关闭</button>
           </div>
         </div>
       </div>

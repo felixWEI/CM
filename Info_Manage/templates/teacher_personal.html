@@ -51,7 +51,7 @@
         </div>
         <div id="navbar" class="navbar-collapse">
           <ul class="nav navbar-nav">
-            {% if request.user.is_staff %}
+            {% if request.user.is_staff or user_type == 'leader'%}
               <li class="nav-item"><a href="/arrange_class/">分配授课教师</a></li>
               <!--<li class="nav-item"><a href="#">分配上课时间</a></li>-->
               <li class="nav-item"><a href="/class_manage/">课程信息管理</a></li>
@@ -89,17 +89,24 @@
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
             <li>
-              {% if request.user.is_staff %}
-                <a href="\teacher_manage\" style="color: black">教务员</a>
+              {% if request.user.is_staff or user_type == 'leader' %}
+                <a style="color: black">教务员</a>
+                <li>
+                  <a href="\teacher_manage\" style="color: black; text-indent: 2em;">申报信息</a>
+                </li>
+                <li>
+                  <a href="\teacher_manage_adjust\" style="color: black; text-indent: 2em;">微调信息</a>
+                </li>
               {% endif %}
             </li>
             <li>
               {% if user_type == 'leader' %}
-                <a href="\teacher_leader\" style="color: black">主管领导</a>
+                <a style="color: black">主管领导</a>
+                <a href="\teacher_leader\" style="color: black; text-indent: 2em;">微调信息</a>
               {% endif %}
             </li>
             <li class="active">
-              <a href="#">教师个人</a>
+              <a href="\teacher_personal\">教师个人</a>
             </li>
           </ul>
           <!--<form action="/teacher_personal_checkbox/" method="POST"> {% csrf_token %}-->
@@ -224,6 +231,8 @@
                  <button class="btn btn-primary" onclick="check_apply_status('{{ request.user.username }}')">完成申报</button>
                {% elif status == 'recall' %}
                  <button class="btn btn-primary" onclick="recall_apply_result('{{ request.user.username }}')">撤回申报</button>
+               {% elif status == 'wait_approve' %}
+                  <button class="btn btn-primary" disabled >撤回申报完成待审批</button>
                {% endif %}
             </div>
             <table class="table table-striped" id="table_course_personal">

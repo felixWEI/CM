@@ -22,6 +22,8 @@ import xlwt
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from io import StringIO, BytesIO
+from myLogger import MyLogger
+
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
@@ -44,10 +46,17 @@ logging.basicConfig(filename='test.log', level=logging.DEBUG, format=LOG_FORMAT)
 log = logging.getLogger()
 log.addHandler(log_file_handler)
 #######################################################
+module_log_update = MyLogger()
+
 
 @login_required()
 def teacher_manage(request):
+    if request.user.nickname == 'leader':
+        user_type = 'leader'
+    else:
+        user_type = 'teacher'
     search_result = CurrentStepInfo.objects.all()
+
     if search_result:
         year = search_result[0].s1_year_info
     else:
@@ -118,10 +127,14 @@ def teacher_manage(request):
                   '已分配难度2' ,'申报完成', '特殊理由', '已申报课程数','状态']
     return render(request, 'teacher_manage_apply.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username,
                                                    'teacher_table': search_result, 'summary_table': summary_table,
-                                                   'table_head': table_head, 'year': year})
+                                                   'table_head': table_head, 'year': year, 'user_type':user_type})
 
 @login_required
 def teacher_manage_adjusst(request):
+    if request.user.nickname == 'leader':
+        user_type = 'leader'
+    else:
+        user_type = 'teacher'
     search_result = CurrentStepInfo.objects.all()
     if search_result:
         year = search_result[0].s1_year_info
@@ -137,15 +150,20 @@ def teacher_manage_adjusst(request):
         status = eachLine.status
         notes = eachLine.notes
         search_result.append([course_id, course_name, teacher_before, teacher_after, status, notes])
-    table_head = ['课程代码', '课程名称', '自动分配教师', '微调教师', '申请状态', '补充说明']
+    table_head = ['课程代码', '课程名称', '原授课教师', '微调教师', '申请状态', '补充说明']
     return render(request, 'teacher_manage_adjust.html',
                   {'UserName': request.user.last_name + request.user.first_name + request.user.username,
                    'teacher_table': search_result,
                    'table_head': table_head,
-                   'year': year})
+                   'year': year,
+                   'user_type': user_type})
 
 @login_required
 def teacher_leader(request):
+    if request.user.nickname == 'leader':
+        user_type = 'leader'
+    else:
+        user_type = 'teacher'
     search_result = CurrentStepInfo.objects.all()
     if search_result:
         year = search_result[0].s1_year_info
@@ -167,7 +185,8 @@ def teacher_leader(request):
     return render(request, 'teacher_leader.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username,
                                                    'teacher_table': search_result,
                                                    'table_head': table_head,
-                                                   'year': year})
+                                                   'year': year,
+                                                   'user_type':user_type})
 
 @csrf_exempt
 def teacher_reject_teacher_adjust(request):
@@ -185,6 +204,8 @@ def teacher_reject_teacher_adjust(request):
 @csrf_exempt
 def teacher_approve_teacher_adjust(request):
     course_id = request.POST['course_id']
+    user = request.user.last_name + request.user.first_name + request.user.username
+
     search_result = CourseAdjustInfo.objects.filter(course_id=course_id)
     if search_result:
         CourseAdjustInfo.objects.filter(course_id=course_id).update(status='批准微调申请')
@@ -229,12 +250,17 @@ def teacher_approve_teacher_adjust(request):
 
             tmp_change_teacher = ','.join(tmp_change_teacher_list)
             CourseInfo.objects.filter(course_id=course_id).update(teacher_final_pick=tmp_change_teacher)
+            module_log_update.data_operate_log(user, '[CourseInfo]course_id:{} teacher_final_pick: {}'.format(course_id, tmp_change_teacher))
+
             search_result_course = CourseInfo.objects.filter(course_id=course_id)
             if search_result_course[0].course_relate:
                 if search_result_course[0].student_type == '本科':
                     course_list = search_result_course[0].course_relate.split(',')
                     for eachCourse in course_list:
                         CourseInfo.objects.filter(course_id=eachCourse).update(teacher_final_pick=to_change_teacher)
+                        module_log_update.data_operate_log(user,
+                                                   'course_relate:{} teacher_final_pick: {}'.format(eachCourse,
+                                                                                               to_change_teacher))
             status = '微调申请已经批准'
         except Exception, e:
             print e
@@ -247,28 +273,31 @@ def teacher_approve_teacher_adjust(request):
 
 @csrf_exempt
 def teacher_save_and_config(request):
+    user = request.user.last_name + request.user.first_name + request.user.username
     teacher_table = json.loads(request.POST['teacher_table'])
     data_length = teacher_table['length']
     all_teacher = []
     for i in range(data_length):
         all_teacher.append(teacher_table[str(i)])
 
-    save_teacher_into_database(all_teacher)
+    save_teacher_into_database(all_teacher, user)
     result = 'Pass'
     result = json.dumps({'result': result})
     return HttpResponse(result)
 
 
-def save_teacher_into_database(all_teacher):
+def save_teacher_into_database(all_teacher, user=''):
     now = datetime.now()
     for eachItem in all_teacher:
         search_result = TeacherInfo.objects.all().filter(teacher_id=eachItem[0])
         if search_result:
             TeacherInfo.objects.filter(teacher_id=eachItem[0]).update(teacher_name=eachItem[1], first_semester=eachItem[2],
                                                                       second_semester=eachItem[3], claiming_course=eachItem[4], update_time=now)
+            module_log_update.data_operate_log(user, 'update: {}'.format(eachItem))
         else:
             TeacherInfo.objects.create(teacher_id=eachItem[0], teacher_name=eachItem[1], first_semester=eachItem[2],
                                        second_semester=eachItem[3], claiming_course=eachItem[4], update_time=now)
+            module_log_update.data_operate_log(user, 'create: {}'.format(eachItem))
 
 
 @login_required()
@@ -280,6 +309,8 @@ def teacher_personal(request):
     if search_result:
         if search_result[0].teacher_apply_done:
             status = 'recall'
+            if search_result[0].teacher_apply_done == '申报结束/申请取消申报':
+                status = 'wait_approve'
     if request.user.nickname == 'leader':
         user_type = 'leader'
 
@@ -419,6 +450,7 @@ def teacher_personal(request):
 
 @csrf_exempt
 def teacher_request_course(request):
+    user = request.user.last_name + request.user.first_name + request.user.username
     course_id = request.POST['course_id']
     searchResult = TeacherInfo.objects.filter(teacher_id=request.user.username)
     if searchResult:
@@ -434,9 +466,9 @@ def teacher_request_course(request):
             result = json.dumps({'status': status})
             return HttpResponse(result)
     if 'status' not in request.POST.keys():
-        status = save_teacher_to_course_info(course_id, teacher_name)
+        status = save_teacher_to_course_info(course_id, teacher_name, user)
     else:
-        status = remove_teacher_from_course_info(course_id, teacher_name)
+        status = remove_teacher_from_course_info(course_id, teacher_name, user)
     # TODO: result part
     result = json.dumps({'status': status})
     return HttpResponse(result)
@@ -444,6 +476,7 @@ def teacher_request_course(request):
 
 @csrf_exempt
 def teacher_change_expect(request):
+    user = request.user.last_name + request.user.first_name + request.user.username
     modify_0 = request.POST['modify_0']
     modify_1 = request.POST['modify_1']
     lock_state = request.POST['lock_state'] if 'lock_state' in request.POST else 0
@@ -459,6 +492,7 @@ def teacher_change_expect(request):
         TeacherInfo.objects.filter(teacher_id=teacher_id).update(first_semester_expect=modify_0,
                                                                  second_semester_expect=modify_1,
                                                                  lock_state=lock_state)
+        module_log_update.data_operate_log(user, '[TeacherInfo]update: first_semester_expect {} second_semester_expect {} lock_state {}'.format(modify_0, modify_1, lock_state))
         status = 'Success'
     result = json.dumps({'status': status})
     return HttpResponse(result)
@@ -502,8 +536,11 @@ def teacher_table_upload(request):
         if type(teacher_index) == float and teacher_name:
             teacher_list.append(work_sheet.row(line_number))
 
-    insert_teacher_extend_info_into_db(teacher_list)
-    status = 'Pass'
+    retCode = insert_teacher_extend_info_into_db(teacher_list)
+    if retCode:
+        status = 'Pass'
+    else:
+        status = 'Fail'
     result = json.dumps({'result': status})
     return HttpResponse(result)
 
@@ -515,6 +552,7 @@ def teacher_help_declare_upload(request):
     work_book = xlrd.open_workbook(filename=None, file_contents=input_file.read())
     # TODO: result part
     work_sheet = work_book.sheet_by_name('代理申报')
+    user = request.user.last_name + request.user.first_name + request.user.username
     line_length = work_sheet.nrows
     teacher_list = []
     line_width = work_sheet.row_len(0)
@@ -537,22 +575,27 @@ def teacher_help_declare_upload(request):
                 teacher_ordered_str = ','.join(teacher_ordered_list)
                 CourseInfo.objects.filter(id=search_result[0].id).update(suit_teacher=suit_teacher_str, teacher_ordered=
                                                                          teacher_ordered_str)
+                module_log_update.data_operate_log(user, '[CourseInfo]update: suit_teacher {} teacher_ordered {}'.format(suit_teacher_str, teacher_ordered_str))
     status = 'Pass'
     result = json.dumps({'result': status})
     return HttpResponse(result)
 
 
-def insert_teacher_list_into_db(teacher_list):
+def insert_teacher_list_into_db(teacher_list, user=''):
     for eachTeacher in teacher_list:
         searchResult = TeacherInfo.objects.all().filter(teacher_id=eachTeacher[0])
         if searchResult:
             TeacherInfo.objects.filter(teacher_id=eachTeacher[0]).update(teacher_name=eachTeacher[1])
+            module_log_update.data_operate_log(user, '[TeacherInfo]update: teacher_id {} teacher_name {}'.format(eachTeacher[0],eachTeacher[1]))
         else:
             TeacherInfo.objects.create(teacher_id=eachTeacher[0], teacher_name=eachTeacher[1], first_semester_expect=1.0, second_semester_expect=1.0)
+            module_log_update.data_operate_log(user, '[TeacherInfo]create: teacher_id {} teacher_name {}'.format(eachTeacher[0],eachTeacher[1]))
 
 
-def insert_teacher_extend_info_into_db(teacher_list):
+def insert_teacher_extend_info_into_db(teacher_list, user=''):
     now = datetime.now()
+    output = ""
+    retCode = True
     for eachTeacher in teacher_list:
         teacher_name = eachTeacher[2].value
         major = eachTeacher[1].value
@@ -577,6 +620,7 @@ def insert_teacher_extend_info_into_db(teacher_list):
                                                                                  sex=sex,
                                                                                  lock_state=lock_state,
                                                                                  update_time=now)
+            module_log_update.data_operate_log(user, '[TeacherInfo]update: teacher_name {} {} {} {} {} {} {}'.format(eachTeacher[2].value, major, birthday, teacher_title, teacher_type, sex, lock_state))
         else:
             TeacherInfo.objects.create(teacher_name=teacher_name,
                                        teacher_id=teacher_id,
@@ -589,9 +633,18 @@ def insert_teacher_extend_info_into_db(teacher_list):
                                        second_semester_expect=1.0,
                                        lock_state=lock_state,
                                        update_time=now)
+            module_log_update.data_operate_log(user, '[TeacherInfo]create: {} {} {} {} {} {} {} {}'.format(teacher_name,
+                                                                                                           teacher_id,
+                                                                                                           major,
+                                                                                                           birthday,
+                                                                                                           teacher_title,
+                                                                                                           teacher_type,
+                                                                                                           sex,
+                                                                                                           lock_state))
 
+    return retCode
 
-def save_teacher_to_course_info(course_id, user_name):
+def save_teacher_to_course_info(course_id, user_name, user=''):
     search_result = CourseInfo.objects.all().filter(course_id=course_id)
     if search_result:
 
@@ -604,15 +657,17 @@ def save_teacher_to_course_info(course_id, user_name):
                 teacher_list.append(user_name)
             teacher_str = ','.join(teacher_list)
         CourseInfo.objects.filter(course_id=course_id).update(teacher_ordered=teacher_str, suit_teacher=teacher_str)
+        module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} teacher_ordered {} suit_teacher {}'.format(course_id, teacher_str, teacher_str))
         if search_result[0].course_relate:
             course_relate_list = search_result[0].course_relate.split(',')
             for each_relate_course in course_relate_list:
                 CourseInfo.objects.filter(course_id=each_relate_course).update(teacher_ordered=teacher_str,
                                                                       suit_teacher=teacher_str)
+                module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} teacher_ordered {} suit_teacher {}'.format(course_id, teacher_str, teacher_str))
     return 'Success'
 
 
-def remove_teacher_from_course_info(course_id, user_name):
+def remove_teacher_from_course_info(course_id, user_name, user=''):
     search_result = CourseInfo.objects.all().filter(course_id=course_id)
     status = 'Success'
     if search_result:
@@ -626,11 +681,16 @@ def remove_teacher_from_course_info(course_id, user_name):
                 status = '你并未申报此课程, 取消失败'
             teacher_str = ','.join(teacher_list)
         CourseInfo.objects.filter(course_id=course_id).update(teacher_ordered=teacher_str, suit_teacher=teacher_str)
+        module_log_update.data_operate_log(user,
+                                           '[CourseInfo]update: course_id {} teacher_ordered {} suit_teacher {}'.format(course_id, teacher_str, teacher_str))
         if search_result[0].course_relate:
             course_relate_list = search_result[0].course_relate.split(',')
             for each_relate_course in course_relate_list:
                 CourseInfo.objects.filter(course_id=each_relate_course).update(teacher_ordered=teacher_str,
                                                                       suit_teacher=teacher_str)
+                module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} teacher_ordered {} suit_teacher {}'.format(each_relate_course,
+                                                                                               teacher_str,
+                                                                                               teacher_str))
     return status
 
 
@@ -684,6 +744,30 @@ def teacher_submit_apply_status(request):
         result = json.dumps({'status': status})
     return HttpResponse(result)
 
+@csrf_exempt
+def check_teacher_apply_status(request):
+    course_table = CourseInfo.objects.filter(lock_state=0)
+    final_result = {'status': 'Success', 'message':[]}
+    for eachCourse in course_table:
+        teacher_limit_basic = eachCourse.allow_teachers
+
+        if int(eachCourse.course_parallel) != 1:
+            teacher_limit_final = teacher_limit_basic * int(eachCourse.course_parallel)
+        else:
+            teacher_limit_final = teacher_limit_basic
+        teacher_list = eachCourse.teacher_ordered.split(',')
+        if len(teacher_list) < teacher_limit_final and len(teacher_list) > teacher_limit_basic:
+            notes = '{} {} 申报教师数满足授课最低要求,但是需要某些教师授课多次{}'.format(eachCourse.course_id,eachCourse.course_name,os.linesep)
+            final_result['message'].append(notes)
+        elif len(teacher_list) < teacher_limit_basic:
+            notes = '{} {} 申报教师不满足授课最低要求{}'.format(eachCourse.course_id,eachCourse.course_name,os.linesep)
+            final_result['message'].append(notes)
+        else:
+            pass
+    if len(final_result['message']) == 0:
+        final_result['message'] = ['所有课程的申报教师数均符合要求']
+    result = json.dumps({'status': final_result['status'], 'message': final_result['message']})
+    return HttpResponse(result)
 
 @login_required()
 def class_manage(request):
@@ -708,13 +792,14 @@ def class_manage(request):
 
     course_table = CourseInfo.objects.all().filter()
     search_result = []
-    class_name = CLASS_NAME_LIST
-    student_type = STUDENT_TYPE
-    year = CLASS_GRADE
+
+    class_name = get_class_value_by_key('class_name')#CLASS_NAME_LIST
+    student_type = get_class_value_by_key('student_type')#STUDENT_TYPE
+    year = get_class_value_by_key('year')#CLASS_GRADE
     semester = SEMESTER
     course_hour = COURSE_HOUR
     course_degree = COURSE_DEGREE
-    course_type = COURSE_TYPE
+    course_type = get_class_value_by_key('course_type')#COURSE_TYPE
     current_course_count = len(course_table)
     current_hour_count = 0
     current_degree_count = 0
@@ -778,6 +863,30 @@ def class_manage(request):
     return render(request, 'class_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
                                                  'summary_table': summary_table, 'year': current_year, 'major': major_list_temp})
+
+
+def get_class_value_by_key(key):
+    if key in ['class_name', 'year', 'student_type']:
+        searchKey = 'class_name'
+    else:
+        searchKey = key
+    search_result_key = CourseInfo.objects.values(searchKey)
+    class_value_list = []
+    for row_item in search_result_key:
+        if row_item[searchKey]:
+            if key == 'class_name':
+                tmp_value = row_item[searchKey].split('_')[-1]
+            elif key == 'year':
+                tmp_value = row_item[searchKey].split('_')[0].split('-')[-1]
+                if not tmp_value:
+                    continue
+            elif key == 'student_type':
+                tmp_value = row_item[searchKey].split('_')[0].split('-')[0]
+            else:
+                tmp_value = row_item[searchKey]
+            if tmp_value not in class_value_list:
+                class_value_list.append(tmp_value)
+    return class_value_list
 
 
 def get_course_effective_count(course_object):
@@ -883,6 +992,7 @@ def class_filter_by_submit(request):
 
 @csrf_exempt
 def class_save_one_row(request):
+    user = request.user.last_name + request.user.first_name + request.user.username
     course_info = json.loads(request.POST['row_data'])
     # in case of wrong course lock state input
     if not course_info[-2]:
@@ -893,15 +1003,15 @@ def class_save_one_row(request):
     old_class_info = request.POST['old_data']
     if 'old_course_id' in request.POST:
         old_course_id = request.POST['old_course_id']
-        save_course_into_database_by_edit(course_info, old_class_info, old_course_id)
+        save_course_into_database_by_edit(course_info, old_class_info, old_course_id, user)
     else:
-        save_course_into_database_by_add(course_info, old_class_info)
+        save_course_into_database_by_add(course_info, old_class_info, user)
     result = 'Success'
     result = json.dumps({'result': result})
     return HttpResponse(result)
 
 
-def save_course_into_database_by_edit(course_info, old_class_info, old_course_id=None):
+def save_course_into_database_by_edit(course_info, old_class_info, old_course_id=None,user=''):
     now = datetime.now()
     search_result = CourseInfo.objects.all().filter(course_id=course_info[0])
     allow_teachers = course_info[11]
@@ -927,6 +1037,23 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                                                      lock_state=course_info[16],
                                                                      course_parallel=course_parallel,
                                                                      update_time=now)
+            module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} course_name {} major {} semester {} course_hour {} course_degree {} course_type {} language {} allow_teachers {} times_every_week {} suit_teacher {} course_relate {} excellent_course {} lock_state {} course_parallel {}'.format(
+                course_info[0],
+                course_info[1],
+                course_info[2],
+                course_info[6],
+                course_info[7],
+                course_info[8],
+                course_info[9],
+                course_info[10],
+                allow_teachers,
+                course_info[12],
+                course_info[13],
+                course_info[14],
+                course_info[15],
+                course_info[16],
+                course_parallel,
+            ))
         else:
             class_list = search_result[0].class_name.split(' ')
             if old_class_info:
@@ -955,6 +1082,24 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                                                      lock_state=course_info[16],
                                                                      course_parallel=course_parallel,
                                                                      update_time=now)
+            module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} course_name {} major {} class_name {} semester {} course_hour {} course_degree {} course_type {} language {} allow_teachers {} times_every_week {} suit_teacher {} course_relate {} excellent_course {} lock_state {} course_parallel {}'.format(
+                course_info[0],
+                course_info[1],
+                course_info[2],
+                class_name_str,
+                course_info[6],
+                course_info[7],
+                course_info[8],
+                course_info[9],
+                course_info[10],
+                allow_teachers,
+                course_info[12],
+                suit_teacher,
+                course_info[14],
+                course_info[15],
+                course_info[16],
+                course_parallel,
+            ))
     else:
         # remove class from previous course
         search_result = CourseInfo.objects.filter(course_id=old_course_id)
@@ -965,9 +1110,11 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
             class_list.remove(old_class_info)
             if len(class_list) == 0:
                 CourseInfo.objects.filter(course_id=old_course_id).delete()
+                module_log_update.data_operate_log(user, '[CourseInfo]delete: course_id {}'.format(old_course_id))
             else:
                 class_name_str = ' '.join(class_list)
                 CourseInfo.objects.filter(course_id=old_course_id).update(class_name=class_name_str)
+                module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} class_name {}'.format(old_course_id, class_name_str))
         # add a new course
         combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
         CourseInfo.objects.create(course_id=course_info[0],
@@ -990,9 +1137,31 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                   lock_state=course_info[16],
                                   course_parallel=course_parallel,
                                   update_time=now)
+        module_log_update.data_operate_log(user,
+                                           '[CourseInfo]create: course_id {} course_name {} major {} student_type {} year {} class_name {} semester {} course_hour {} course_degree {} course_type {} language {} allow_teachers {} times_every_week {} suit_teacher {} teacher_ordered {} course_relate {} excellent_course {} lock_state {} course_parallel {}'.format(
+                                               course_info[0],
+                                               course_info[1],
+                                               course_info[2],
+                                               course_info[3],
+                                               current_school_year,
+                                               combine_class_name,
+                                               course_info[6],
+                                               course_info[7],
+                                               course_info[8],
+                                               course_info[9],
+                                               course_info[10],
+                                               allow_teachers,
+                                               course_info[12],
+                                               '',
+                                               '',
+                                               course_info[14],
+                                               course_info[15],
+                                               course_info[16],
+                                               course_parallel,
+                                           ))
 
 
-def save_course_into_database_by_add(course_info, old_class_info):
+def save_course_into_database_by_add(course_info, old_class_info, user=''):
     now = datetime.now()
     search_result = CourseInfo.objects.all().filter(course_id=course_info[0])
     allow_teachers = course_info[11]
@@ -1018,6 +1187,23 @@ def save_course_into_database_by_add(course_info, old_class_info):
                                                                      lock_state=course_info[16],
                                                                      course_parallel=course_parallel,
                                                                      update_time=now)
+            module_log_update.data_operate_log(user,
+                                               '[CourseInfo]update: course_id {} course_name {} major {} semester {} course_hour {} course_degree {} course_type {} language {} allow_teachers {} times_every_week {} course_relate {} excellent_course {} lock_state {} course_parallel {}'.format(
+                                                   course_info[0],
+                                                   course_info[1],
+                                                   course_info[2],
+                                                   course_info[6],
+                                                   course_info[7],
+                                                   course_info[8],
+                                                   course_info[9],
+                                                   course_info[10],
+                                                   allow_teachers,
+                                                   course_info[12],
+                                                   course_info[14],
+                                                   course_info[15],
+                                                   course_info[16],
+                                                   course_parallel,
+                                               ))
         else:
             class_list = search_result[0].class_name.split(' ')
             class_list.append(combine_class_name)
@@ -1041,9 +1227,27 @@ def save_course_into_database_by_add(course_info, old_class_info):
                                                                      # suit_teacher=suit_teacher,
                                                                      course_relate=course_info[14],
                                                                      excellent_course=course_info[15],
-                                                                     lcok_state=course_info[16],
+                                                                     lock_state=course_info[16],
                                                                      course_parallel=course_parallel,
                                                                      update_time=now)
+            module_log_update.data_operate_log(user,
+                                               '[CourseInfo]update: course_id {} course_name {} major {} class_name {} semester {} course_hour {} course_degree {} course_type {} language {} allow_teachers {} times_every_week {} course_relate {} excellent_course {} lock_state {} course_parallel {}'.format(
+                                                   course_info[0],
+                                                   course_info[1],
+                                                   course_info[2],
+                                                   class_name_str,
+                                                   course_info[6],
+                                                   course_info[7],
+                                                   course_info[8],
+                                                   course_info[9],
+                                                   course_info[10],
+                                                   allow_teachers,
+                                                   course_info[12],
+                                                   course_info[14],
+                                                   course_info[15],
+                                                   course_info[16],
+                                                   course_parallel,
+                                               ))
     else:
         combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
         CourseInfo.objects.create(course_id=course_info[0],
@@ -1061,10 +1265,33 @@ def save_course_into_database_by_add(course_info, old_class_info):
                                   times_every_week=course_info[12],
                                   suit_teacher='',
                                   teacher_ordered='',
+                                  course_relate=course_info[14],
                                   excellent_course=course_info[15],
                                   lock_state=course_info[16],
                                   course_parallel=course_parallel,
                                   update_time=now)
+        module_log_update.data_operate_log(user,
+                                           '[CourseInfo]create: course_id {} course_name {} major {} student_type {} year {} class_name {} semester {} course_hour {} course_degree {} course_type {} language {} allow_teachers {} times_every_week {} suit_teacher {} teacher_ordered {} course_relate {} excellent_course {} lock_state {} course_parallel {}'.format(
+                                               course_info[0],
+                                               course_info[1],
+                                               course_info[2],
+                                               course_info[3],
+                                               current_school_year,
+                                               combine_class_name,
+                                               course_info[6],
+                                               course_info[7],
+                                               course_info[8],
+                                               course_info[9],
+                                               course_info[10],
+                                               allow_teachers,
+                                               course_info[12],
+                                               '',
+                                               '',
+                                               course_info[14],
+                                               course_info[15],
+                                               course_info[16],
+                                               course_parallel,
+                                           ))
 
 
 # temp use
@@ -1120,14 +1347,15 @@ def save_course_into_database(course_info):
 def class_delete_one_row(request):
     course_id = request.POST['course_id']
     old_class_info = request.POST['old_data']
-    delete_course_from_database(course_id, old_class_info)
+    user = request.user.last_name + request.user.first_name + request.user.username
+    delete_course_from_database(course_id, old_class_info, user)
     # TODO: result part
     result = 'Pass'
     result = json.dumps({'result': result})
     return HttpResponse(result)
 
 
-def delete_course_from_database(course_id, old_class_info):
+def delete_course_from_database(course_id, old_class_info, user=''):
     search_result = CourseInfo.objects.all().filter(course_id=course_id)
     if search_result:
         if len(search_result[0].class_name.split(' ')) > 1:
@@ -1135,8 +1363,10 @@ def delete_course_from_database(course_id, old_class_info):
             class_list.remove(old_class_info)
             class_name_str = ' '.join(class_list)
             CourseInfo.objects.filter(course_id=course_id).update(class_name=class_name_str)
+            module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} class_name {}'.format(course_id, class_name_str))
         else:
             CourseInfo.objects.filter(course_id=course_id).delete()
+            module_log_update.data_operate_log(user, '[CourseInfo]delete: {}'.format(course_id))
     else:
         return False
 
@@ -1153,7 +1383,15 @@ def class_get_suit_teacher(request):
         if search_result:
             tmp = [search_result[0].teacher_id, eachTeacher]
             result_list.append(tmp)
-    result = json.dumps({'result_list': result_list})
+    class_name = get_class_value_by_key('class_name')#CLASS_NAME_LIST
+    student_type = get_class_value_by_key('student_type')#STUDENT_TYPE
+    year = get_class_value_by_key('year')#CLASS_GRADE
+    semester = SEMESTER
+    course_hour = COURSE_HOUR
+    course_degree = COURSE_DEGREE
+    course_type = get_class_value_by_key('course_type')#COURSE_TYPE
+    info_default = [class_name, student_type, year, semester, course_hour, course_degree, course_type]
+    result = json.dumps({'result_list': result_list, 'info_default':info_default})
     return HttpResponse(result)
 
 
@@ -1257,8 +1495,11 @@ def class_table_upload(request):
                                    course_degree, course_type, allow_teachers, times_every_week, suit_teacher,
                                    teacher_ordered, excellent_course, major, language, course_relate, lock_state,course_parallel])
 
-    save_course_table_into_database(class_info_to_save)
-    result = 'Pass'
+    retCode = save_course_table_into_database(class_info_to_save)
+    if retCode:
+        result = 'Pass'
+    else:
+        result = 'Fail'
     result = json.dumps({'result': result})
     return HttpResponse(result)
 
@@ -1266,24 +1507,28 @@ def class_table_upload(request):
 def save_course_table_into_database(class_info_to_save):
     course_dict = {}
     output = ""
-    for eachCourse in class_info_to_save:
+    retCode = True
+    for rowNumber, eachCourse in enumerate(class_info_to_save):
         if eachCourse[0] not in course_dict.keys():
             course_dict[eachCourse[0]] = eachCourse
         else:
             if course_dict[eachCourse[0]][5] != eachCourse[5]:
-                output += "{}, 学期信息与相同课程号发生冲突\n".format(eachCourse)
+                output += "行号：{} 课程：{}, 学期信息与相同课程号发生冲突\n".format(rowNumber+1, eachCourse)
+                module_log_update.log_info('course_table', "行号：{} 课程：{}, 学期信息与相同课程号发生冲突\n".format(rowNumber+1, eachCourse))
             # elif eachCourse[4].split('_')[0] not in course_dict[eachCourse[0]][4]:
             #     output += "{}, 班级信息与相同课程号发生冲突\n".format(eachCourse)
+                retCode = False
             else:
                 course_dict[eachCourse[0]][4] += ' {}'.format(eachCourse[4])
 
     for tmpKey in course_dict.keys():
         each_course = course_dict[tmpKey]
         save_course_into_database(each_course)
-    return output
+
+    return retCode
 
 
-def save_course_table_extend_info_into_database(class_info_to_save):
+def save_course_table_extend_info_into_database(class_info_to_save, user=''):
     output = ""
     count = 0
     for eachCourse in class_info_to_save:
@@ -1299,6 +1544,7 @@ def save_course_table_extend_info_into_database(class_info_to_save):
                                                                      language=language,
                                                                      course_relate=eachCourse[4],
                                                                      update_time=now)
+            module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} major {} language {} course_relate {}'.format(eachCourse[0], eachCourse[2], language, eachCourse[4]))
         else:
             search_result = CourseInfo.objects.all().filter(course_name=eachCourse[1])
             if search_result:
@@ -1347,7 +1593,7 @@ def class_search_from_course_id(request):
                          tmp_class_grade,
                          tmp_class_name,
                          search_result[0].semester,
-                         str(search_result[0].course_hour),
+                         str(int(search_result[0].course_hour)),
                          str(search_result[0].course_degree),
                          search_result[0].course_type,
                          search_result[0].language,
@@ -1367,7 +1613,13 @@ def class_search_from_course_id(request):
 @login_required()
 def arrange_class(request):
     step_info = []
+    init_info = {}
     step_position = ['active', 'disabled', 'disabled', 'disabled', 'disabled']
+    current_year_init = datetime.now().year
+    select_year = ['{}-{}'.format(current_year_init-1, current_year_init),
+                   '{}-{}'.format(current_year_init, current_year_init+1),
+                   '{}-{}'.format(current_year_init+1, current_year_init+2)]
+    init_info['select_year'] = select_year
     search_result = CurrentStepInfo.objects.all()
     if len(search_result) == 1:
         if search_result[0].arrange_class_status == 'start':
@@ -1428,9 +1680,10 @@ def arrange_class(request):
             else:
                 pass
 
-    times = [[i for i in range(1, 13)], [i for i in range(1, 32)], [i for i in range(24)], [i for i in range(1, 60)]]
+    times = [[current_year_init-1,current_year_init,current_year_init+1],[i for i in range(1, 13)], [i for i in range(1, 32)], [i for i in range(24)], [i for i in range(1, 60)]]
+    init_info['times'] = times
     return render(request, 'arrange_class.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'step_info': step_info,
-                                                  'step_position': step_position, 'times': times})
+                                                  'step_position': step_position, 'times':init_info['times'], 'select_year':init_info['select_year']})
 
 
 @csrf_exempt
@@ -1508,6 +1761,7 @@ def arrange_step_3(request):
     status = request.POST['status']
     result = {}
     result['status'] = 'Pass'
+    operator = request.user.last_name + request.user.first_name + request.user.username
     search_result = CurrentStepInfo.objects.all()
     if len(search_result) == 1:
         if status == 'start arrange':
@@ -1515,7 +1769,11 @@ def arrange_step_3(request):
         elif status == 'init info':
             result['info'] = start_arrange()
         elif status == 'arrange main':
-            arrange_main()
+            try:
+                arrange_main(user=operator)
+            except Exception, e:
+                module_log_update.log_info('class_manage', '排课异常:{}'.format(e))
+                result = 'Fail'
         elif status == 'arrange over':
             CurrentStepInfo.objects.filter(id=search_result[0].id).update(s3_status_flag=status,
                                                                           s4_status_flag='adjustment start',
@@ -1596,9 +1854,10 @@ def start_arrange():
             degree_count, total_courses, [degree_count_u, degree_count_p1, degree_count_p2, degree_count_d], lock_teacher_count]
 
 
-def arrange_main():
+def arrange_main(user='admin'):
     now = datetime.now().strftime("%Y-%m-%d %H-%M")
     file_obj = open('analysis_result.txt', 'w+')
+    module_name = 'class_manage'
     search_result_course = CourseInfo.objects.all().filter(lock_state=0)
     search_result_teacher = TeacherInfo.objects.all().filter(lock_state=0)
     teacher_1 = {}
@@ -1644,6 +1903,7 @@ def arrange_main():
     # hours_ave_1 = (hours_ave_1 / 18 + 1) * 18
     # hours_ave_2 = (hours_ave_2 / 18 + 1) * 18
     print >>file_obj, '<STEP0 Initial teacher state>'
+    module_log_update.log_info(module_name, '<STEP0 Initial teacher state> user: {}'.format(user))
     for eachTeacher in search_result_teacher:
         expect_hours_1 = math.ceil(eachTeacher.first_semester_expect * hours_ave_1 / 18) * 18
         expect_hours_2 = math.ceil(eachTeacher.second_semester_expect * hours_ave_2 / 18) * 18
@@ -1651,6 +1911,10 @@ def arrange_main():
         expect_degree_2 = eachTeacher.second_semester_expect * degree_ave_2
         print >>file_obj, "工号:{} 姓名:{} 第一学期期望学时:{} 第二学期期望学时:{} 第一学期期望难度:{} 第二学期期望难度:{}".format(
             eachTeacher.teacher_id, eachTeacher.teacher_name, expect_hours_1, expect_hours_2, expect_degree_1, expect_degree_2)
+
+        module_log_update.log_info(module_name, "工号:{} 姓名:{} 第一学期期望学时:{} 第二学期期望学时:{} 第一学期期望难度:{} 第二学期期望难度:{}".format(
+            eachTeacher.teacher_id, eachTeacher.teacher_name, expect_hours_1, expect_hours_2, expect_degree_1, expect_degree_2))
+
         tmp_dict = {'course_list': [], 'degree_list': [], 'total_hours_1': 0, 'expect_hours_1': expect_hours_1, 'total_hours_2': 0,
                     'expect_hours_2': expect_hours_2, 'expect_degree_1': expect_degree_1, 'expect_degree_2': expect_degree_2,
                     'total_degree_1': 0, 'total_degree_2': 0}
@@ -1679,8 +1943,10 @@ def arrange_main():
     show_statistical(result_1, file_obj)
     result_2_firstSemester, result_2_secondSemester = split_semester_from_whole_year(result_2)
     for each_semester in [result_2_firstSemester, result_2_secondSemester]:
+        # 难度均衡
         result_1, result_2 = balance_for_high_degree(result_1, each_semester, teacher_1, file_obj)
         show_statistical(result_1, file_obj)
+        # 学时均衡
         result_1, result_2 = balance_for_course_hour(result_1, result_2, teacher_1, file_obj)
         show_statistical(result_1, file_obj)
 
@@ -1698,18 +1964,23 @@ def arrange_main():
     for tmpKey in result_3.keys():
         tmp = ",".join(result_3[tmpKey])
         CourseInfo.objects.filter(course_id=tmpKey).update(teacher_auto_pick=tmp, teacher_final_pick=tmp)
+        module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} teacher_auto_pick {} teacher_final_pick {}'.format(tmpKey, tmp, tmp))
         current_course = CourseInfo.objects.filter(course_id=tmpKey)
         if current_course:
             course_relate = current_course[0].course_relate.split(',')
             for eachCourse in course_relate:
                 CourseInfo.objects.filter(course_id=eachCourse).update(teacher_auto_pick=tmp, teacher_final_pick=tmp)
+                module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} teacher_auto_pick {} teacher_final_pick {}'.format(eachCourse, tmp, tmp))
     file_obj.close()
-    HttpResponse('Pass')
+    # HttpResponse('Pass')
 
 
 def show_statistical(result_1, file_obj):
     print >>file_obj, '##########################################################'
     print >>file_obj, 'showing available information'
+    module_name = 'class_manage'
+    module_log_update.log_info(module_name, '##########################################################')
+    module_log_update.log_info(module_name, 'showing available information')
     for tmpKey in result_1.keys():
         avail_hours_1 = result_1[tmpKey]['expect_hours_1'] - result_1[tmpKey]['total_hours_1']
         avail_hours_2 = result_1[tmpKey]['expect_hours_2'] - result_1[tmpKey]['total_hours_2']
@@ -1717,9 +1988,12 @@ def show_statistical(result_1, file_obj):
         avail_degree_2 = result_1[tmpKey]['expect_degree_2'] - result_1[tmpKey]['total_degree_2']
         print >>file_obj, 'teacher id: {} available hours {} {} available degree {} {}'.format(tmpKey, avail_hours_1, avail_hours_2,
                                                                                    avail_degree_1, avail_degree_2)
+        module_log_update.log_info(module_name, 'teacher id: {} available hours {} {} available degree {} {}'.format(tmpKey, avail_hours_1, avail_hours_2,
+                                                                                   avail_degree_1, avail_degree_2))
         # logging.info('teacher id: {} available hours {} {} available degree {} {}'.format(tmpKey, avail_hours_1, avail_hours_2,
         #                                                                            avail_degree_1, avail_degree_2))
     print >>file_obj, '##########################################################'
+    module_log_update.log_info(module_name, '##########################################################')
 
 
 # 先学时大小再老师个数
@@ -1917,6 +2191,8 @@ def split_semester_from_whole_year(result_courses):
 
 def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_info, file_obj):
     print >>file_obj, '<STEP 2 high degree course balance>'
+    module_name = 'class_manage'
+    module_log_update.log_info(module_name, '<STEP 2 high degree course balance>')
     high_degree_course_10 = []
     high_degree_course_9 = []
     high_degree_course_8 = []
@@ -1940,6 +2216,8 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
             result_left_courses.remove(eachCourse)
             print >>file_obj, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
             print >>file_obj, eachCourse.course_id
+            module_log_update.log_info(module_name, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+            module_log_update.log_info(module_name, eachCourse.course_id)
             teacher_list = eachCourse.suit_teacher.split(',')
             all_teachers = int(eachCourse.allow_teachers)
             teacher_without_high_degree = []
@@ -1968,6 +2246,14 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                     (result_all_teachers[eachTeacher][tmp_str2] - result_all_teachers[eachTeacher][tmp_str1]))
                 print >>file_obj, '<current> degree left {}'.format(
                     (result_all_teachers[eachTeacher][tmp_str4] - result_all_teachers[eachTeacher][tmp_str3]))
+                module_log_update.log_info(module_name, 'teacher id {}'.format(eachTeacher))
+                module_log_update.log_info(module_name, '<current> course list {}'.format(result_all_teachers[eachTeacher]['course_list']))
+                module_log_update.log_info(module_name, '<current> degree list {}'.format(result_all_teachers[eachTeacher]['degree_list']))
+                module_log_update.log_info(module_name, '<current> hour left {}'.format(
+                    (result_all_teachers[eachTeacher][tmp_str2] - result_all_teachers[eachTeacher][tmp_str1])))
+                module_log_update.log_info(module_name, '<current> degree left {}'.format(
+                    (result_all_teachers[eachTeacher][tmp_str4] - result_all_teachers[eachTeacher][tmp_str3])))
+
             while all_teachers > 0:
                 current_list = find_high_degree_course_count(teacher_id_list, high_degree_count, result_all_teachers)
                 if len(current_list) > 1:
@@ -1976,6 +2262,8 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                     high_degree_count += 1
                     continue
                 print >>file_obj, '<current> teacher list {}. high degree count {}'.format(current_list, high_degree_count)
+                module_log_update.log_info(module_name, '<current> teacher list {}. high degree count {}'.format(current_list, high_degree_count))
+
                 if result_all_teachers[current_list[0]][tmp_str1] + eachCourse.course_hour <= result_all_teachers[current_list[0]][tmp_str2]:
                     # high level factor design
                     current_list = high_level_factor_involve(current_list, result_all_teachers, tmp_str2, tmp_str1,
@@ -1984,6 +2272,10 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                     print >>file_obj, '<choose> teacher id {}'.format(current_list[0])
                     print >>file_obj, '<before choose> total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
                     print >>file_obj, '<before choose> degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
+                    module_log_update.log_info(module_name, '<choose> teacher id {}'.format(current_list[0]))
+                    module_log_update.log_info(module_name, '<before choose> total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1]))
+                    module_log_update.log_info(module_name, '<before choose> degree list {}'.format(result_all_teachers[current_list[0]]['degree_list']))
+
                     result_all_teachers[current_list[0]]['course_list'].append(eachCourse.course_id)
                     result_all_teachers[current_list[0]]['degree_list'].append(eachCourse.course_degree)
                     # 平行课程和非平行课程的计算方法不同
@@ -1995,14 +2287,22 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                     high_degree_count = 0
                     print >>file_obj, '<after choose> total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1])
                     print >>file_obj, '<after choose> degree list {}'.format(result_all_teachers[current_list[0]]['degree_list'])
+                    module_log_update.log_info(module_name, '<after choose> total hours {}'.format(result_all_teachers[current_list[0]][tmp_str1]))
+                    module_log_update.log_info(module_name, '<after choose> degree list {}'.format(result_all_teachers[current_list[0]]['degree_list']))
+
                 else:
                     high_degree_count += 1
                     if len(current_list) == len(teacher_id_list):
                         print >> file_obj, '<BAD 1> all teacher hours are exceed expect'
+                        module_log_update.log_info(module_name, '<BAD 1> all teacher hours are exceed expect')
                         for i in range(all_teachers):
                             print >>file_obj, '<BAD 1>teacher id {}'.format(current_list[i])
                             print >>file_obj, '<BAD 1>total hours {}'.format(result_all_teachers[current_list[i]][tmp_str1])
                             print >>file_obj, '<BAD 1>degree list {}'.format(result_all_teachers[current_list[i]]['degree_list'])
+                            module_log_update.log_info(module_name, '<BAD 1>teacher id {}'.format(current_list[i]))
+                            module_log_update.log_info(module_name, '<BAD 1>total hours {}'.format(result_all_teachers[current_list[i]][tmp_str1]))
+                            module_log_update.log_info(module_name, '<BAD 1>degree list {}'.format(result_all_teachers[current_list[i]]['degree_list']))
+
                             result_all_teachers[current_list[i]]['course_list'].append(eachCourse.course_id)
                             result_all_teachers[current_list[i]]['degree_list'].append(eachCourse.course_degree)
                             # 平行课程和非平行课程的计算方法不同
@@ -2014,10 +2314,14 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                             all_teachers -= 1
                             print >>file_obj, '<BAD 1>new total hours {}'.format(result_all_teachers[current_list[i]][tmp_str1])
                             print >>file_obj, '<BAD 1>new degree list {}'.format(result_all_teachers[current_list[i]]['degree_list'])
+                            module_log_update.log_info(module_name, '<BAD 1>new total hours {}'.format(result_all_teachers[current_list[i]][tmp_str1]))
+                            module_log_update.log_info(module_name, '<BAD 1>new degree list {}'.format(result_all_teachers[current_list[i]]['degree_list']))
 
             print >>file_obj, '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<'
+            module_log_update.log_info(module_name, '<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
     for eachItem in tmp_teacher_in_high_degree_course:
         print >>file_obj, '{} {}'.format(eachItem, result_all_teachers[eachItem]['degree_list'])
+        module_log_update.log_info(module_name, '{} {}'.format(eachItem, result_all_teachers[eachItem]['degree_list']))
     # tmp = {}
     # for eachDegree in high_degree_course:
     #     for eachCourse in eachDegree:
@@ -2034,6 +2338,8 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
 
 def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_info, file_obj):
     print >>file_obj, '<STEP 3 course hour balance>'
+    module_name = 'class_manage'
+    module_log_update.log_info(module_name, '<STEP 3 course hour balance>')
     for eachCourse in result_left_courses:
         print >>file_obj, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
         print >>file_obj, eachCourse.course_id
@@ -2062,18 +2368,33 @@ def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_in
             print >>file_obj, '<current> total hour 1:{} 2:{}'.format(result_all_teachers[eachTeacher]['total_hours_1'],result_all_teachers[eachTeacher]['total_hours_2'])
             print >>file_obj, '<current> degree left {}'.format(
                 (result_all_teachers[eachTeacher][tmp_str4] - result_all_teachers[eachTeacher][tmp_str3]))
+            module_log_update.log_info(module_name, 'teacher id {}'.format(eachTeacher))
+            module_log_update.log_info(module_name, '<current> course list {}'.format(result_all_teachers[eachTeacher]['course_list']))
+            module_log_update.log_info(module_name, '<current> degree list {}'.format(result_all_teachers[eachTeacher]['degree_list']))
+            module_log_update.log_info(module_name, '<current> hour left {}'.format(
+                (result_all_teachers[eachTeacher][tmp_str2] - result_all_teachers[eachTeacher][tmp_str1])))
+            module_log_update.log_info(module_name, '<current> total hour 1:{} 2:{}'.format(result_all_teachers[eachTeacher]['total_hours_1'],result_all_teachers[eachTeacher]['total_hours_2']))
+            module_log_update.log_info(module_name, '<current> degree left {}'.format(
+                (result_all_teachers[eachTeacher][tmp_str4] - result_all_teachers[eachTeacher][tmp_str3])))
+
         teacher_list = sort_new_2(teacher_list, result_all_teachers, tmp_str2, tmp_str1, tmp_str4, tmp_str3,teacher_info)
         print >> file_obj, '<current> after sort_new_2 course list {}'.format(teacher_list)
+        module_log_update.log_info(module_name, '<current> after sort_new_2 course list {}'.format(teacher_list))
         # high level factor design
         teacher_list = high_level_factor_involve(teacher_list, result_all_teachers, tmp_str2, tmp_str1,
                                                  tmp_str4, tmp_str3, teacher_info, eachCourse.course_hour,
                                                  eachCourse.course_degree, eachCourse.course_id)
         print >> file_obj, '<current> after high_level_factor_involve course list {}'.format(teacher_list)
+        module_log_update.log_info(module_name, '<current> after high_level_factor_involve course list {}'.format(teacher_list))
 
         for i in range(all_teachers):
             print >>file_obj, '<choose> teacher id {}'.format(teacher_list[i])
             print >>file_obj, '<before> total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1])
             print >>file_obj, '<before> degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
+            module_log_update.log_info(module_name, '<choose> teacher id {}'.format(teacher_list[i]))
+            module_log_update.log_info(module_name, '<before> total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1]))
+            module_log_update.log_info(module_name, '<before> degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list']))
+
             result_all_teachers[teacher_list[i]]['course_list'].append(eachCourse.course_id)
             result_all_teachers[teacher_list[i]]['degree_list'].append(eachCourse.course_degree)
             allow_teachers = float(eachCourse.allow_teachers) / float(
@@ -2084,12 +2405,16 @@ def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_in
             all_teachers -= 1
             print >>file_obj, '<after choose> new total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1])
             print >>file_obj, '<after choose> new degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list'])
+            module_log_update.log_info(module_name, '<after choose> new total hours {}'.format(result_all_teachers[teacher_list[i]][tmp_str1]))
+            module_log_update.log_info(module_name, '<after choose> new degree list {}'.format(result_all_teachers[teacher_list[i]]['degree_list']))
 
     return result_all_teachers, result_left_courses
 
 
 def first_allocation_for_limit_teacher_list(result_all_teachers, result_left_courses, teacher_info, file_obj):
     print >> file_obj, '<STEP 1 Limitation for teacher list>'
+    module_name = 'class_manage'
+    module_log_update.log_info(module_name, '<STEP 1 Limitation for teacher list>')
     result_2 = []
     for eachCourse in result_left_courses:
         # 本科 - 硕士 打通课程的时候，排课时以本科的课程为主进行排课
@@ -2112,8 +2437,59 @@ def first_allocation_for_limit_teacher_list(result_all_teachers, result_left_cou
                 result_all_teachers[teacher_info[eachTeacher]['id']][tmp_str2] += int(eachCourse.course_degree) / float(
                     eachCourse.allow_teachers)
         else:
-            result_2.append(eachCourse)
+            if int(eachCourse.course_parallel) == 1:
+                result_2.append(eachCourse)
+            else:
+                # 平行班级情况下，如果申报认识不满足最高要求，但是大于最低要求，会先行安排
+                module_log_update.log_info(module_name, '课程：{} 平行班级情况下，如果申报认识不满足最高要求，但是大于最低要求，会先行安排'.format(eachCourse))
+                teacher_limit_basic = eachCourse.allow_teachers
+                teacher_limit_final = eachCourse.allow_teachers * int(eachCourse.course_parallel)
+                if len(teacher_list) == teacher_limit_final:
+                    result_2.append(eachCourse)
+                elif teacher_limit_basic < len(teacher_list) < teacher_limit_final:
+                    for eachTeacher in teacher_list:
+                        print eachTeacher
+                        result_all_teachers[teacher_info[eachTeacher]['id']]['course_list'].append(
+                            eachCourse.course_id)
+                        result_all_teachers[teacher_info[eachTeacher]['id']]['degree_list'].append(
+                            eachCourse.course_degree)
+                        if eachCourse.semester == '一':
+                            tmp_str1 = 'total_hours_1'
+                            tmp_str2 = 'total_degree_1'
+                        else:
+                            tmp_str1 = 'total_hours_2'
+                            tmp_str2 = 'total_degree_2'
+                        result_all_teachers[teacher_info[eachTeacher]['id']][tmp_str1] += int(
+                            eachCourse.course_hour) / int(
+                            eachCourse.allow_teachers)
+                        result_all_teachers[teacher_info[eachTeacher]['id']][tmp_str2] += int(
+                            eachCourse.course_degree) / float(
+                            eachCourse.allow_teachers)
+                    left_course_time = teacher_limit_final - len(teacher_list)
+                    for eachTeacher in teacher_list:
+                        print eachTeacher
+                        result_all_teachers[teacher_info[eachTeacher]['id']]['course_list'].append(
+                            eachCourse.course_id)
+                        result_all_teachers[teacher_info[eachTeacher]['id']]['degree_list'].append(
+                            eachCourse.course_degree)
+                        if eachCourse.semester == '一':
+                            tmp_str1 = 'total_hours_1'
+                            tmp_str2 = 'total_degree_1'
+                        else:
+                            tmp_str1 = 'total_hours_2'
+                            tmp_str2 = 'total_degree_2'
+                        result_all_teachers[teacher_info[eachTeacher]['id']][tmp_str1] += int(
+                            eachCourse.course_hour) / int(
+                            eachCourse.allow_teachers)
+                        result_all_teachers[teacher_info[eachTeacher]['id']][tmp_str2] += int(
+                            eachCourse.course_degree) / float(
+                            eachCourse.allow_teachers)
+                        left_course_time -= 1
+                        if left_course_time == 0:
+                            break
+
     return result_all_teachers, result_2
+
 
 
 @csrf_exempt
@@ -2294,6 +2670,7 @@ def arrange_submit_adjust_request(request):
 def arrange_change_by_course_id(request):
     course_id = request.POST['course_id']
     to_change_teacher = request.POST['to_change_teacher']
+    user = request.user.last_name + request.user.first_name + request.user.username
     try:
         search_result = CourseInfo.objects.filter(course_id=course_id)
         final_teacher_list = search_result[0].teacher_final_pick.split(',')
@@ -2328,12 +2705,15 @@ def arrange_change_by_course_id(request):
                                                                             second_semester_degree=value2)
 
         CourseInfo.objects.filter(course_id=course_id).update(teacher_final_pick=to_change_teacher)
+        module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} teacher_final_pick {}'.format(course_id, to_change_teacher))
         search_result_course = CourseInfo.objects.filter(course_id=course_id)
         if search_result_course[0].course_relate:
             if search_result_course[0].student_type == '本科':
                 course_list = search_result_course[0].course_relate.split(',')
                 for eachCourse in course_list:
                     CourseInfo.objects.filter(course_id=eachCourse).update(teacher_final_pick=to_change_teacher)
+                    module_log_update.data_operate_log(user,
+                                                       '[CourseInfo]update: course_id {} teacher_final_pick {}'.format(eachCourse, to_change_teacher))
         status = 'Success'
     except Exception, e:
         print e
@@ -2457,13 +2837,13 @@ def course_info_history_main(request):
 
     course_table = CourseInfo.objects.all()
     search_result = []
-    class_name = CLASS_NAME_LIST
-    student_type = STUDENT_TYPE
-    year = CLASS_GRADE
+    class_name = get_class_value_by_key('class_name')#CLASS_NAME_LIST
+    student_type = get_class_value_by_key('student_type')#STUDENT_TYPE
+    year = get_class_value_by_key('year')#CLASS_GRADE
     semester = SEMESTER
     course_hour = COURSE_HOUR
     course_degree = COURSE_DEGREE
-    course_type = COURSE_TYPE
+    course_type = get_class_value_by_key('course_type')#COURSE_TYPE
     current_course_count = len(course_table)
     current_hour_count = 0
     current_degree_count = 0

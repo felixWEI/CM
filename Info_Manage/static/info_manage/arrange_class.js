@@ -187,6 +187,12 @@ $(document).ready(function () {
             data: {"status": status},
             dataType: "json",
             success: function(result){
+                if (result['status'] == 'Pass'){
+                    alert('排课成功')
+                }
+                else {
+                    alert('排课异常')
+                }
                 document.getElementById('titleDuringArrange').setAttribute('hidden', 'hidden');
                 document.getElementById('titleAfterArrange').removeAttribute('hidden');
                 document.getElementById('export_course_report_1').removeAttribute('disabled');
@@ -447,7 +453,7 @@ function change_assign_teacher(){
             str = str + ',' +$('#e_10').DataTable().rows().data()[i][1]
         }
     }
-    to_change_teacher = str
+    to_change_teacher = strstr
     $.ajax({
         type: 'POST',
         url: '/arrange_submit_adjust_request/',

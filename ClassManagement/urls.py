@@ -39,6 +39,7 @@ urlpatterns = [
     url(r'^teacher_help_declare_upload/', Info_Manage_views.teacher_help_declare_upload, name="teacher_help_declare_upload"),
     url(r'^teacher_change_expect/', Info_Manage_views.teacher_change_expect),
     url(r'^teacher_submit_apply_status/', Info_Manage_views.teacher_submit_apply_status),
+    url(r'^check_teacher_apply_status/', Info_Manage_views.check_teacher_apply_status),
     url(r'^class_manage/', Info_Manage_views.class_manage),
     url(r'^class_save_one_row/', Info_Manage_views.class_save_one_row),
     url(r'^class_delete_one_row/', Info_Manage_views.class_delete_one_row),
