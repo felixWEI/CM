@@ -2823,6 +2823,9 @@ def history_search_by_year(request):
     year = request.POST['year']
     search_result = CourseHistoryInfo.objects.filter(year=year)
     class_table = []
+    init_data = []
+
+    init_data.append(year)
     for eachItem in search_result:
         tmp = ''
         if eachItem.course_relate and eachItem.student_type != '本科':
@@ -2856,14 +2859,62 @@ def history_search_by_year(request):
                             eachItem.course_parallel,
                             eachItem.excellent_course,
                             eachItem.teacher_final_pick])
-    result = json.dumps({'class_table': class_table})
+    result = json.dumps({'class_table': class_table, 'init_data': init_data})
     return HttpResponse(result)
+
+
+@csrf_exempt
+def history_export_report(request):
+    now = datetime.now().strftime("%Y-%m-%d %H-%M")
+    ws = xlwt.Workbook(encoding='utf-8')
+    w = ws.add_sheet(u"排课结果")
+    year = request.GET.get('current_year')
+    course_table = CourseHistoryInfo.objects.filter(year=year)
+    search_result = []
+    for eachItem in course_table:
+        search_result.append([eachItem.course_id,
+                              eachItem.course_name,
+                              eachItem.major,
+                              eachItem.student_type,
+                              eachItem.year,
+                              eachItem.class_name,
+                              eachItem.semester,
+                              eachItem.course_hour,
+                              eachItem.course_degree,
+                              eachItem.course_type,
+                              eachItem.allow_teachers,
+                              eachItem.times_every_week,
+                              eachItem.teacher_final_pick,
+                              eachItem.course_relate,
+                              eachItem.language,
+                              eachItem.excellent_course,
+                              eachItem.lock_state,
+                              eachItem.course_parallel])
+
+    table_head = ['代码', '名称', '学科', '学位', '学年', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '上课老师', '打通课程代码','上课语言','是否精品课程','是否激活','平行班级数']
+    for col, eachTitle in enumerate(table_head):
+        w.write(0, col, eachTitle)
+    for row, eachRow in enumerate(search_result):
+        for col, eachCol in enumerate(eachRow):
+            w.write(row+1, col, eachCol)
+    exist_file = os.path.exists("last_report.xls")
+    if exist_file:
+        os.remove(r"last_report.xls")
+    ws.save("last_report.xls")
+    sio = BytesIO()
+    ws.save(sio)
+    sio.seek(0)
+    response = HttpResponse(sio.getvalue(), content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename={}_{}.xls'.format('arrange_result', now)
+    response.write(sio.getvalue())
+    return response
 
 
 @login_required()
 def class_history_history_main(request):
     table_head = ['代码', '名称', '专业', '学位', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '平行班级', '是否精品课程', '上课教师']
     exist_years = []
+    init_data = []
     search_result = CourseHistoryInfo.objects.values('year')
     for eachResult in search_result:
         if eachResult['year'] not in exist_years:
@@ -2873,12 +2924,14 @@ def class_history_history_main(request):
     search_result = CurrentStepInfo.objects.all()
     if search_result:
         year = search_result[0].s1_year_info
+        init_data.append(year)
     else:
         return render(request, 'class_management_history.html',
                   {'UserName': request.user.last_name + request.user.first_name + request.user.username,
                    'class_table': [],
                    'table_head': table_head,
                    'exist_years': exist_years,
+                   'init_data': init_data,
                    })
     search_result = CourseHistoryInfo.objects.filter(year=year)
     class_table = []
@@ -2920,4 +2973,5 @@ def class_history_history_main(request):
                    'class_table': class_table,
                    'table_head': table_head,
                    'exist_years': exist_years,
+                   'init_data': init_data,
                    })

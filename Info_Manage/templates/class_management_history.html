@@ -115,18 +115,17 @@
             <li style="padding-left:20px">
               <P><b>学年</b></P>
             </li>
-            <li style="padding-left:20px; padding-right:20px">
+            <li style="padding-left:20px; padding-right:20px;padding-top:20px; padding-bottom:20px">
               <select multiple class="form-control" id="history_year_select">
                 {% for item in exist_years %}
                   <option>{{item}}</option>
                 {% endfor %}
               </select>
             </li>
+            <li>
+              <button type="submit" class="btn btn-default center-block" onclick="submit_select_info()">提交</button>
+            </li>
           </ul>
-          <li>
-            <!--<button type="submit" class="btn btn-default center-block">提交</button>-->
-            <button type="submit" class="btn btn-default center-block" onclick="submit_select_info()">提交</button>
-          </li>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <!--<h1 class="page-header">统计信息</h1>-->
@@ -156,10 +155,11 @@
               <!--<button id="modify_expect" class="btn btn-primary" data-toggle="modal" data-target="#modifyExpectModal">修改</button>-->
             <!--{% endif %}-->
           <!--</div>-->
-          <h2 class="sub-header">课程信息</h2>
+          <h2 class="sub-header">历史课程信息</h2>
+          <div><p>当前查询年份：</p><p class="bg-info" id="current_year">{{ init_data.0 }}</p></div>
           <div class="table-responsive">
              <div class="pull-right" style="margin-top: 10px;margin-bottom: 10px;">
-               <button class="btn btn-primary" onclick="request_course()">导出排课结果</button>
+               <button class="btn btn-primary" onclick="export_course_info()">导出排课结果</button>
              </div>
             <table class="table table-striped" id="table_course_personal">
               <thead>

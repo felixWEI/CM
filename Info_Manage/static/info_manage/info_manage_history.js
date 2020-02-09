@@ -32,7 +32,8 @@ function submit_select_info(){
         data: {'year': year},
         dataType: "json",
         success: function(result){
-            console.log(result['class_table'])
+            console.log(result['init_data'])
+            document.getElementById('current_year').innerText = result['init_data'][0]
             $('#table_course_personal').DataTable().clear();
             for (var i = 0; i < result['class_table'].length; i++){
                 $('#table_course_personal').DataTable().row.add(result['class_table'][i])
@@ -43,6 +44,13 @@ function submit_select_info(){
             alert('获取历史排课信息失败');
         }
     });
+}
+
+function export_course_info(){
+    current_year = document.getElementById('current_year').innerText;
+    var post_url = '/history_export_report/?current_year='+current_year;
+    alert(post_url)
+    location.replace(post_url);
 }
 //function initFileInput(ctrlName, uploadUrl) {
 //    var control = $('#' + ctrlName);

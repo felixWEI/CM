@@ -61,6 +61,7 @@ urlpatterns = [
     url(r'^arrange_change_button_status/', Info_Manage_views.arrange_change_button_status),
     url(r'^arrange_step_5/', Info_Manage_views.arrange_step_5),
     url(r'^class_history/', Info_Manage_views.class_history_history_main),
-    url(r'history_search_by_year/', Info_Manage_views.history_search_by_year),
+    url(r'^history_search_by_year/', Info_Manage_views.history_search_by_year),
+    url(r'^history_export_report/', Info_Manage_views.history_export_report),
     url(r'^info_search/', info_search_main),
 ]

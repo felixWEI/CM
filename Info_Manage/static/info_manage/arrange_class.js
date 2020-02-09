@@ -393,7 +393,7 @@ function arrange_start() {
 }
 
 function initialize_arrange_class(page_info) {
-    document.getElementById('teacher_count').innerText = page_info[0];
+    page_expect_1 = page_info[0];
     document.getElementById('lock_teacher_count').innerText = page_info[8];
     document.getElementById('teacher_with_expect').innerText = page_info[1];
     document.getElementById('total_hours_with_expect').innerText = page_info[2];
