@@ -2867,31 +2867,62 @@ def history_search_by_year(request):
 def history_export_report(request):
     now = datetime.now().strftime("%Y-%m-%d %H-%M")
     ws = xlwt.Workbook(encoding='utf-8')
-    w = ws.add_sheet(u"排课结果")
+    w = ws.add_sheet(u"历史结果")
     year = request.GET.get('current_year')
-    course_table = CourseHistoryInfo.objects.filter(year=year)
+    course_table = CourseHistoryInfo.objects.filter(year=year, lock_state=0)
     search_result = []
     for eachItem in course_table:
-        search_result.append([eachItem.course_id,
-                              eachItem.course_name,
-                              eachItem.major,
-                              eachItem.student_type,
-                              eachItem.year,
-                              eachItem.class_name,
-                              eachItem.semester,
-                              eachItem.course_hour,
-                              eachItem.course_degree,
-                              eachItem.course_type,
-                              eachItem.allow_teachers,
-                              eachItem.times_every_week,
-                              eachItem.teacher_final_pick,
-                              eachItem.course_relate,
-                              eachItem.language,
-                              eachItem.excellent_course,
-                              eachItem.lock_state,
-                              eachItem.course_parallel])
+        for eachClass in eachItem.class_name.split(' '):
+            tmp_student = eachClass.split('-')[0]
+            tmp_class_grade, tmp_class_name = eachClass.split('-')[-1].split('_')
+            if eachItem.course_relate:
+                course_relate = eachItem.course_relate.strip(',')
+            else:
+                course_relate = ''
+            # search_result.append([eachItem.course_id,
+            #                       eachItem.course_name,
+            #                       eachItem.major,
+            #                       tmp_student,
+            #                       tmp_class_grade,
+            #                       tmp_class_name,
+            #                       eachItem.semester,
+            #                       eachItem.course_hour,
+            #                       eachItem.course_degree,
+            #                       eachItem.course_type,
+            #                       eachItem.language,
+            #                       eachItem.allow_teachers,
+            #                       eachItem.times_every_week,
+            #                       eachItem.teacher_final_pick,
+            #                       course_relate,
+            #                       eachItem.excellent_course,
+            #                       eachItem.course_parallel
+            #                       ])
+            search_result.append([eachItem.year,
+                                  eachItem.semester,
+                                  eachItem.student_type,
+                                  tmp_class_grade,
+                                  tmp_class_name,
+                                  eachItem.major,
+                                  eachItem.course_id,
+                                  eachItem.course_name,
+                                  eachItem.course_hour / 18,
+                                  eachItem.course_hour,
+                                  eachItem.course_degree,
+                                  eachItem.course_type,
+                                  eachItem.language,
+                                  eachItem.allow_teachers,
+                                  eachItem.times_every_week,
+                                  '',
+                                  course_relate,
+                                  eachItem.excellent_course,
+                                  course_relate,
+                                  eachItem.lock_state,
+                                  eachItem.teacher_final_pick,
+                                  eachItem.teacher_ordered
+                                  ])
 
-    table_head = ['代码', '名称', '学科', '学位', '学年', '班级', '学期', '学时', '难度', '必/选', '教师数', '周上课次数', '上课老师', '打通课程代码','上课语言','是否精品课程','是否激活','平行班级数']
+    table_head = ['学年','学期','学位','年级','班级','专业','课程代码','课程名称','学分','学时','难度','必修/选修','授课语言','教师数','每周上课次数',
+                              '可选教师','打通课程代码','是否精品课程','平行班级','未激活','授课教师','申报教师']
     for col, eachTitle in enumerate(table_head):
         w.write(0, col, eachTitle)
     for row, eachRow in enumerate(search_result):
@@ -2905,7 +2936,7 @@ def history_export_report(request):
     ws.save(sio)
     sio.seek(0)
     response = HttpResponse(sio.getvalue(), content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename={}_{}.xls'.format('arrange_result', now)
+    response['Content-Disposition'] = 'attachment; filename={}_{}.xls'.format('历史排课结果', now)
     response.write(sio.getvalue())
     return response
 
