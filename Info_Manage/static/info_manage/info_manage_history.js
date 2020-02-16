@@ -49,7 +49,11 @@ function submit_select_info(){
 function export_course_info(){
     current_year = document.getElementById('current_year').innerText;
     var post_url = '/history_export_report/?current_year='+current_year;
-    alert(post_url)
+    location.replace(post_url);
+}
+function export_teacher_info(){
+    current_year = document.getElementById('current_year').innerText;
+    var post_url = '/history_export_teacher/?current_year='+current_year;
     location.replace(post_url);
 }
 //function initFileInput(ctrlName, uploadUrl) {

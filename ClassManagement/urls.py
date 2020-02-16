@@ -63,5 +63,6 @@ urlpatterns = [
     url(r'^class_history/', Info_Manage_views.class_history_history_main),
     url(r'^history_search_by_year/', Info_Manage_views.history_search_by_year),
     url(r'^history_export_report/', Info_Manage_views.history_export_report),
+    url(r'^history_export_teacher/', Info_Manage_views.history_export_teacher),
     url(r'^info_search/', info_search_main),
 ]

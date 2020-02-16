@@ -420,7 +420,8 @@ function initialize_arrange_class(page_info) {
     document.getElementById('whole_info_present').innerHTML = str2;
 }
 function get_course_report(){
-    var post_url = '/arrange_export_report/';
+    var current_year = ''
+    var post_url = '/history_export_teacher/?current_year='+current_year;
     location.replace(post_url);
 }
 function get_analysis_report_1(){

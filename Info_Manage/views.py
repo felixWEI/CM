@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.utils.http import urlquote
 from django.db import connection
 
 from Info_Manage.models import TeacherInfo, CourseInfo, CurrentStepInfo, CourseHistoryInfo, CourseAdjustInfo
@@ -21,6 +22,7 @@ from datetime import datetime
 import xlwt
 import logging
 from logging.handlers import TimedRotatingFileHandler
+
 from io import StringIO, BytesIO
 from myLogger import MyLogger
 
@@ -2928,15 +2930,77 @@ def history_export_report(request):
     for row, eachRow in enumerate(search_result):
         for col, eachCol in enumerate(eachRow):
             w.write(row+1, col, eachCol)
-    exist_file = os.path.exists("last_report.xls")
+    exist_file = os.path.exists("历史信息汇总.xls")
     if exist_file:
-        os.remove(r"last_report.xls")
-    ws.save("last_report.xls")
+        os.remove(r"历史信息汇总.xls")
+    filename = '历史信息汇总'
+    ws.save("{}.xls".format(filename))
     sio = BytesIO()
     ws.save(sio)
     sio.seek(0)
     response = HttpResponse(sio.getvalue(), content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename={}_{}.xls'.format('历史排课结果', now)
+
+    filename = urlquote(filename)
+    response['Content-Disposition'] = 'attachment; filename={}_{}.xls'.format(filename, now)
+    response.write(sio.getvalue())
+    return response
+
+
+@csrf_exempt
+def history_export_teacher(request):
+    now = datetime.now().strftime("%Y-%m-%d %H-%M")
+    ws = xlwt.Workbook(encoding='utf-8')
+    w = ws.add_sheet(u"历史结果")
+    year = request.GET.get('current_year')
+    if not year:
+        course_table = CourseInfo.objects.filter(lock_state=0)
+    else:
+        course_table = CourseHistoryInfo.objects.filter(year=year, lock_state=0)
+    teacher_info = {}
+    for eachItem in course_table:
+        if eachItem.teacher_final_pick:
+            teacher_list = eachItem.teacher_final_pick.split(',')
+        else:
+            continue
+        for eachTeacher in teacher_list:
+            if eachTeacher not in teacher_info.keys():
+                teacher_info[eachTeacher] = {'id':'',
+                                             'degree_first_semester': 0,
+                                             'degree_second_semester': 0,
+                                             'hour_first_semester':0,
+                                             'hour_second_semester':0,
+                                             'course_list':[]}
+            else:
+                if eachItem.semester == '一':
+                    teacher_info[eachTeacher]['degree_first_semester'] += int(eachItem.course_degree)
+                    teacher_info[eachTeacher]['hour_first_semester'] += int(eachItem.course_hour)
+                else:
+                    teacher_info[eachTeacher]['degree_second_semester'] += int(eachItem.course_degree)
+                    teacher_info[eachTeacher]['hour_second_semester'] += int(eachItem.course_hour)
+                teacher_info[eachTeacher]['course_list'].append(eachItem.course_id)
+    teacher_info_list = []
+    for tmpKey in teacher_info.keys():
+        teacher_info_list.append([tmpKey, teacher_info[tmpKey]['degree_first_semester'], teacher_info[tmpKey]['hour_first_semester'],
+                                 teacher_info[tmpKey]['degree_second_semester'],teacher_info[tmpKey]['hour_second_semester'],len(teacher_info[tmpKey]['course_list'])])
+    table_head = ['教师', '第一学期难度', '第一学期学时', '第二学期难度', '第二学期学时', '总共授课']
+
+    for col, eachTitle in enumerate(table_head):
+        w.write(0, col, eachTitle)
+    for row, eachRow in enumerate(teacher_info_list):
+        for col, eachCol in enumerate(eachRow):
+            w.write(row+1, col, eachCol)
+    exist_file = os.path.exists("教师授课情况汇总.xls")
+    if exist_file:
+        os.remove(r"教师授课情况汇总.xls")
+    filename = '教师授课情况汇总'
+    ws.save("{}.xls".format(filename))
+    sio = BytesIO()
+    ws.save(sio)
+    sio.seek(0)
+    response = HttpResponse(sio.getvalue(), content_type='application/ms-excel')
+
+    filename = urlquote(filename)
+    response['Content-Disposition'] = 'attachment; filename={}_{}.xls'.format(filename, now)
     response.write(sio.getvalue())
     return response
 
