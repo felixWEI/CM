@@ -454,7 +454,7 @@ function change_assign_teacher(){
             str = str + ',' +$('#e_10').DataTable().rows().data()[i][1]
         }
     }
-    to_change_teacher = strstr
+    to_change_teacher = str
     $.ajax({
         type: 'POST',
         url: '/arrange_submit_adjust_request/',
