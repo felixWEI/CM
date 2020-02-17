@@ -14,7 +14,6 @@
     <!-- Bootstrap core CSS -->
     <link href="../static/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="../static/DataTables/DataTables-1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">
-    <link href="../static/dist/css/fileinput.css" rel="stylesheet">
 
     <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
     <link href="../static/assets/css/ie10-viewport-bug-workaround.css" rel="stylesheet">
@@ -52,12 +51,14 @@
         </div>
         <div id="navbar" class="navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="nav-item"><a href="/arrange_class/">分配授课教师</a></li>
-            <!--<li class="nav-item"><a href="#">分配上课时间</a></li>-->
-            <li class="nav-item"><a href="/class_manage/">课程信息管理</a></li>
-            <li class="nav-item"><a href="/class_history/">历史信息</a></li>
-            <li class="nav-item"><a class="nav-active" href="/teacher_personal/">教师信息管理</a></li>
-            <!--<li class="nav-item"><a href="/course_info_search/">历史信息管理</a></li>-->
+            {% if request.user.is_staff or user_type == 'leader'%}
+              <li class="nav-item"><a href="/arrange_class/">分配授课教师</a></li>
+              <!--<li class="nav-item"><a href="#">分配上课时间</a></li>-->
+              <li class="nav-item"><a href="/class_manage/">课程信息管理</a></li>
+              <li class="nav-item"><a class="nav-active" href="/class_history/">历史信息</a></li>
+            {% endif %}
+            <li class="nav-item"><a href="/teacher_personal/">教师信息管理</a></li>
+<!--{#            <li class="nav-item"><a href="/course_info_search/">历史信息管理</a></li>#}-->
           </ul>
           <ul class="nav navbar-nav navbar-right">
               <li class="nav-item">
@@ -88,89 +89,89 @@
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
           <ul class="nav nav-sidebar">
-            <li>
-              {% if request.user.is_staff or user_type == 'leader' %}
-                <a style="color: black">教务员</a>
-                <a href="\teacher_manage\" style="color: black; text-indent: 2em;">申报信息</a>
-                <li class="active">
-                    <a href="\teacher_manage_adjust\" style="color: black; text-indent: 2em;">微调信息</a>
-                </li>
-              {% endif %}
+            <!--<li>-->
+              <!--{% if request.user.is_staff or user_type == 'leader' %}-->
+                <!--<a style="color: black">教务员</a>-->
+                <!--<li>-->
+                  <!--<a href="\teacher_manage\" style="color: black; text-indent: 2em;">申报信息</a>-->
+                <!--</li>-->
+                <!--<li>-->
+                  <!--<a href="\teacher_manage_adjust\" style="color: black; text-indent: 2em;">微调信息</a>-->
+                <!--</li>-->
+              <!--{% endif %}-->
+            <!--</li>-->
+            <!--<li>-->
+              <!--{% if user_type == 'leader' %}-->
+                <!--<a style="color: black">主管领导</a>-->
+                <!--<a href="\teacher_leader\" style="color: black; text-indent: 2em;">微调信息</a>-->
+              <!--{% endif %}-->
+            <!--</li>-->
+            <!--<li class="active">-->
+              <!--<a href="\teacher_personal\">教师个人</a>-->
+            <!--</li>-->
+          </ul>
+          <!--<form action="/teacher_personal_checkbox/" method="POST"> {% csrf_token %}-->
+          <ul class="nav nav-sidebar">
+            <li style="padding-left:20px">
+              <P><b>学年</b></P>
+            </li>
+            <li style="padding-left:20px; padding-right:20px;padding-top:20px; padding-bottom:20px">
+              <select multiple class="form-control" id="history_year_select">
+                {% for item in exist_years %}
+                  <option>{{item}}</option>
+                {% endfor %}
+              </select>
             </li>
             <li>
-              {% if user_type == 'leader' %}
-                <a style="color: black">主管领导</a>
-                <a href="\teacher_leader\" style="color: black; text-indent: 2em;">微调信息</a>
-              {% endif %}
-            </li>
-            <li>
-              <a href="\teacher_personal\" style="color: black;">教师个人</a>
+              <button type="submit" class="btn btn-default center-block" onclick="submit_select_info()">提交</button>
             </li>
           </ul>
         </div>
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <!--<h1 class="page-header">统计信息</h1>-->
-          {% if year == 'None' %}
-            <div><p class="bg-info">当前不再排课当中</p></div>
-          {% else %}
-            <div><p class="bg-info">当前在排课中：目标学期为{{ year }}学年</p></div>
-          {% endif %}
+          <!--{% if year == 'None' %}-->
+            <!--<div><p class="bg-info">当前不再排课当中</p></div>-->
+          <!--{% else %}-->
+            <!--<div><p class="bg-info">当前在排课中：目标学期为{{ year }}学年</p></div>-->
+          <!--<div>-->
+            <!--<p class="bg-warning">博士生课程限博士生导师申报，法学硕士必修课程限副高级职称以上者（含教授，副教授，青年副研究员）申报。</p>-->
+            <!--<p class="bg-warning">申报课程的最低要求：难度为9以上的课程，不少于1门；难度大于等于7的课程（包含难度9），不少于5门；合格的申报课程总门数不少于7门（教学岗专任教师不少于10门）</p>-->
+          <!--</div>-->
+          <!--{% endif %}-->
           <!--<div class="row">-->
             <!--<div class="col-sm-2">-->
                 <!--<div class="placeholders2">-->
-                  <!--<span class="">教师总数</span>-->
-                  <!--<div>{{ summary_table.0 }}</div>-->
+                  <!--<span class="">第一学期期望学时</span>-->
+                  <!--<div id="page_expect_1">{{ summary_table.0 }}%</div>-->
                 <!--</div>-->
             <!--</div>-->
             <!--<div class="col-sm-2">-->
                 <!--<div class="placeholders2">-->
-                  <!--<span class="">未激活教师数</span>-->
-                  <!--<div>{{ summary_table.6 }}</div>-->
+                  <!--<span class="">第二学期期望学时</span>-->
+                  <!--<div id="page_expect_2">{{ summary_table.1 }}%</div>-->
                 <!--</div>-->
             <!--</div>-->
-            <!--<div class="col-sm-2">-->
-                <!--<div class="placeholders2">-->
-                  <!--<span class="">申报完成教师数(激活)</span>-->
-                  <!--<div>{{ summary_table.1 }}</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="col-sm-2">-->
-                <!--<div class="placeholders2">-->
-                  <!--<span class="">第一学期平均学时</span>-->
-                  <!--<div>{{ summary_table.2 }}</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="col-sm-2">-->
-                <!--<div class="placeholders2">-->
-                  <!--<span class="">第二学期平均学时</span>-->
-                  <!--<div>{{ summary_table.3 }}</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="col-sm-2">-->
-                <!--<div class="placeholders2">-->
-                  <!--<span class="">第一学期平均难度</span>-->
-                  <!--<div>{{ summary_table.4 }}</div>-->
-                <!--</div>-->
-            <!--</div>-->
-            <!--<div class="col-sm-2">-->
-                <!--<div class="placeholders2">-->
-                  <!--<span class="">第二学期平均难度</span>-->
-                  <!--<div>{{ summary_table.5 }}</div>-->
-                <!--</div>-->
-            <!--</div>-->
+            <!--{% if status == 'free' %}-->
+              <!--<button id="modify_expect" class="btn btn-primary" data-toggle="modal" data-target="#modifyExpectModal">修改</button>-->
+            <!--{% endif %}-->
           <!--</div>-->
-          <h2 class="sub-header">微调申请</h2>
+          <h2 class="sub-header">历史课程信息</h2>
+          <div><p>当前查询年份：</p><p class="bg-info" id="current_year">{{ init_data.0 }}</p></div>
           <div class="table-responsive">
-            <table class="table table-striped" id="table_course_adjust">
+             <div class="pull-right" style="margin-top: 10px;margin-bottom: 10px;">
+               <button class="btn btn-primary" onclick="export_course_info()">导出排课结果</button>
+               <button class="btn btn-primary" onclick="export_teacher_info()">排课报表</button>
+             </div>
+            <table class="table table-striped" id="table_course_personal">
               <thead>
                 <tr>
-                {% for row in table_head %}
-                  <th>{{ row }}</th>
-                {% endfor %}
+                    {% for col in table_head %}
+                        <th>{{ col }}</th>
+                    {% endfor %}
                 </tr>
               </thead>
               <tbody>
-                {% for row in teacher_table %}
+                {% for row in class_table %}
                     <tr>
                         {% for col in row %}
                         <td>{{ col }}</td>
@@ -182,7 +183,8 @@
           </div>
         </div>
       </div>
-    </div>
+
+
 
     <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -198,9 +200,7 @@
     <script type="text/javascript" src="../static/DataTables/DataTables-1.10.16/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript" src="../static/DataTables/Buttons-1.5.1/js/dataTables.buttons.min.js"></script>
     <script type="text/javascript" src="../static/dist/js/jszip.min.js"></script>
-    <script type="text/javascript" src="../static/dist/js/fileinput.js"></script>
-    <script type="text/javascript" src="../static/dist/js/zh.js"></script>
     <script type="text/javascript" src="../static/DataTables/Buttons-1.5.1/js/buttons.html5.min.js"></script>
-    <script type="text/javascript" src="../static/info_manage/info_manage_leader.js"></script>
+    <script type="text/javascript" src="../static/info_manage/info_manage_history.js"></script>
   </body>
 </html>

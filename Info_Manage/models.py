@@ -76,6 +76,7 @@ class CourseHistoryInfo(models.Model):
     teacher_ordered = models.CharField(db_column='teacher_ordered', max_length=200, blank=True, null=True)
     teacher_auto_pick = models.CharField(db_column='teacher_auto_pick', max_length=200, blank=True, null=True)
     teacher_final_pick = models.CharField(db_column='teacher_final_pick', max_length=200, blank=True, null=True)
+    course_parallel = models.CharField(db_column='course_parallel', max_length=45, blank=True, null=True)
     excellent_course = models.CharField(db_column='excellent_course', max_length=45, blank=True, null=True)
     notes = models.CharField(db_column='notes', max_length=200, blank=True, null=True)
     major = models.CharField(db_column='major', max_length=45, blank=True, null=True)

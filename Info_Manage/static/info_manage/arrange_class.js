@@ -393,7 +393,7 @@ function arrange_start() {
 }
 
 function initialize_arrange_class(page_info) {
-    document.getElementById('teacher_count').innerText = page_info[0];
+    page_expect_1 = page_info[0];
     document.getElementById('lock_teacher_count').innerText = page_info[8];
     document.getElementById('teacher_with_expect').innerText = page_info[1];
     document.getElementById('total_hours_with_expect').innerText = page_info[2];
@@ -420,7 +420,8 @@ function initialize_arrange_class(page_info) {
     document.getElementById('whole_info_present').innerHTML = str2;
 }
 function get_course_report(){
-    var post_url = '/arrange_export_report/';
+    var current_year = ''
+    var post_url = '/history_export_teacher/?current_year='+current_year;
     location.replace(post_url);
 }
 function get_analysis_report_1(){
@@ -453,7 +454,7 @@ function change_assign_teacher(){
             str = str + ',' +$('#e_10').DataTable().rows().data()[i][1]
         }
     }
-    to_change_teacher = strstr
+    to_change_teacher = str
     $.ajax({
         type: 'POST',
         url: '/arrange_submit_adjust_request/',

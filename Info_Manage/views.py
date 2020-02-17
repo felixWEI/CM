@@ -7,6 +7,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse
+from django.utils.http import urlquote
 from django.db import connection
 
 from Info_Manage.models import TeacherInfo, CourseInfo, CurrentStepInfo, CourseHistoryInfo, CourseAdjustInfo
@@ -21,6 +22,7 @@ from datetime import datetime
 import xlwt
 import logging
 from logging.handlers import TimedRotatingFileHandler
+
 from io import StringIO, BytesIO
 from myLogger import MyLogger
 
@@ -2818,39 +2820,60 @@ def arrange_step_5(request):
     result = json.dumps({'status': status})
     return HttpResponse(result)
 
+@csrf_exempt
+def history_search_by_year(request):
+    year = request.POST['year']
+    search_result = CourseHistoryInfo.objects.filter(year=year)
+    class_table = []
+    init_data = []
 
-@login_required()
-def course_info_history_main(request):
-    search_result = CurrentStepInfo.objects.all()
-    if search_result:
-        current_year = search_result[0].s1_year_info
-    else:
-        current_year = 'None'
-    search_result_major = TeacherInfo.objects.values('teacher_id', 'major')
-    major_list = []
-    for row_major in search_result_major:
-        if row_major['major']:
-            temp_list = row_major['major'].split('、')
-            major_list.extend(temp_list)
-    major_set = set(major_list)
-    major_set.add('综合')
-
-    course_table = CourseInfo.objects.all()
-    search_result = []
-    class_name = get_class_value_by_key('class_name')#CLASS_NAME_LIST
-    student_type = get_class_value_by_key('student_type')#STUDENT_TYPE
-    year = get_class_value_by_key('year')#CLASS_GRADE
-    semester = SEMESTER
-    course_hour = COURSE_HOUR
-    course_degree = COURSE_DEGREE
-    course_type = get_class_value_by_key('course_type')#COURSE_TYPE
-    current_course_count = len(course_table)
-    current_hour_count = 0
-    current_degree_count = 0
-    current_course_claim = 0
-    for eachItem in course_table:
-        if not eachItem.class_name:
+    init_data.append(year)
+    for eachItem in search_result:
+        tmp = ''
+        if eachItem.course_relate and eachItem.student_type != '本科':
             continue
+        class_name_list = [eachItem.class_name]
+        if eachItem.course_relate and eachItem.student_type == '本科':
+            course_relate_list = eachItem.course_relate.split(',')
+            for eachCourseId in course_relate_list:
+                if CourseInfo.objects.filter(course_id=eachCourseId):
+                    class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
+        # todo when class name confirm, may change
+        class_name_str = '/'.join((' '.join(class_name_list)).split(' '))
+        if eachItem.course_relate:
+            course_relate = eachItem.course_relate.strip(',')
+            course_id_str = '{}/{}'.format(eachItem.course_id, course_relate)
+        else:
+            course_id_str = eachItem.course_id
+
+        class_table.append([course_id_str,
+                            eachItem.course_name,
+                            eachItem.major,
+                            eachItem.student_type,
+                            class_name_str,
+                            eachItem.semester,
+                            eachItem.course_hour,
+                            eachItem.course_degree,
+                            eachItem.course_type,
+                            eachItem.language,
+                            eachItem.allow_teachers,
+                            eachItem.times_every_week,
+                            eachItem.course_parallel,
+                            eachItem.excellent_course,
+                            eachItem.teacher_final_pick])
+    result = json.dumps({'class_table': class_table, 'init_data': init_data})
+    return HttpResponse(result)
+
+
+@csrf_exempt
+def history_export_report(request):
+    now = datetime.now().strftime("%Y-%m-%d %H-%M")
+    ws = xlwt.Workbook(encoding='utf-8')
+    w = ws.add_sheet(u"历史结果")
+    year = request.GET.get('current_year')
+    course_table = CourseHistoryInfo.objects.filter(year=year, lock_state=0)
+    search_result = []
+    for eachItem in course_table:
         for eachClass in eachItem.class_name.split(' '):
             tmp_student = eachClass.split('-')[0]
             tmp_class_grade, tmp_class_name = eachClass.split('-')[-1].split('_')
@@ -2858,34 +2881,192 @@ def course_info_history_main(request):
                 course_relate = eachItem.course_relate.strip(',')
             else:
                 course_relate = ''
-            search_result.append([eachItem.course_id,
-                                  eachItem.course_name,
-                                  eachItem.major,
-                                  tmp_student,
+            # search_result.append([eachItem.course_id,
+            #                       eachItem.course_name,
+            #                       eachItem.major,
+            #                       tmp_student,
+            #                       tmp_class_grade,
+            #                       tmp_class_name,
+            #                       eachItem.semester,
+            #                       eachItem.course_hour,
+            #                       eachItem.course_degree,
+            #                       eachItem.course_type,
+            #                       eachItem.language,
+            #                       eachItem.allow_teachers,
+            #                       eachItem.times_every_week,
+            #                       eachItem.teacher_final_pick,
+            #                       course_relate,
+            #                       eachItem.excellent_course,
+            #                       eachItem.course_parallel
+            #                       ])
+            search_result.append([eachItem.year,
+                                  eachItem.semester,
+                                  eachItem.student_type,
                                   tmp_class_grade,
                                   tmp_class_name,
-                                  eachItem.semester,
+                                  eachItem.major,
+                                  eachItem.course_id,
+                                  eachItem.course_name,
+                                  eachItem.course_hour / 18,
                                   eachItem.course_hour,
                                   eachItem.course_degree,
                                   eachItem.course_type,
                                   eachItem.language,
                                   eachItem.allow_teachers,
                                   eachItem.times_every_week,
-                                  eachItem.suit_teacher,
+                                  '',
                                   course_relate,
-                                  eachItem.excellent_course])
-        current_hour_count += float(eachItem.course_hour)
-        current_degree_count += float(eachItem.course_degree)
-        if eachItem.suit_teacher:
-            current_course_claim += 1
-    summary_table = [current_course_count, current_hour_count, current_degree_count, current_course_claim]
+                                  eachItem.excellent_course,
+                                  course_relate,
+                                  eachItem.lock_state,
+                                  eachItem.teacher_final_pick,
+                                  eachItem.teacher_ordered
+                                  ])
 
-    table_head = ['代码', '名称', '专业', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '可选教师', '打通课程代码',
-                  '备注']
-    table_default = ['', '', list(major_set), student_type, year, class_name,
-                     semester, course_hour, course_degree, course_type, LANGUAGE, '', '', '']
-    return render(request, 'course_info_search_main.html',
+    table_head = ['学年','学期','学位','年级','班级','专业','课程代码','课程名称','学分','学时','难度','必修/选修','授课语言','教师数','每周上课次数',
+                              '可选教师','打通课程代码','是否精品课程','平行班级','未激活','授课教师','申报教师']
+    for col, eachTitle in enumerate(table_head):
+        w.write(0, col, eachTitle)
+    for row, eachRow in enumerate(search_result):
+        for col, eachCol in enumerate(eachRow):
+            w.write(row+1, col, eachCol)
+    exist_file = os.path.exists("历史信息汇总.xls")
+    if exist_file:
+        os.remove(r"历史信息汇总.xls")
+    filename = '历史信息汇总'
+    ws.save("{}.xls".format(filename))
+    sio = BytesIO()
+    ws.save(sio)
+    sio.seek(0)
+    response = HttpResponse(sio.getvalue(), content_type='application/ms-excel')
+
+    filename = urlquote(filename)
+    response['Content-Disposition'] = 'attachment; filename={}_{}.xls'.format(filename, now)
+    response.write(sio.getvalue())
+    return response
+
+
+@csrf_exempt
+def history_export_teacher(request):
+    now = datetime.now().strftime("%Y-%m-%d %H-%M")
+    ws = xlwt.Workbook(encoding='utf-8')
+    w = ws.add_sheet(u"历史结果")
+    year = request.GET.get('current_year')
+    if not year:
+        course_table = CourseInfo.objects.filter(lock_state=0)
+    else:
+        course_table = CourseHistoryInfo.objects.filter(year=year, lock_state=0)
+    teacher_info = {}
+    for eachItem in course_table:
+        if eachItem.teacher_final_pick:
+            teacher_list = eachItem.teacher_final_pick.split(',')
+        else:
+            continue
+        for eachTeacher in teacher_list:
+            if eachTeacher not in teacher_info.keys():
+                teacher_info[eachTeacher] = {'id':'',
+                                             'degree_first_semester': 0,
+                                             'degree_second_semester': 0,
+                                             'hour_first_semester':0,
+                                             'hour_second_semester':0,
+                                             'course_list':[]}
+            else:
+                if eachItem.semester == '一':
+                    teacher_info[eachTeacher]['degree_first_semester'] += int(eachItem.course_degree)
+                    teacher_info[eachTeacher]['hour_first_semester'] += int(eachItem.course_hour)
+                else:
+                    teacher_info[eachTeacher]['degree_second_semester'] += int(eachItem.course_degree)
+                    teacher_info[eachTeacher]['hour_second_semester'] += int(eachItem.course_hour)
+                teacher_info[eachTeacher]['course_list'].append(eachItem.course_id)
+    teacher_info_list = []
+    for tmpKey in teacher_info.keys():
+        teacher_info_list.append([tmpKey, teacher_info[tmpKey]['degree_first_semester'], teacher_info[tmpKey]['hour_first_semester'],
+                                 teacher_info[tmpKey]['degree_second_semester'],teacher_info[tmpKey]['hour_second_semester'],len(teacher_info[tmpKey]['course_list'])])
+    table_head = ['教师', '第一学期难度', '第一学期学时', '第二学期难度', '第二学期学时', '总共授课']
+
+    for col, eachTitle in enumerate(table_head):
+        w.write(0, col, eachTitle)
+    for row, eachRow in enumerate(teacher_info_list):
+        for col, eachCol in enumerate(eachRow):
+            w.write(row+1, col, eachCol)
+    exist_file = os.path.exists("教师授课情况汇总.xls")
+    if exist_file:
+        os.remove(r"教师授课情况汇总.xls")
+    filename = '教师授课情况汇总'
+    ws.save("{}.xls".format(filename))
+    sio = BytesIO()
+    ws.save(sio)
+    sio.seek(0)
+    response = HttpResponse(sio.getvalue(), content_type='application/ms-excel')
+
+    filename = urlquote(filename)
+    response['Content-Disposition'] = 'attachment; filename={}_{}.xls'.format(filename, now)
+    response.write(sio.getvalue())
+    return response
+
+
+@login_required()
+def class_history_history_main(request):
+    table_head = ['代码', '名称', '专业', '学位', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '平行班级', '是否精品课程', '上课教师']
+    exist_years = []
+    init_data = []
+    search_result = CourseHistoryInfo.objects.values('year')
+    for eachResult in search_result:
+        if eachResult['year'] not in exist_years:
+            exist_years.append(eachResult['year'])
+    exist_years = sorted(exist_years)
+
+    search_result = CurrentStepInfo.objects.all()
+    if search_result:
+        year = search_result[0].s1_year_info
+        init_data.append(year)
+    else:
+        return render(request, 'class_management_history.html',
                   {'UserName': request.user.last_name + request.user.first_name + request.user.username,
-                   'class_table': search_result,
-                   'table_head': table_head, 'table_default': table_default,
-                   'summary_table': summary_table, 'year': current_year, 'major': major_set})
+                   'class_table': [],
+                   'table_head': table_head,
+                   'exist_years': exist_years,
+                   'init_data': init_data,
+                   })
+    search_result = CourseHistoryInfo.objects.filter(year=year)
+    class_table = []
+    for eachItem in search_result:
+        tmp = ''
+        if eachItem.course_relate and eachItem.student_type != '本科':
+            continue
+        class_name_list = [eachItem.class_name]
+        if eachItem.course_relate and eachItem.student_type == '本科':
+            course_relate_list = eachItem.course_relate.split(',')
+            for eachCourseId in course_relate_list:
+                if CourseInfo.objects.filter(course_id=eachCourseId):
+                    class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
+        # todo when class name confirm, may change
+        class_name_str = '/'.join((' '.join(class_name_list)).split(' '))
+        if eachItem.course_relate:
+            course_relate = eachItem.course_relate.strip(',')
+            course_id_str = '{}/{}'.format(eachItem.course_id, course_relate)
+        else:
+            course_id_str = eachItem.course_id
+
+        class_table.append([course_id_str,
+                              eachItem.course_name,
+                              eachItem.major,
+                              eachItem.student_type,
+                              class_name_str,
+                              eachItem.semester,
+                              eachItem.course_hour,
+                              eachItem.course_degree,
+                              eachItem.course_type,
+                              eachItem.language,
+                              eachItem.allow_teachers,
+                              eachItem.times_every_week,
+                              eachItem.course_parallel,
+                              eachItem.excellent_course,
+                              eachItem.teacher_final_pick])
+    return render(request, 'class_management_history.html',
+                  {'UserName': request.user.last_name + request.user.first_name + request.user.username,
+                   'class_table': class_table,
+                   'table_head': table_head,
+                   'exist_years': exist_years,
+                   'init_data': init_data,
+                   })
