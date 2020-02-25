@@ -373,13 +373,16 @@ def teacher_personal(request):
                 if eachItem.course_relate:
                     course_relate = eachItem.course_relate.strip(',')
                     course_id_str = '{}/{}'.format(eachItem.course_id, course_relate)
+                    student_type_relate = CourseInfo.objects.filter(course_id=course_relate)[0].student_type
+                    student_type_str = '{}/{}'.format(eachItem.student_type, student_type_relate)
                 else:
                     course_id_str = eachItem.course_id
+                    student_type_str = eachItem.student_type
 
                 search_result.append([course_id_str,
                                       eachItem.course_name,
                                       eachItem.major,
-                                      eachItem.student_type,
+                                      student_type_str,
                                       class_name_str,
                                       eachItem.semester,
                                       eachItem.course_hour,
@@ -389,7 +392,7 @@ def teacher_personal(request):
                                       eachItem.allow_teachers,
                                       eachItem.times_every_week,
                                       eachItem.course_parallel,
-                                      eachItem.excellent_course,
+                                      eachItem.excellent_course if eachItem.excellent_course else '',
                                       tmp])
     else:
         current_user_selected = CourseInfo.objects.filter(teacher_final_pick__contains=request.user.last_name+request.user.first_name)
@@ -412,13 +415,16 @@ def teacher_personal(request):
             if eachItem.course_relate:
                 course_relate = eachItem.course_relate.strip(',')
                 course_id_str = '{}/{}'.format(eachItem.course_id, course_relate)
+                student_type_relate = CourseInfo.objects.filter(course_id=course_relate)[0].student_type
+                student_type_str = '{}/{}'.format(eachItem.student_type, student_type_relate)
             else:
                 course_id_str = eachItem.course_id
+                student_type_str = eachItem.student_type
 
             search_result.append([course_id_str,
                                   eachItem.course_name,
                                   eachItem.major,
-                                  eachItem.student_type,
+                                  student_type_str,
                                   class_name_str,
                                   eachItem.semester,
                                   eachItem.course_hour,
@@ -428,7 +434,7 @@ def teacher_personal(request):
                                   eachItem.allow_teachers,
                                   eachItem.times_every_week,
                                   eachItem.course_parallel,
-                                  eachItem.excellent_course,
+                                  eachItem.excellent_course if eachItem.excellent_course else '',
                                   tmp])
     search_result_teacher = TeacherInfo.objects.filter(teacher_id=request.user.username)
     if search_result_teacher:
@@ -845,9 +851,9 @@ def class_manage(request):
                                   eachItem.language,
                                   eachItem.allow_teachers,
                                   eachItem.times_every_week,
-                                  eachItem.suit_teacher,
+                                  eachItem.teacher_ordered,
                                   course_relate,
-                                  eachItem.excellent_course,
+                                  eachItem.excellent_course if eachItem.excellent_course else '',
                                   lock_state,
                                   eachItem.course_parallel
                                   ])
@@ -859,7 +865,7 @@ def class_manage(request):
         #         current_course_claim += 1
     summary_table = [unlock_class_count, current_hour_count, current_degree_count, current_course_claim, lock_class_count]
 
-    table_head = ['代码', '名称', '专业', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '可选教师', '打通课程代码','是否精品课程','状态','平行班级数']
+    table_head = ['代码', '名称', '专业', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '申报教师', '打通课程代码','是否精品课程','状态','平行班级数']
     table_default = ['', '', major_list_temp, student_type, year, class_name,
                      semester, course_hour, course_degree, course_type, LANGUAGE, '', '','']
     return render(request, 'class_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
@@ -951,7 +957,7 @@ def class_filter_by_submit(request):
                                               eachItem.times_every_week,
                                               eachItem.suit_teacher,
                                               eachItem.course_relate,
-                                              eachItem.excellent_course,
+                                              eachItem.excellent_course if eachItem.excellent_course else '',
                                               lock_state,
                                               eachItem.course_parallel])
                 elif table_id == 'table_course_personal':
@@ -972,10 +978,34 @@ def class_filter_by_submit(request):
                             if CourseInfo.objects.filter(course_id=eachCourseId):
                                 class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
                     class_name_str = ' '.join(class_name_list)
-                    search_result.append([eachItem.course_id,
+                    if eachItem.course_relate:
+                        course_relate = eachItem.course_relate.strip(',')
+                        course_id_str = '{}/{}'.format(eachItem.course_id, course_relate)
+                        student_type_relate = CourseInfo.objects.filter(course_id=course_relate)[0].student_type
+                        student_type_str = '{}/{}'.format(eachItem.student_type, student_type_relate)
+                    else:
+                        course_id_str = eachItem.course_id
+                        student_type_str = eachItem.student_type
+                    # search_result.append([eachItem.course_id,
+                    #                       eachItem.course_name,
+                    #                       eachItem.major,
+                    #                       eachItem.student_type,
+                    #                       class_name_str,
+                    #                       eachItem.semester,
+                    #                       eachItem.course_hour,
+                    #                       eachItem.course_degree,
+                    #                       eachItem.course_type,
+                    #                       eachItem.language,
+                    #                       eachItem.allow_teachers,
+                    #                       eachItem.times_every_week,
+                    #                       eachItem.course_relate,
+                    #                       eachItem.course_parallel,
+                    #                       eachItem.excellent_course,
+                    #                       tmp])
+                    search_result.append([course_id_str,
                                           eachItem.course_name,
                                           eachItem.major,
-                                          eachItem.student_type,
+                                          student_type_str,
                                           class_name_str,
                                           eachItem.semester,
                                           eachItem.course_hour,
@@ -984,9 +1014,8 @@ def class_filter_by_submit(request):
                                           eachItem.language,
                                           eachItem.allow_teachers,
                                           eachItem.times_every_week,
-                                          eachItem.course_relate,
                                           eachItem.course_parallel,
-                                          eachItem.excellent_course,
+                                          eachItem.excellent_course if eachItem.excellent_course else '',
                                           tmp])
     result = json.dumps({'result': search_result})
     return HttpResponse(result)
@@ -1489,7 +1518,7 @@ def class_table_upload(request):
         if eachLine[17].value and eachLine[17].value == '是':
             excellent_course = '精品课程'
         else:
-            excellent_course = '非精品课程'
+            excellent_course = ''
 
         allow_teachers = allow_teachers*course_parallel
 
