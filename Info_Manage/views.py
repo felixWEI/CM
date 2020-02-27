@@ -855,8 +855,8 @@ def class_manage(request):
                                   course_relate,
                                   eachItem.excellent_course if eachItem.excellent_course else '',
                                   lock_state,
-                                  eachItem.course_parallel
-                                  ])
+                                  eachItem.course_parallel,
+                                  eachItem.teacher_final_pick])
         # if eachItem.lock_state == 0:
         #     tmp_hour, tmp_degree = get_course_effective_point(eachItem)
         #     current_hour_count += tmp_hour
@@ -865,7 +865,7 @@ def class_manage(request):
         #         current_course_claim += 1
     summary_table = [unlock_class_count, current_hour_count, current_degree_count, current_course_claim, lock_class_count]
 
-    table_head = ['代码', '名称', '专业', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '申报教师', '打通课程代码','是否精品课程','状态','平行班级数']
+    table_head = ['代码', '名称', '专业', '学位', '年级', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '申报教师', '打通课程代码','是否精品课程','状态','平行班级数','授课教师']
     table_default = ['', '', major_list_temp, student_type, year, class_name,
                      semester, course_hour, course_degree, course_type, LANGUAGE, '', '','']
     return render(request, 'class_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
@@ -959,7 +959,8 @@ def class_filter_by_submit(request):
                                               eachItem.course_relate,
                                               eachItem.excellent_course if eachItem.excellent_course else '',
                                               lock_state,
-                                              eachItem.course_parallel])
+                                              eachItem.course_parallel,
+                                              eachItem.teacher_final_pick])
                 elif table_id == 'table_course_personal':
                     if eachItem.lock_state == 1:
                         continue
@@ -2889,7 +2890,8 @@ def history_search_by_year(request):
                             eachItem.times_every_week,
                             eachItem.course_parallel,
                             eachItem.excellent_course,
-                            eachItem.teacher_final_pick])
+                            eachItem.teacher_final_pick,
+                            eachItem.teacher_ordered])
     result = json.dumps({'class_table': class_table, 'init_data': init_data})
     return HttpResponse(result)
 
@@ -3036,7 +3038,7 @@ def history_export_teacher(request):
 
 @login_required()
 def class_history_history_main(request):
-    table_head = ['代码', '名称', '专业', '学位', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '平行班级', '是否精品课程', '上课教师']
+    table_head = ['代码', '名称', '专业', '学位', '班级', '学期', '学时', '难度', '必/选', '语言', '教师数', '周上课次数', '平行班级', '是否精品课程', '上课教师','申报教师']
     exist_years = []
     init_data = []
     search_result = CourseHistoryInfo.objects.values('year')
@@ -3091,7 +3093,8 @@ def class_history_history_main(request):
                               eachItem.times_every_week,
                               eachItem.course_parallel,
                               eachItem.excellent_course,
-                              eachItem.teacher_final_pick])
+                              eachItem.teacher_final_pick,
+                              eachItem.teacher_ordered])
     return render(request, 'class_management_history.html',
                   {'UserName': request.user.last_name + request.user.first_name + request.user.username,
                    'class_table': class_table,
