@@ -1,4 +1,4 @@
-CLASS_TABLE_LENGTH = 17;
+CLASS_TABLE_LENGTH = 18;
 $(document).ready(function () {
 	t = $('#table_course_manage').DataTable({
         dom: 'Blfrtip',
@@ -149,6 +149,7 @@ $(document).ready(function () {
                     document.getElementById('a_15').removeAttribute('disabled')
                     document.getElementById('a_16').removeAttribute('disabled')
                     document.getElementById('a_17').removeAttribute('disabled')
+                    document.getElementById('a_18').removeAttribute('disabled')
                 }else{
                     document.getElementById('a_1').value = ''
                     document.getElementById('a_2').value = ''
@@ -177,6 +178,7 @@ $(document).ready(function () {
                     document.getElementById('a_15').removeAttribute('disabled')
                     document.getElementById('a_16').removeAttribute('disabled')
                     document.getElementById('a_17').removeAttribute('disabled')
+                    document.getElementById('a_18').removeAttribute('disabled')
                 }
             },
             error: function (){
