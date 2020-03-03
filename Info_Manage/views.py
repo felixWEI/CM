@@ -230,11 +230,21 @@ def teacher_approve_teacher_adjust(request):
                     value2 = float(teacher_result[0].first_semester_degree) - float(course_degree)
                     TeacherInfo.objects.filter(teacher_name=eachTeacher).update(first_semester_hours=value1,
                                                                                 first_semester_degree=value2)
+                    module_log_update.data_operate_log(user, '[TeacherInfo] teacher_name: {} first_semester_hours: {} first_semester_degree: {}'.format(
+                        eachTeacher,
+                        value1,
+                        value2
+                    ))
                 else:
                     value1 = float(teacher_result[0].second_semester_hours) - float(course_hour)
                     value2 = float(teacher_result[0].second_semester_degree) - float(course_degree)
                     TeacherInfo.objects.filter(teacher_name=eachTeacher).update(second_semester_hours=value1,
                                                                                 second_semester_degree=value2)
+                    module_log_update.data_operate_log(user, '[TeacherInfo] teacher_name: {} second_semester_hours: {} second_semester_degree: {}'.format(
+                        eachTeacher,
+                        value1,
+                        value2
+                    ))
             to_change_teacher_list = to_change_teacher.split(',')
             tmp_change_teacher_list = []
             for eachTeacher in to_change_teacher_list:
@@ -247,11 +257,21 @@ def teacher_approve_teacher_adjust(request):
                     value2 = float(teacher_result[0].first_semester_degree if teacher_result[0].first_semester_degree else 0) + float(course_degree)
                     TeacherInfo.objects.filter(teacher_name=eachTeacher).update(first_semester_hours=value1,
                                                                                 first_semester_degree=value2)
+                    module_log_update.data_operate_log(user, '[TeacherInfo] teacher_name: {} first_semester_hours: {} first_semester_degree: {}'.format(
+                        eachTeacher,
+                        value1,
+                        value2
+                    ))
                 else:
                     value1 = float(teacher_result[0].second_semester_hours if teacher_result[0].second_semester_hours else 0) + float(course_hour)
                     value2 = float(teacher_result[0].second_semester_degree if teacher_result[0].second_semester_degree else 0) + float(course_degree)
                     TeacherInfo.objects.filter(teacher_name=eachTeacher).update(second_semester_hours=value1,
                                                                                 second_semester_degree=value2)
+                    module_log_update.data_operate_log(user, '[TeacherInfo] teacher_name: {} second_semester_hours: {} second_semester_degree: {}'.format(
+                        eachTeacher,
+                        value1,
+                        value2
+                    ))
 
             tmp_change_teacher = ','.join(tmp_change_teacher_list)
             CourseInfo.objects.filter(course_id=course_id).update(teacher_final_pick=tmp_change_teacher)
@@ -298,11 +318,23 @@ def save_teacher_into_database(all_teacher, user=''):
         if search_result:
             TeacherInfo.objects.filter(teacher_id=eachItem[0]).update(teacher_name=eachItem[1], first_semester=eachItem[2],
                                                                       second_semester=eachItem[3], claiming_course=eachItem[4], update_time=now)
-            module_log_update.data_operate_log(user, 'update: {}'.format(eachItem))
+            module_log_update.data_operate_log(user, '[TeacherInfo] update teacher_id: {} teacher_name: {} first_semester: {} second_semester: {} claiming_course: {}'.format(
+                eachItem[0],
+                eachItem[1],
+                eachItem[2],
+                eachItem[3],
+                eachItem[4]
+            ))
         else:
             TeacherInfo.objects.create(teacher_id=eachItem[0], teacher_name=eachItem[1], first_semester=eachItem[2],
                                        second_semester=eachItem[3], claiming_course=eachItem[4], update_time=now)
-            module_log_update.data_operate_log(user, 'create: {}'.format(eachItem))
+            module_log_update.data_operate_log(user, '[TeacherInfo] create teacher_id: {} teacher_name: {} first_semester: {} second_semester: {} claiming_course: {}'.format(
+                eachItem[0],
+                eachItem[1],
+                eachItem[2],
+                eachItem[3],
+                eachItem[4]
+            ))
 
 
 @login_required()
@@ -503,7 +535,11 @@ def teacher_change_expect(request):
         TeacherInfo.objects.filter(teacher_id=teacher_id).update(first_semester_expect=modify_0,
                                                                  second_semester_expect=modify_1,
                                                                  lock_state=lock_state)
-        module_log_update.data_operate_log(user, '[TeacherInfo]update: first_semester_expect {} second_semester_expect {} lock_state {}'.format(modify_0, modify_1, lock_state))
+        module_log_update.data_operate_log(user, '[TeacherInfo]update: teacher_id:{} first_semester_expect {} second_semester_expect {} lock_state {}'.format(
+            teacher_id,
+            modify_0,
+            modify_1,
+            lock_state))
         status = 'Success'
     result = json.dumps({'status': status})
     return HttpResponse(result)
@@ -541,13 +577,14 @@ def teacher_table_upload(request):
     line_length = work_sheet.nrows
     teacher_list = []
     line_width = work_sheet.row_len(0)
+    user = request.user.last_name + request.user.first_name + request.user.username
     for line_number in range(line_length):
         teacher_index = work_sheet.row(line_number)[0].value
         teacher_name = work_sheet.row(line_number)[2].value
         if type(teacher_index) == float and teacher_name:
             teacher_list.append(work_sheet.row(line_number))
 
-    retCode = insert_teacher_extend_info_into_db(teacher_list)
+    retCode = insert_teacher_extend_info_into_db(teacher_list, user)
     if retCode:
         status = 'Pass'
     else:
@@ -631,7 +668,14 @@ def insert_teacher_extend_info_into_db(teacher_list, user=''):
                                                                                  sex=sex,
                                                                                  lock_state=lock_state,
                                                                                  update_time=now)
-            module_log_update.data_operate_log(user, '[TeacherInfo]update: teacher_name {} {} {} {} {} {} {}'.format(eachTeacher[2].value, major, birthday, teacher_title, teacher_type, sex, lock_state))
+            module_log_update.data_operate_log(user, '[TeacherInfo]update: teacher_name {} major: {} birthday: {} teacher_title: {} teacher_type: {} sex: {} lock_state{}'.format(
+                eachTeacher[2].value,
+                major,
+                birthday,
+                teacher_title,
+                teacher_type,
+                sex,
+                lock_state))
         else:
             TeacherInfo.objects.create(teacher_name=teacher_name,
                                        teacher_id=teacher_id,
@@ -644,14 +688,15 @@ def insert_teacher_extend_info_into_db(teacher_list, user=''):
                                        second_semester_expect=1.0,
                                        lock_state=lock_state,
                                        update_time=now)
-            module_log_update.data_operate_log(user, '[TeacherInfo]create: {} {} {} {} {} {} {} {}'.format(teacher_name,
-                                                                                                           teacher_id,
-                                                                                                           major,
-                                                                                                           birthday,
-                                                                                                           teacher_title,
-                                                                                                           teacher_type,
-                                                                                                           sex,
-                                                                                                           lock_state))
+            module_log_update.data_operate_log(user, '[TeacherInfo]create: teacher_name: {} teacher_id: {} major: {} birthday: {} teacher_title: {} teacher_type: {} sex: {} lock_state{}'.format(
+                teacher_name,
+                teacher_id,
+                major,
+                birthday,
+                teacher_title,
+                teacher_type,
+                sex,
+                lock_state))
 
     return retCode
 
@@ -710,6 +755,7 @@ def teacher_submit_apply_status(request):
     status_code = request.POST['status']
     teacher_id = request.POST['teacher_id']
     search_result = TeacherInfo.objects.filter(teacher_id=teacher_id, lock_state=0)
+    user = request.user.last_name + request.user.first_name + request.user.username
     if search_result:
         teacher_name = search_result[0].teacher_name
     else:
@@ -734,19 +780,37 @@ def teacher_submit_apply_status(request):
         notes = request.POST['notes']
         if notes[:6] == '满足申报要求':
             TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='申报结束', notes=notes[6:])
+            module_log_update.data_operate_log(user, '[TeacherInfo] teacher_id: {} teacher_apply_done: {} notes: {}'.format(
+                teacher_id,
+                '申报结束',
+                notes[6:]
+            ))
         elif notes[:7] == '不满足申报要求':
             TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='申报结束/不满足申报要求', notes=notes[7:])
+            module_log_update.data_operate_log(user, '[TeacherInfo] teacher_id: {} teacher_apply_done: {} notes: {}'.format(
+                teacher_id,
+                '申报结束/不满足申报要求',
+                notes[7:]
+            ))
         else:
             status = '申报状态出错，{}'.format(notes)
         result = json.dumps({'status': status})
     elif status_code == 'recall':
         status = 'Success'
         TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='申报结束/申请取消申报')
+        module_log_update.data_operate_log(user, '[TeacherInfo] teacher_id: {} teacher_apply_done: {}'.format(
+            teacher_id,
+            '申报结束/不满足申报要求',
+        ))
         result = json.dumps({'status': status})
     elif status_code == 'approve':
         if search_result[0].teacher_apply_done == '申报结束/申请取消申报':
             status = 'Success'
             TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='')
+            module_log_update.data_operate_log(user, '[TeacherInfo] teacher_id: {} teacher_apply_done: {}'.format(
+                teacher_id,
+                '',
+            ))
         else:
             status = '该教师无撤销申报的申请'
         result = json.dumps({'status': status})
@@ -2019,8 +2083,18 @@ def arrange_main(user='admin'):
         for eachCourse in result_1[tmpKey]['course_list']:
             if CourseInfo.objects.get(course_id=eachCourse).semester == '一':
                 TeacherInfo.objects.filter(teacher_id=tmpKey).update(first_semester_hours=result_1[tmpKey]['total_hours_1'], first_semester_degree=result_1[tmpKey]['total_degree_1'])
+                module_log_update.data_operate_log(user, '[TeacherInfo] teacher_id: {} first_semester_hours: {} first_semester_degree: {}'.format(
+                    tmpKey,
+                    result_1[tmpKey]['total_hours_1'],
+                    result_1[tmpKey]['total_degree_1']
+                ))
             else:
                 TeacherInfo.objects.filter(teacher_id=tmpKey).update(second_semester_hours=result_1[tmpKey]['total_hours_2'], second_semester_degree=result_1[tmpKey]['total_degree_2'])
+                module_log_update.data_operate_log(user, '[TeacherInfo] teacher_id: {} second_semester_hours: {} second_semester_degree: {}'.format(
+                    tmpKey,
+                    result_1[tmpKey]['total_hours_2'],
+                    result_1[tmpKey]['total_degree_2']
+                ))
             if eachCourse not in result_3.keys():
                 result_3[eachCourse] = [teacher_2[tmpKey]]
             else:
@@ -2764,11 +2838,21 @@ def arrange_change_by_course_id(request):
                 value2 = float(teacher_result[0].first_semester_degree) - float(course_degree)
                 TeacherInfo.objects.filter(teacher_name=eachTeacher).update(first_semester_hours=value1,
                                                                             first_semester_degree=value2)
+                module_log_update.data_operate_log(user, '[TeacherInfo] teacher_name: {} first_semester_hours: {} first_semester_degree: {}'.format(
+                    eachTeacher,
+                    value1,
+                    value2
+                ))
             else:
                 value1 = float(teacher_result[0].second_semester_hours) - float(course_hour)
                 value2 = float(teacher_result[0].second_semester_degree) - float(course_degree)
                 TeacherInfo.objects.filter(teacher_name=eachTeacher).update(second_semester_hours=value1,
                                                                             second_semester_degree=value2)
+                module_log_update.data_operate_log(user, '[TeacherInfo] teacher_name: {} second_semester_hours: {} second_semester_degree: {}'.format(
+                    eachTeacher,
+                    value1,
+                    value2
+                ))
         to_change_teacher_list = to_change_teacher.split(',')
         for eachTeacher in to_change_teacher_list:
             teacher_result = TeacherInfo.objects.filter(teacher_name=eachTeacher)
@@ -2778,11 +2862,21 @@ def arrange_change_by_course_id(request):
                 value2 = float(teacher_result[0].first_semester_degree if teacher_result[0].first_semester_degree else 0) + float(course_degree)
                 TeacherInfo.objects.filter(teacher_name=eachTeacher).update(first_semester_hours=value1,
                                                                             first_semester_degree=value2)
+                module_log_update.data_operate_log(user, '[TeacherInfo] teacher_name: {} first_semester_hours: {} first_semester_degree: {}'.format(
+                    eachTeacher,
+                    value1,
+                    value2
+                ))
             else:
                 value1 = float(teacher_result[0].second_semester_hours if teacher_result[0].second_semester_hours else 0) + float(course_hour)
                 value2 = float(teacher_result[0].second_semester_degree if teacher_result[0].second_semester_degree else 0) + float(course_degree)
                 TeacherInfo.objects.filter(teacher_name=eachTeacher).update(second_semester_hours=value1,
                                                                             second_semester_degree=value2)
+                module_log_update.data_operate_log(user, '[TeacherInfo] teacher_name: {} second_semester_hours: {} second_semester_degree: {}'.format(
+                    eachTeacher,
+                    value1,
+                    value2
+                ))
 
         CourseInfo.objects.filter(course_id=course_id).update(teacher_final_pick=to_change_teacher)
         module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} teacher_final_pick {}'.format(course_id, to_change_teacher))
