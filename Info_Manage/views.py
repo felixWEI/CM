@@ -2983,12 +2983,31 @@ def arrange_step_5(request):
     operation_status = request.POST['status']
     search_result = CurrentStepInfo.objects.all()
     status = '切换至最后一步失败'
+    user_type = request.user.nickname
     if operation_status:
         if len(search_result) == 1:
-            status = 'Success'
-            if operation_status == 'lock done':
-                status = update_final_result(search_result[0].s1_year_info)
-            CurrentStepInfo.objects.filter(id=search_result[0].id).update(s5_status_flag=operation_status)
+            search_adjust_result = CourseAdjustInfo.objects.filter(status='等待审批')
+            if not search_adjust_result:
+                status = 'Success'
+                if operation_status == 'lock done':
+                    if user_type == 'leader':
+                        update_final_result(search_result[0].s1_year_info)
+                    else:
+                        status = '您没有权限锁定排课'
+                elif operation_status == 'unlock':
+                    if user_type == 'leader':
+                        CurrentStepInfo.objects.filter(id=search_result[0].id).update(s5_status_flag=operation_status)
+                    else:
+                        status = '您没有权限解锁'
+                else:
+                    pass
+                if status == 'Success':
+                    CurrentStepInfo.objects.filter(id=search_result[0].id).update(s5_status_flag=operation_status)
+
+            else:
+                status = '还有未处理的微调申请'
+        else:
+            status = '没有找到正在进行的排课'
     result = json.dumps({'status': status})
     return HttpResponse(result)
 
