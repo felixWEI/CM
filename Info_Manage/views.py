@@ -195,8 +195,10 @@ def teacher_reject_teacher_adjust(request):
     course_id = request.POST['course_id']
     reject_notes = request.POST['notes']
     search_result = CourseAdjustInfo.objects.filter(course_id=course_id)
+    user = request.user.last_name + request.user.first_name + request.user.username
     if search_result:
         CourseAdjustInfo.objects.filter(course_id=course_id).update(status='已驳回', notes=reject_notes)
+        module_log_update.data_operate_log(user, '[CourseAdjustInfo] status: {} notes: {}'.format('已驳回', reject_notes))
         status = '驳回微调申请'
     else:
         status = '课程代码异常'
@@ -211,6 +213,7 @@ def teacher_approve_teacher_adjust(request):
     search_result = CourseAdjustInfo.objects.filter(course_id=course_id)
     if search_result:
         CourseAdjustInfo.objects.filter(course_id=course_id).update(status='已批准')
+        module_log_update.data_operate_log(user, '[CourseAdjustInfo] status: 已批准')
         to_change_teacher = search_result[0].teacher_after
 
         notes = search_result[0].notes
@@ -1750,6 +1753,8 @@ def arrange_step_1(request):
     year = request.POST['year']
     search_result = CurrentStepInfo.objects.all()
     CourseAdjustInfo.objects.all().delete()
+    user = request.user.last_name+request.user.first_name+request.user.username
+    module_log_update.data_operate_log(user, '[CourseAdjustInfo] Delete ALL')
     if search_result:
         CurrentStepInfo.objects.filter(id=search_result[0].id).update(s1_year_info=year)
         result = 'success'
@@ -2692,6 +2697,7 @@ def arrange_submit_adjust_request(request):
     course_id = request.POST['course_id']
     to_change_teacher = request.POST['to_change_teacher']
     notes = request.POST['notes']
+    user = request.user.last_name + request.user.first_name + request.user.username
     try:
         search_result = CourseInfo.objects.filter(course_id=course_id)
         course_name = search_result[0].course_name
@@ -2712,11 +2718,26 @@ def arrange_submit_adjust_request(request):
                                             teacher_after=to_change_teacher,
                                             status='等待审批',
                                             notes=notes)
+            module_log_update.data_operate_log(user, '[CourseAdjustInfo] course_id: {} course_name: {} teacher_before: {} teacher_after: {} status: {} notes'.format(
+                course_id,
+                course_name,
+                teacher_before,
+                to_change_teacher,
+                '等待审批',
+                notes
+            ))
         else:
             CourseAdjustInfo.objects.filter(course_id=course_id).update(teacher_before=teacher_before,
                                                                         teacher_after=to_change_teacher,
                                                                         status='等待审批',
                                                                         notes=notes)
+            module_log_update.data_operate_log(user, '[CourseAdjustInfo] course_id: {} teacher_before: {} teacher_after: {} status: {} notes'.format(
+                course_id,
+                teacher_before,
+                to_change_teacher,
+                '等待审批',
+                notes
+            ))
         status = 'success'
     except Exception, e:
         print e
