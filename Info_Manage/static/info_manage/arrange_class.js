@@ -142,9 +142,7 @@ $(document).ready(function () {
 
     });
     $('#activate-step-5').on('click', function(e) {
-        $('ul.setup-panel li:eq(4)').removeClass('disabled');
-        $('ul.setup-panel li a[href="#step-5"]').trigger('click');
-        $(this).remove();
+
         var status = 'lock start';
         $.ajax({
             type: 'POST',
@@ -154,6 +152,9 @@ $(document).ready(function () {
             success: function(result){
                 if (result['status'] == 'Success'){
                     console.log(result)
+                    $('ul.setup-panel li:eq(4)').removeClass('disabled');
+                    $('ul.setup-panel li a[href="#step-5"]').trigger('click');
+                    $(this).remove();
                 }else{
                     alert(result['status'])
                 }
@@ -187,6 +188,12 @@ $(document).ready(function () {
             data: {"status": status},
             dataType: "json",
             success: function(result){
+                if (result['status'] == 'Pass'){
+                    alert('排课成功')
+                }
+                else {
+                    alert('排课异常')
+                }
                 document.getElementById('titleDuringArrange').setAttribute('hidden', 'hidden');
                 document.getElementById('titleAfterArrange').removeAttribute('hidden');
                 document.getElementById('export_course_report_1').removeAttribute('disabled');
@@ -387,7 +394,7 @@ function arrange_start() {
 }
 
 function initialize_arrange_class(page_info) {
-    document.getElementById('teacher_count').innerText = page_info[0];
+    page_expect_1 = page_info[0];
     document.getElementById('lock_teacher_count').innerText = page_info[8];
     document.getElementById('teacher_with_expect').innerText = page_info[1];
     document.getElementById('total_hours_with_expect').innerText = page_info[2];
@@ -414,7 +421,8 @@ function initialize_arrange_class(page_info) {
     document.getElementById('whole_info_present').innerHTML = str2;
 }
 function get_course_report(){
-    var post_url = '/arrange_export_report/';
+    var current_year = ''
+    var post_url = '/history_export_teacher/?current_year='+current_year;
     location.replace(post_url);
 }
 function get_analysis_report_1(){
@@ -482,16 +490,18 @@ function search_course_by_id(){
         success: function(result){
             if (result['status'] == 'Success'){
                 course_content = result['course'];
-                for (var i=0; i < course_content.length-2; i++){
+                for (var i=0; i < course_content.length; i++){
+                    if ( i == 8  ||  i == 9 ){
+                        continue;
+                    }
                     document.getElementById('e_'+String(i+1)).value = course_content[i]
                 }
-                console.log(course_content);
                 $('#e_9').DataTable({
                     dom: '<"top">rt<"bottom"><"clear">',
                     "searching": false,
                     "ordering": false,
                     "destroy": true,
-                    "data": course_content[course_content.length-1],
+                    "data": course_content[course_content.length-2],
                     "column":[
                         {title: '工号'},
                         {title: '姓名'}
@@ -502,7 +512,7 @@ function search_course_by_id(){
                     "searching": false,
                     "ordering": false,
                     "destroy": true,
-                    "data": course_content[course_content.length-2],
+                    "data": course_content[course_content.length-3],
                     "column":[
                         {title: '工号'},
                         {title: '姓名'}

@@ -87,28 +87,24 @@
     <div class="container-fluid" style="padding-top: 70px;">
       <div class="row">
         <div class="col-sm-3 col-md-2 sidebar">
-         <ul class="nav nav-sidebar">
+          <ul class="nav nav-sidebar">
             <li>
               {% if request.user.is_staff or user_type == 'leader' %}
                 <a style="color: black">教务员</a>
-                <li>
-                  <a href="\teacher_manage\" style="color: black; text-indent: 2em;">申报信息</a>
-                </li>
-                <li>
-                  <a href="\teacher_manage_adjust\" style="color: black; text-indent: 2em;">微调信息</a>
+                <a href="\teacher_manage\" style="color: black; text-indent: 2em;">申报信息</a>
+                <li class="active">
+                    <a href="\teacher_manage_adjust\" style="color: black; text-indent: 2em;">微调信息</a>
                 </li>
               {% endif %}
             </li>
             <li>
               {% if user_type == 'leader' %}
                 <a style="color: black">主管领导</a>
-                <li class="active">
-                  <a href="\teacher_leader\" style="color: black; text-indent: 2em;">微调信息</a>
-                </li>
+                <a href="\teacher_leader\" style="color: black; text-indent: 2em;">微调信息</a>
               {% endif %}
             </li>
             <li>
-              <a href="\teacher_personal\" style="color: black">教师个人</a>
+              <a href="\teacher_personal\" style="color: black;">教师个人</a>
             </li>
           </ul>
         </div>
@@ -165,10 +161,6 @@
           <!--</div>-->
           <h2 class="sub-header">微调申请</h2>
           <div class="table-responsive">
-            <div class="pull-right" style="margin-top: 10px;">
-             <button class="btn btn-primary" onclick="approve_request_show()">批准该次微调</button>
-              <button class="btn btn-primary" onclick="cancel_request_show()">驳回该次微调</button>
-            </div>
             <table class="table table-striped" id="table_course_adjust">
               <thead>
                 <tr>
@@ -192,58 +184,6 @@
       </div>
     </div>
 
-    <div class="modal fade" id="cancelRequestModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title">驳回微调申请</h4>
-          </div>
-          <div class="modal-body ">
-            <div class="form-group">
-              <p><strong id="teacher_name">{{ request.user.last_name }}{{request.user.first_name}}({{request.user.username}})</strong>,  您好:</p>
-              <p>该次微调信息:</p>
-              <p>课程名称: <b id="cancel_CourseId"></b></p>
-              <p>课程代码: <b id="cancel_CourseName"></b></p>
-              <p>原指定教师: <b id="cancel_TeacherBefore"></b></p>
-              <p>微调指定教师: <b id="cancel_TeacherAfter"></b></p>
-              <p>补充说明:</p>
-              <textarea style="display" id="cancel_notes" class="form-control" rows="3"></textarea>
-            </div>
-          </div>
-          <div class="modal-footer">
-              <button class="button" onclick="cancel_request_submit()">确认驳回申请</button>
-              <button type="button" class="button" data-dismiss="modal">关闭</button>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="modal fade" id="approveRequestModal" tabindex="-1" role="dialog" style="width:1000px; margin-left:500px">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-              <h4 class="modal-title">批准微调申请</h4>
-          </div>
-          <div class="modal-body ">
-            <div class="form-group">
-              <p><strong>{{ request.user.last_name }}{{request.user.first_name}}({{request.user.username}})</strong>,  您好:</p>
-              <p>该次微调信息:</p>
-              <p>课程名称: <b id="approve_CourseId"></b></p>
-              <p>课程代码: <b id="approve_CourseName"></b></p>
-              <p>原指定教师: <b id="approve_TeacherBefore"></b></p>
-              <p>微调指定教师: <b id="approve_TeacherAfter"></b></p>
-              <p>补充说明:</p>
-              <textarea style="display" id="approve_notes" class="form-control" rows="3" disabled ></textarea>
-            </div>
-          </div>
-          <div class="modal-footer">
-              <button class="button" onclick="approve_request_submit()">确认批准申请</button>
-              <button type="button" class="button" data-dismiss="modal">关闭</button>
-          </div>
-        </div>
-      </div>
-    </div>
     <!-- Bootstrap core JavaScript
     ================================================== -->
     <!-- Placed at the end of the document so the pages load faster -->

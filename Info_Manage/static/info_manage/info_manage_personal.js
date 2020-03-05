@@ -340,22 +340,10 @@ function cancel_request(){
     }
     $('#cancelModal').modal('show');
     console.log(t.row('.selected').data());
-    document.getElementById('c_0').value = t.row('.selected').data()[0];
-    document.getElementById('c_1').value = t.row('.selected').data()[1];
-    document.getElementById('c_2').value = t.row('.selected').data()[2];
-    document.getElementById('c_3').value = t.row('.selected').data()[3];
-    document.getElementById('c_4').value = t.row('.selected').data()[4];
-    document.getElementById('c_5').value = t.row('.selected').data()[5];
-    document.getElementById('c_6').value = t.row('.selected').data()[6];
-    document.getElementById('c_7').value = t.row('.selected').data()[7];
-    document.getElementById('c_8').value = t.row('.selected').data()[8];
-    document.getElementById('c_9').value = t.row('.selected').data()[9];
-    document.getElementById('c_10').value = t.row('.selected').data()[10];
-    document.getElementById('c_11').value = t.row('.selected').data()[11];
-    document.getElementById('c_12').value = t.row('.selected').data()[12];
-    document.getElementById('c_13').value = t.row('.selected').data()[13];
-    document.getElementById('c_14').value = t.row('.selected').data()[14];
-    document.getElementById('c_15').value = t.row('.selected').data()[15];
+    for (var i=0; i < t.row('.selected').data().length; i++){
+        id = 'c_'+i.toString()
+        document.getElementById(id).value = t.row('.selected').data()[i];
+    }
 }
 
 function submit_edit_info(){
@@ -435,7 +423,7 @@ function submit_cancel(){
         dataType: "json",
         success: function (result) {
             if (result['status'] == 'Success'){
-                alert('取消申报成功')
+                alert('取消申报申请,提交成功!')
                 t.row('.selected').data()[t.row('.selected').data().length-1] = '';
                 t.row('.selected').data(t.row('.selected').data()).draw();
             }else{
@@ -460,6 +448,26 @@ function check_apply_status(teacher_id){
             if (result['status'] == 'Success'){
                 init_modal_content(result)
                 $('#requestCompleteModal').modal('show')
+            }else{
+                alert(result['status'])
+            }
+        },
+        error: function () {
+            alert('fail');
+        }
+    })
+
+}
+function recall_apply_result(teacher_id){
+    var status = 'check'
+    $.ajax({
+        type: 'POST',
+        url:'/teacher_submit_apply_status/',
+        data: {"teacher_id": teacher_id, 'status':status},
+        dataType: "json",
+        success: function (result) {
+            if (result['status'] == 'Success'){
+                $('#recallRequestModal').modal('show')
             }else{
                 alert(result['status'])
             }
@@ -576,11 +584,11 @@ function init_modal_content(result){
     document.getElementById('total_course_count').innerText = total_course_count
     document.getElementById('require_high_degree_count_1').innerText = CRITICAL_VALUE_1
     document.getElementById('require_high_degree_count_2').innerText = CRITICAL_VALUE_2
-     document.getElementById('require_course_count').innerText = CRITICAL_VALUE_3
+    document.getElementById('require_course_count').innerText = CRITICAL_VALUE_3
     if (total_high_degree_count_1 >= CRITICAL_VALUE_1 && total_high_degree_count_2 >= CRITICAL_VALUE_2 && total_course_count >= CRITICAL_VALUE_3){
         document.getElementById('p_pass').style.display = "block"
         document.getElementById('p_fail').style.display = "none"
-        document.getElementById('t_fail').style.display = "none"
+        document.getElementById('t_fail').style.display = "block"
 
     }else{
         document.getElementById('p_pass').style.display = "none"
@@ -604,6 +612,12 @@ function apply_complete_1(){
 function apply_complete_2(teacher_id){
     var status = 'save'
     notes = document.getElementById('t_fail').value
+    if ( document.getElementById('p_fail').style.display == 'block' ){
+        notes = '不满足申报要求' + notes
+    }
+    if ( document.getElementById('p_pass').style.display == 'block' ){
+        notes = '满足申报要求' + notes
+    }
     $.ajax({
         type: 'POST',
         url:'/teacher_submit_apply_status/',
@@ -613,6 +627,25 @@ function apply_complete_2(teacher_id){
             if (result['status'] == 'Success'){
                 $('#confirmCompleteModal').modal('hide')
                 $('#requestCompleteModal').modal('hide')
+                window.location.reload();
+            }else{
+                alert(result['status'])
+            }
+        },
+        error: function () {
+            alert('fail');
+        }
+    })
+}
+function apply_complete_3(teacher_id){
+    var status = 'recall'
+    $.ajax({
+        type: 'POST',
+        url:'/teacher_submit_apply_status/',
+        data: {"teacher_id": teacher_id, 'status':status},
+        dataType: "json",
+        success: function (result) {
+            if (result['status'] == 'Success'){
                 window.location.reload();
             }else{
                 alert(result['status'])

@@ -32,18 +32,18 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
-      <script>
-        var current_year = new Date().getFullYear().toString().substr(2,2);
-        var STUDENT_TYPE = ['本科', '法学硕士', '法律硕士', '法学博士']
-        var CLASS_NAME_LIST = ["第二专业教学", "通识教育","法学专业教育", "跨校辅修教学", "基础教育", "法律硕士(法学)",
-        "法律硕士(非法学)1班","法律硕士(非法学)2班", "法律硕士在职生", "法律史", "法学理论", "国际法学", "环境与资源保护法学",
-        "经济法学","民商法学", "诉讼法学", "刑法学", "宪法学与行政法学","法律硕士（法学）国际班", "法律硕士（非法学）国际班"]
-        var SEMESTER = ['一', '二']
-        var COURSE_HOUR = ['18', '36', '54', '56', '72']
-        var COURSE_DEGREE = ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', '9.0', '10']
-        var COURSE_TYPE = ['必修', '选修']
-        var LANGUAGE = ['中文', '英文', '中/英']
-      </script>
+      <!--<script>-->
+        <!--var current_year = new Date().getFullYear().toString().substr(2,2);-->
+        <!--var STUDENT_TYPE = ['本科', '法学硕士', '法律硕士', '法学博士']-->
+        <!--var CLASS_NAME_LIST = ["第二专业教学", "通识教育","法学专业教育", "跨校辅修教学", "基础教育", "法律硕士(法学)",-->
+        <!--"法律硕士(非法学)1班","法律硕士(非法学)2班", "法律硕士在职生", "法律史", "法学理论", "国际法学", "环境与资源保护法学",-->
+        <!--"经济法学","民商法学", "诉讼法学", "刑法学", "宪法学与行政法学","法律硕士（法学）国际班", "法律硕士（非法学）国际班"]-->
+        <!--var SEMESTER = ['一', '二']-->
+        <!--var COURSE_HOUR = ['18', '36', '54', '56', '72']-->
+        <!--var COURSE_DEGREE = ['1.0', '2.0', '3.0', '4.0', '5.0', '6.0', '7.0', '8.0', '9.0', '10']-->
+        <!--var COURSE_TYPE = ['必修', '选修']-->
+        <!--var LANGUAGE = ['中文', '英文', '中/英']-->
+      <!--</script>-->
   </head>
 
   <body>
@@ -64,6 +64,7 @@
             <li class="nav-item"><a href="/arrange_class/">分配授课教师</a></li>
             <!--<li class="nav-item"><a href="#">分配上课时间</a></li>-->
             <li class="nav-item"><a class="nav-active" href="/class_manage/">课程信息管理</a></li>
+            <li class="nav-item"><a href="/class_history/">历史信息</a></li>
             <li class="nav-item"><a href="/teacher_personal/">教师信息管理</a></li>
             <!--<li class="nav-item"><a href="/course_info_search/">历史信息管理</a></li>-->
           </ul>
@@ -150,6 +151,13 @@
               <li style="padding-left:20px">
                 <P><b>学科组</b></P>
               </li>
+              <li>
+                <div class="checkbox" style="padding-left:20px">
+                  <label>
+                      <input type="checkbox" id="major_check_list_all"> 全选
+                  </label>
+                </div>
+              </li>
               {% for row in major %}
                 <li>
                   <div class="checkbox" style="padding-left:20px">
@@ -159,13 +167,6 @@
                   </div>
                 </li>
               {% endfor %}
-                <li>
-                      <div class="checkbox" style="padding-left:20px">
-                          <label>
-                              <input type="checkbox" id="major_check_list_all"> 全选
-                          </label>
-                      </div>
-                  </li>
             </ul>
           <li>
             <button type="submit" class="btn btn-default center-block" onclick="submit_checkbox_info()">提交</button>
@@ -415,7 +416,7 @@
                   </div>
                   <div class="row form-group">
                     <label for="a_15" class="col-sm-2 control-label">{{ table_head.15 }}</label>
-                    <div class="col-sm-10"><input id="a_15" disabled="disabled" class="form-control" type="text" placeholder="是否精品课程"></div>
+                    <div class="col-sm-10"><input id="a_15" disabled="disabled" class="form-control" type="text" placeholder="是否精品课程: 精品课程；非精品课程"></div>
                   </div>
                   <div class="row form-group">
                     <label for="a_16" class="col-sm-2 control-label">{{ table_head.16 }}</label>
@@ -424,6 +425,10 @@
                   <div class="row form-group">
                     <label for="a_17" class="col-sm-2 control-label">{{ table_head.17 }}</label>
                     <div class="col-sm-10"><input id="a_17" disabled="disabled" class="form-control" type="text" placeholder="平行班级数"></div>
+                  </div>
+                   <div class="row form-group">
+                    <label for="a_18" class="col-sm-2 control-label">{{ table_head.18 }}</label>
+                   <div class="col-sm-10"><input id="a_18" disabled="disabled" class="form-control" type="text" placeholder="备注"></div>
                   </div>
               </form>
             </div>
@@ -553,7 +558,7 @@
                             <div class="col-sm-8"><input id="e_12" class="form-control" type="text" placeholder="周上课次数"></div>
                           </div>
                       </div>
-                      <div class="col-sm-6">
+                      <div class="col-sm-6" style="display: none">
                         <div class="row form-group">
                           <label for="e_13" class="col-sm-4 control-label">{{ table_head.13 }}</label>
                           <div class="col-sm-8">
@@ -581,7 +586,7 @@
                   </div>
                   <div class="row form-group">
                     <label for="e_15" class="col-sm-2 control-label">{{ table_head.15 }}</label>
-                    <div class="col-sm-10"><input id="e_15" class="form-control" type="text" placeholder="是否精品课程"></div>
+                    <div class="col-sm-10"><input id="e_15" class="form-control" type="text" placeholder="是否精品课程: 精品课程；非精品课程"></div>
                   </div>
                   <div class="row form-group">
                     <label for="e_16" class="col-sm-2 control-label">{{ table_head.16 }}</label>
@@ -590,6 +595,10 @@
                   <div class="row form-group">
                     <label for="e_17" class="col-sm-2 control-label">{{ table_head.17 }}</label>
                     <div class="col-sm-10"><input id="e_17" class="form-control" type="text" placeholder="平行班级数"></div>
+                  </div>
+                  <div class="row form-group">
+                    <label for="e_18" class="col-sm-2 control-label">{{ table_head.18 }}</label>
+                    <div class="col-sm-10"><input id="e_18" class="form-control" type="text" placeholder="备注"></div>
                   </div>
               </form>
             </div>

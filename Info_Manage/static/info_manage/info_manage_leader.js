@@ -203,14 +203,17 @@ function cancel_request_show(){
     document.getElementById('cancel_notes').innerText = t.row('.selected').data()[5];
 }
 function cancel_request_submit(){
+    var rejectNotes = document.getElementById('cancel_notes').value
+
     $.ajax({
 	    type: 'POST',
         url:'/teacher_reject_teacher_adjust/',
-        data: {"course_id": t.row('.selected').data()[0]},
+        data: {"course_id": t.row('.selected').data()[0], "notes": rejectNotes},
         dataType: "json",
         success: function (result) {
             alert(result['status']);
             $('#cancelRequestModal').modal('hide')
+            location.reload();
         },
         error: function () {
             alert('驳回异常');

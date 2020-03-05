@@ -41,21 +41,43 @@ $(document).ready(function () {
             return
         }
         $('#editModal').modal('show')
-        console.log(t.row('.selected').data());
-        document.getElementById('0').value = t.row('.selected').data()[0];
-        document.getElementById('1').value = t.row('.selected').data()[1];
-        document.getElementById('2').value = t.row('.selected').data()[2];
-        document.getElementById('3').value = t.row('.selected').data()[3];
-        document.getElementById('4').value = t.row('.selected').data()[4];
-        document.getElementById('5').value = t.row('.selected').data()[5];
-        document.getElementById('6').value = t.row('.selected').data()[6];
-        document.getElementById('7').value = t.row('.selected').data()[7];
-        document.getElementById('8').value = t.row('.selected').data()[8];
-        document.getElementById('9').value = t.row('.selected').data()[9];
-        document.getElementById('14').value = t.row('.selected').data()[14];
-        document.getElementById('15').value = t.row('.selected').data()[15];
+        for (var i=0; i < t.row('.selected').data().length; i++){
+            document.getElementById(i.toString()).value = t.row('.selected').data()[i];
+        }
 	});
+	$('#approve_table').click( function(){
+        if ( t.row('.selected').length === 0 ){
+            alert('没有选择的教师')
+            return
+        }
+        $('#approveModal').modal('show')
+        for (var i=0; i < t.row('.selected').data().length; i++){
+            id = 'a_'+i.toString()
+            document.getElementById(id).value = t.row('.selected').data()[i];
+        }
+	});
+	$('#check_teacher_apply_status').click( function(){
+	    type = 'all'
+        $.ajax({
+                type: 'POST',
+                url: '/check_teacher_apply_status/',
+                data: {'type': type},
+                dataType: "json",
+                success: function(result){
+                    if (result['status']=='Success'){
+                        $('#checkModal').modal('show')
+                        document.getElementById('check_modal_body').rows = result['message'].length
+                        document.getElementById('check_modal_body').value = result['message']
+                    }else{
+                        alert(result['status'])
+                    }
+                },
+                error: function (){
+                    console.log('No');
+                }
+            });
 
+	});
     $('#edit_teacher_info').click( function(){
         teacher_code = document.getElementById('0').value
         teacher_name = document.getElementById('1').value
@@ -84,6 +106,45 @@ $(document).ready(function () {
             success: function(result){
                 if (result['status']=='Success'){
                     alert('修改期望成功')
+                    location.reload();
+                }else{
+                    alert(result['status'])
+                }
+            },
+            error: function (){
+                console.log('No');
+            }
+        });
+    });
+    $('#approve_teacher_request').click( function(){
+        teacher_code = document.getElementById('a_0').value
+        teacher_name = document.getElementById('a_1').value
+        major = document.getElementById('a_2').value
+        teacher_type = document.getElementById('a_3').value
+        teacher_title = document.getElementById('a_4').value
+        birthday = document.getElementById('a_5').value
+        first_semester_expect = document.getElementById('a_6').value
+        second_semester_expect = document.getElementById('a_7').value
+        hours_semester_1 = document.getElementById('a_8').value
+        hours_semester_2 = document.getElementById('a_9').value
+        degree_semester_1 = document.getElementById('a_10').value
+        degree_semester_2 = document.getElementById('a_11').value
+        teacher_apply_status = document.getElementById('a_12').value
+        notes = document.getElementById('a_13').value
+        apply_course_count = document.getElementById('a_14').value
+        lock_state = document.getElementById('a_15').value
+        t.row('.selected').data([teacher_code, teacher_name, major, teacher_type, teacher_title, birthday,
+        first_semester_expect, second_semester_expect, hours_semester_1,hours_semester_2,
+        degree_semester_1, degree_semester_2, teacher_apply_status, notes, apply_course_count, lock_state]).draw();
+        var status = 'approve'
+        $.ajax({
+            type: 'POST',
+            url: '/teacher_submit_apply_status/',
+            data: {'teacher_id':teacher_code, 'status':status},
+            dataType: "json",
+            success: function(result){
+                if (result['status']=='Success'){
+                    alert('通过撤销申请')
                     location.reload();
                 }else{
                     alert(result['status'])
