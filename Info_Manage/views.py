@@ -2952,7 +2952,8 @@ def update_final_result(current_year):
                                              language=each_course.language,
                                              course_relate=each_course.course_relate,
                                              lock_state=each_course.lock_state,
-                                             notes='/'.join(tmp_notes_list))
+                                             notes='/'.join(tmp_notes_list),
+                                             course_parallel=each_course.course_parallel)
         else:
             CourseHistoryInfo.objects.create(course_id=each_course.course_id,
                                              course_name=each_course.course_name,
@@ -2974,7 +2975,8 @@ def update_final_result(current_year):
                                              language=each_course.language,
                                              course_relate=each_course.course_relate,
                                              lock_state=each_course.lock_state,
-                                             notes='/'.join(tmp_notes_list))
+                                             notes='/'.join(tmp_notes_list),
+                                             course_parallel=each_course.course_parallel)
     return status
 
 
@@ -3020,7 +3022,6 @@ def history_search_by_year(request):
 
     init_data.append(year)
     for eachItem in search_result:
-        tmp = ''
         if eachItem.course_relate and eachItem.student_type != '本科':
             continue
         class_name_list = [eachItem.class_name]
@@ -3034,13 +3035,16 @@ def history_search_by_year(request):
         if eachItem.course_relate:
             course_relate = eachItem.course_relate.strip(',')
             course_id_str = '{} / {}'.format(eachItem.course_id, course_relate)
+            student_type_relate = CourseInfo.objects.filter(course_id=course_relate)[0].student_type
+            student_type_str = '{} / {}'.format(eachItem.student_type, student_type_relate)
         else:
             course_id_str = eachItem.course_id
+            student_type_str = eachItem.student_type
 
         class_table.append([course_id_str,
                             eachItem.course_name,
                             eachItem.major,
-                            eachItem.student_type,
+                            student_type_str,
                             class_name_str,
                             eachItem.semester,
                             eachItem.course_hour,
@@ -3111,8 +3115,7 @@ def history_export_report(request):
                                   '',
                                   course_relate,
                                   eachItem.excellent_course,
-                                  course_relate,
-                                  eachItem.lock_state,
+                                  eachItem.course_parallel,
                                   get_teacher_final_pick(eachItem.teacher_final_pick, eachItem.teacher_ordered),
                                   eachItem.teacher_ordered,
                                   '非激活' if eachItem.lock_state else '',
@@ -3120,7 +3123,7 @@ def history_export_report(request):
                                   ])
 
     table_head = ['学年','学期','学位','年级','班级','专业','课程代码','课程名称','学分','学时','难度','必修/选修','授课语言','教师数','每周上课次数',
-                              '可选教师','打通课程代码','是否精品课程','平行班级','未激活','授课教师','申报教师','状态','备注']
+                              '可选教师','打通课程代码','是否精品课程','平行班级','授课教师','申报教师','状态','备注']
     for col, eachTitle in enumerate(table_head):
         w.write(0, col, eachTitle)
     for row, eachRow in enumerate(search_result):
@@ -3227,7 +3230,6 @@ def class_history_history_main(request):
     search_result = CourseHistoryInfo.objects.filter(year=year)
     class_table = []
     for eachItem in search_result:
-        tmp = ''
         if eachItem.course_relate and eachItem.student_type != '本科':
             continue
         class_name_list = [eachItem.class_name]
@@ -3241,13 +3243,16 @@ def class_history_history_main(request):
         if eachItem.course_relate:
             course_relate = eachItem.course_relate.strip(',')
             course_id_str = '{} / {}'.format(eachItem.course_id, course_relate)
+            student_type_relate = CourseInfo.objects.filter(course_id=course_relate)[0].student_type
+            student_type_str = '{} / {}'.format(eachItem.student_type, student_type_relate)
         else:
             course_id_str = eachItem.course_id
+            student_type_str = eachItem.student_type
 
         class_table.append([course_id_str,
                               eachItem.course_name,
                               eachItem.major,
-                              eachItem.student_type,
+                              student_type_str,
                               class_name_str,
                               eachItem.semester,
                               eachItem.course_hour,
