@@ -1,4 +1,4 @@
-CLASS_TABLE_LENGTH = 18;
+CLASS_TABLE_LENGTH = 19;
 $(document).ready(function () {
 	t = $('#table_course_manage').DataTable({
         dom: 'Blfrtip',
@@ -150,6 +150,7 @@ $(document).ready(function () {
                     document.getElementById('a_16').removeAttribute('disabled')
                     document.getElementById('a_17').removeAttribute('disabled')
                     document.getElementById('a_18').removeAttribute('disabled')
+                    document.getElementById('a_19').removeAttribute('disabled')
                 }else{
                     document.getElementById('a_1').value = ''
                     document.getElementById('a_2').value = ''
@@ -179,6 +180,7 @@ $(document).ready(function () {
                     document.getElementById('a_16').removeAttribute('disabled')
                     document.getElementById('a_17').removeAttribute('disabled')
                     document.getElementById('a_18').removeAttribute('disabled')
+                    document.getElementById('a_19').removeAttribute('disabled')
                 }
             },
             error: function (){
@@ -326,6 +328,7 @@ function edit_course_info(){
     document.getElementById('e_15').value = t.row('.selected').data()[15];
     document.getElementById('e_16').value = t.row('.selected').data()[16];
     document.getElementById('e_17').value = t.row('.selected').data()[17];
+    document.getElementById('e_19').value = t.row('.selected').data()[19];
 	$.ajax({
 	    type: 'POST',
         url:'/class_get_suit_teacher/',
