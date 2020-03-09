@@ -1116,11 +1116,11 @@ def get_course_effective_count(course_object):
     if course_object.course_relate:
         if course_object.student_type == '本科':
             unlock_course_count = 1
-            if course_object.suit_teacher:
+            if course_object.teacher_ordered:
                 claim_teacher_count = 1
     else:
         unlock_course_count = 1
-        if course_object.suit_teacher:
+        if course_object.teacher_ordered:
             claim_teacher_count = 1
     return unlock_course_count, claim_teacher_count
 
@@ -2294,7 +2294,7 @@ def sort_new_1(result_list):
     result_list = []
     for eachItem in result_list_tmp:
         if len(eachItem) > 1:
-            tmp = sorted(eachItem, key=lambda x: len(x.suit_teacher.split(',')))
+            tmp = sorted(eachItem, key=lambda x: len(x.teacher_ordered.split(',')))
             result_list.extend(tmp)
         else:
             result_list.append(eachItem[0])
@@ -2502,7 +2502,7 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
             print >>file_obj, eachCourse.course_id
             module_log_update.log_info(module_name, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
             module_log_update.log_info(module_name, eachCourse.course_id)
-            teacher_list = eachCourse.suit_teacher.split(',')
+            teacher_list = eachCourse.teacher_ordered.split(',')
             all_teachers = int(eachCourse.allow_teachers)
             teacher_without_high_degree = []
             teacher_with_high_degree = []
@@ -2639,7 +2639,7 @@ def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_in
             tmp_str2 = 'expect_hours_2'
             tmp_str3 = 'total_degree_2'
             tmp_str4 = 'expect_degree_2'
-        tmp = eachCourse.suit_teacher.split(',')
+        tmp = eachCourse.teacher_ordered.split(',')
         teacher_list = []
         for eachTeacher in tmp:
             teacher_list.append(teacher_info[eachTeacher]['id'])
@@ -2704,7 +2704,7 @@ def first_allocation_for_limit_teacher_list(result_all_teachers, result_left_cou
         # 本科 - 硕士 打通课程的时候，排课时以本科的课程为主进行排课
         if eachCourse.course_relate and eachCourse.student_type != '本科':
             continue
-        teacher_list = eachCourse.suit_teacher.split(',')
+        teacher_list = eachCourse.teacher_ordered.split(',')
         if len(teacher_list) == int(eachCourse.allow_teachers):
             for eachTeacher in teacher_list:
                 print eachTeacher
