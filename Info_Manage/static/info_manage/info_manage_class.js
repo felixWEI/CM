@@ -307,19 +307,18 @@ function edit_course_info(){
         alert('没有选中的课程')
         return
     }
-
     document.getElementById('e_0').value = t.row('.selected').data()[0];
     document.getElementById('e_1').value = t.row('.selected').data()[1];
 //    for (var i in STUDENT_TYPE){
 //        document.getElementById('e_3').options.add(new Option(STUDENT_TYPE[i]))
 //    }
     document.getElementById('e_2').innerHTML = '<option>'+t.row('.selected').data()[2]+'</option>'+document.getElementById('e_2').innerHTML;
-    document.getElementById('e_3').innerHTML = '<option>'+t.row('.selected').data()[3]+'</option>'+document.getElementById('e_3').innerHTML;
-    document.getElementById('e_4').innerHTML = '<option>'+t.row('.selected').data()[4]+'</option>'+document.getElementById('e_4').innerHTML;
-    document.getElementById('e_5').innerHTML = '<option>'+t.row('.selected').data()[5]+'</option>'+document.getElementById('e_5').innerHTML;
-    document.getElementById('e_6').innerHTML = '<option>'+t.row('.selected').data()[6]+'</option>'+document.getElementById('e_6').innerHTML;
-    document.getElementById('e_7').innerHTML = '<option>'+t.row('.selected').data()[7]+'</option>'+document.getElementById('e_7').innerHTML;
-    document.getElementById('e_8').innerHTML = '<option>'+t.row('.selected').data()[8]+'</option>'+document.getElementById('e_8').innerHTML;
+    document.getElementById('e_3').innerHTML = '<option>'+t.row('.selected').data()[3]+'</option>'//+document.getElementById('e_3').innerHTML;
+    document.getElementById('e_4').innerHTML = '<option>'+t.row('.selected').data()[4]+'</option>'//+document.getElementById('e_4').innerHTML;
+    document.getElementById('e_5').innerHTML = '<option>'+t.row('.selected').data()[5]+'</option>'//+document.getElementById('e_5').innerHTML;
+    document.getElementById('e_6').innerHTML = '<option>'+t.row('.selected').data()[6]+'</option>'//+document.getElementById('e_6').innerHTML;
+    document.getElementById('e_7').innerHTML = '<option>'+t.row('.selected').data()[7]+'</option>'//+document.getElementById('e_7').innerHTML;
+    document.getElementById('e_8').innerHTML = '<option>'+t.row('.selected').data()[8]+'</option>'//+document.getElementById('e_8').innerHTML;
     document.getElementById('e_9').value = t.row('.selected').data()[9];
     document.getElementById('e_10').innerHTML = '<option>'+t.row('.selected').data()[10]+'</option>'+document.getElementById('e_10').innerHTML;
     document.getElementById('e_11').value = t.row('.selected').data()[11];
@@ -340,13 +339,13 @@ function edit_course_info(){
             var teacher_list = result['result_list'];
             var info_list = result['info_default']
 //            console.log(info_list);
-            document.getElementById('e_3').options.length = 0
-            document.getElementById('e_4').options.length = 0
-            document.getElementById('e_5').options.length = 0
-            document.getElementById('e_6').options.length = 0
-            document.getElementById('e_7').options.length = 0
-            document.getElementById('e_8').options.length = 0
-            document.getElementById('e_9').options.length = 0
+//            document.getElementById('e_3').options.length = 0
+//            document.getElementById('e_4').options.length = 0
+//            document.getElementById('e_5').options.length = 0
+//            document.getElementById('e_6').options.length = 0
+//            document.getElementById('e_7').options.length = 0
+//            document.getElementById('e_8').options.length = 0
+//            document.getElementById('e_9').options.length = 0
             for (var i in info_list[0]){
                 document.getElementById('e_5').options.add(new Option(info_list[0][i]))
             }

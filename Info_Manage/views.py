@@ -219,9 +219,9 @@ def teacher_approve_teacher_adjust(request):
         notes = search_result[0].notes
         try:
             search_result = CourseInfo.objects.filter(course_id=course_id)
-            final_teacher_list = search_result[0].teacher_final_pick.split(',')
-            course_hour = search_result[0].course_hour / len(final_teacher_list)
-            course_degree = search_result[0].course_degree / len(final_teacher_list)
+            final_teacher_list = search_result[0].teacher_final_pick.split(',') if search_result[0].teacher_final_pick else []
+            course_hour = search_result[0].course_hour / (len(final_teacher_list) if final_teacher_list else 1)
+            course_degree = search_result[0].course_degree / (len(final_teacher_list if final_teacher_list else 1))
             semester = search_result[0].semester
             for eachTeacher in final_teacher_list:
                 teacher_result = TeacherInfo.objects.filter(teacher_name=eachTeacher)
@@ -966,10 +966,15 @@ def check_teacher_apply_status(request):
 
 def get_teacher_final_pick(final_pick, teacher_order):
     if final_pick:
-        if final_pick in teacher_order.split(','):
-            return final_pick
-        else:
-            return "{}(未申报)".format(final_pick)
+        final_pick_list = final_pick.split(',')
+        tmp_list = []
+        for eachTeacher in final_pick_list:
+            if eachTeacher in teacher_order.split(','):
+                tmp_list.append(eachTeacher)
+            else:
+                tmp_list.append("{}(未申报)".format(eachTeacher))
+        tmp_str = ','.join(tmp_list)
+        return tmp_str
     else:
         return ''
 
@@ -1751,7 +1756,7 @@ def class_table_upload(request):
         teacher_ordered = eachLine[15].value
         language = eachLine[12].value
         course_relate = eachLine[16].value
-        if eachLine[19].value and eachLine[19].value == '未激活':
+        if eachLine[19].value and eachLine[19].value == '非激活':
             lock_state = 1
         else:
             lock_state = 0
@@ -2882,8 +2887,8 @@ def arrange_search_by_course_id(request):
         allow_teachers = search_result[0].allow_teachers
         teacher_pick = search_result[0].teacher_final_pick
         teacher_ordered = search_result[0].teacher_ordered
-        teacher_list = teacher_pick.split(',')
-        teacher_ordered_list = teacher_ordered.split(',')
+        teacher_list = teacher_pick.split(',') if teacher_pick else []
+        teacher_ordered_list = teacher_ordered.split(',') if teacher_ordered else []
         tmp1 = []
         for eachTeacher in teacher_list:
             teacher_table = TeacherInfo.objects.filter(teacher_name=eachTeacher)
@@ -2922,8 +2927,8 @@ def arrange_submit_adjust_request(request):
         search_result = CourseInfo.objects.filter(course_id=course_id)
         course_name = search_result[0].course_name
         teacher_before = search_result[0].teacher_final_pick
-        origin_teacher_list = search_result[0].teacher_final_pick.split(',')
-        teacher_ordered = search_result[0].teacher_ordered
+        origin_teacher_list = search_result[0].teacher_final_pick.split(',') if teacher_before else []
+        teacher_ordered = search_result[0].teacher_ordered if search_result[0].teacher_ordered else []
         to_change_teacher_list = to_change_teacher.split(',')
         tmp_list = []
         for eachTeacher in to_change_teacher_list:
@@ -2982,8 +2987,8 @@ def arrange_change_by_course_id(request):
     try:
         search_result = CourseInfo.objects.filter(course_id=course_id)
         final_teacher_list = search_result[0].teacher_final_pick.split(',')
-        course_hour = search_result[0].course_hour / len(final_teacher_list)
-        course_degree = search_result[0].course_degree / len(final_teacher_list)
+        course_hour = search_result[0].course_hour / (len(final_teacher_list) if final_teacher_list else 1)
+        course_degree = search_result[0].course_degree / (len(final_teacher_list) if final_teacher_list else 1)
         semester = search_result[0].semester
         for eachTeacher in final_teacher_list:
             teacher_result = TeacherInfo.objects.filter(teacher_name=eachTeacher)
@@ -3089,7 +3094,7 @@ def update_final_result(current_year):
             CourseHistoryInfo.objects.update(course_id=each_course.course_id,
                                              course_name=each_course.course_name,
                                              student_type=each_course.student_type,
-                                             year=each_course.year,
+                                             year=current_year,
                                              class_name=each_course.class_name,
                                              semester=each_course.semester,
                                              course_hour=each_course.course_hour,
@@ -3112,7 +3117,7 @@ def update_final_result(current_year):
             CourseHistoryInfo.objects.create(course_id=each_course.course_id,
                                              course_name=each_course.course_name,
                                              student_type=each_course.student_type,
-                                             year=each_course.year,
+                                             year=current_year,
                                              class_name=each_course.class_name,
                                              semester=each_course.semester,
                                              course_hour=each_course.course_hour,
@@ -3325,14 +3330,13 @@ def history_export_teacher(request):
                                              'hour_first_semester':0,
                                              'hour_second_semester':0,
                                              'course_list':[]}
+            if eachItem.semester == '一':
+                teacher_info[eachTeacher]['degree_first_semester'] += int(eachItem.course_degree)
+                teacher_info[eachTeacher]['hour_first_semester'] += int(eachItem.course_hour)
             else:
-                if eachItem.semester == '一':
-                    teacher_info[eachTeacher]['degree_first_semester'] += int(eachItem.course_degree)
-                    teacher_info[eachTeacher]['hour_first_semester'] += int(eachItem.course_hour)
-                else:
-                    teacher_info[eachTeacher]['degree_second_semester'] += int(eachItem.course_degree)
-                    teacher_info[eachTeacher]['hour_second_semester'] += int(eachItem.course_hour)
-                teacher_info[eachTeacher]['course_list'].append(eachItem.course_id)
+                teacher_info[eachTeacher]['degree_second_semester'] += int(eachItem.course_degree)
+                teacher_info[eachTeacher]['hour_second_semester'] += int(eachItem.course_hour)
+            teacher_info[eachTeacher]['course_list'].append(eachItem.course_id)
     teacher_info_list = []
     for tmpKey in teacher_info.keys():
         teacher_info_list.append([tmpKey, teacher_info[tmpKey]['degree_first_semester'], teacher_info[tmpKey]['hour_first_semester'],
