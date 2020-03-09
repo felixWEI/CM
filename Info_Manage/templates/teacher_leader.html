@@ -103,12 +103,18 @@
               {% if user_type == 'leader' %}
                 <a style="color: black">主管领导</a>
                 <li class="active">
-                  <a href="\teacher_leader\" style="color: black; text-indent: 2em;">微调信息</a>
+                  <a href="\teacher_leader\" style="color: black; text-indent: 2em;">微调审批</a>
                 </li>
               {% endif %}
             </li>
             <li>
-              <a href="\teacher_personal\" style="color: black">教师个人</a>
+                <a style="color: black">教师个人</a>
+                <li>
+                  <a href="\teacher_personal\" style="color: black; text-indent: 2em;">申报课程</a>
+                </li>
+                <li>
+                  <a href="\teacher_personal_lock\" style="color: black; text-indent: 2em;">排课结果</a>
+                </li>
             </li>
           </ul>
         </div>

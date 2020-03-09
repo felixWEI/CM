@@ -109,159 +109,156 @@
               <li>
                 <a style="color: black">教师个人</a>
                 <li>
-                  <a href="\teacher_personal\" class="active" style="color: black; text-indent: 2em;">申报课程</a>
+                  <a href="\teacher_personal\" style="color: black; text-indent: 2em;">申报课程</a>
                 </li>
                 <li>
-                  <a href="\teacher_personal_lock\" style="color: black; text-indent: 2em;">排课结果</a>
+                  <a href="\teacher_personal_lock\" class="active" style="color: black; text-indent: 2em;">排课结果</a>
                 </li>
               </li>
-          </ul>
-          <!--<form action="/teacher_personal_checkbox/" method="POST"> {% csrf_token %}-->
-          <ul class="nav nav-sidebar">
-            <li style="padding-left:20px">
-              <P><b>课程学位</b></P>
-            </li>
-            <li>
-              <div class="checkbox" style="padding-left:20px">
-                <label>
-                  <input type="checkbox" checked="checked" id="c_student_type_1"> 本科
-                </label>
-              </div>
-            </li>
-            <li>
-              <div class="checkbox" style="padding-left:20px">
-                <label>
-                  <input type="checkbox" checked="checked" id="c_student_type_2"> 法学硕士
-                </label>
-              </div>
-            </li>
-            <li>
-              <div class="checkbox" style="padding-left:20px">
-                <label>
-                  <input type="checkbox" checked="checked" id="c_student_type_3"> 法律硕士
-                </label>
-              </div>
-            </li>
-            <li>
-              <div class="checkbox" style="padding-left:20px">
-                <label>
-                  <input type="checkbox" checked="checked" id="c_student_type_4"> 法学博士
-                </label>
-              </div>
-            </li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li style="padding-left:20px">
-              <P><b>开课学期</b></P>
-            </li>
-              <li>
-                  <div class="checkbox" style="padding-left:20px">
-                      <label>
-                          <input type="checkbox" checked="checked" id="c_semester_1"> 第一学期
-                      </label>
-                  </div>
-              </li>
-              <li>
-                  <div class="checkbox" style="padding-left:20px">
-                      <label>
-                          <input type="checkbox" checked="checked" id="c_semester_2"> 第二学期
-                      </label>
-                  </div>
-              </li>
-          </ul>
-          <ul class="nav nav-sidebar">
-            <li style="padding-left:20px">
-              <P><b>学科组</b></P>
-            </li>
-              <li>
-                <div class="checkbox" style="padding-left:20px">
-                  <label>
-                    <input type="checkbox" id="major_check_list_all"> 全选
-                  </label>
-                </div>
-              </li>
-              {% for row in major_list %}
-                <li>
-                  <div class="checkbox" style="padding-left:20px">
-                    <label>
-                      {% if row.0 == "1" %}
-                        <input type="checkbox" checked name="major_check_list" value="{{row.1}}"> {{row.1}}
-                      {% else %}
-                        <input type="checkbox" name="major_check_list" value="{{row.1}}"> {{row.1}}
-                      {% endif %}
-                    </label>
-                  </div>
-                </li>
-              {% endfor %}
 
           </ul>
-          <li>
-            <!--<button type="submit" class="btn btn-default center-block">提交</button>-->
-            <button type="submit" class="btn btn-default center-block" onclick="submit_checkbox_info()">提交</button>
-          </li>
+          <!--{% if summary_table.0 != -1 %}-->
+              <!--&lt;!&ndash;<form action="/teacher_personal_checkbox/" method="POST"> {% csrf_token %}&ndash;&gt;-->
+              <!--<ul class="nav nav-sidebar">-->
+                <!--<li style="padding-left:20px">-->
+                  <!--<P><b>课程学位</b></P>-->
+                <!--</li>-->
+                <!--<li>-->
+                  <!--<div class="checkbox" style="padding-left:20px">-->
+                    <!--<label>-->
+                      <!--<input type="checkbox" checked="checked" id="c_student_type_1"> 本科-->
+                    <!--</label>-->
+                  <!--</div>-->
+                <!--</li>-->
+                <!--<li>-->
+                  <!--<div class="checkbox" style="padding-left:20px">-->
+                    <!--<label>-->
+                      <!--<input type="checkbox" checked="checked" id="c_student_type_2"> 法学硕士-->
+                    <!--</label>-->
+                  <!--</div>-->
+                <!--</li>-->
+                <!--<li>-->
+                  <!--<div class="checkbox" style="padding-left:20px">-->
+                    <!--<label>-->
+                      <!--<input type="checkbox" checked="checked" id="c_student_type_3"> 法律硕士-->
+                    <!--</label>-->
+                  <!--</div>-->
+                <!--</li>-->
+                <!--<li>-->
+                  <!--<div class="checkbox" style="padding-left:20px">-->
+                    <!--<label>-->
+                      <!--<input type="checkbox" checked="checked" id="c_student_type_4"> 法学博士-->
+                    <!--</label>-->
+                  <!--</div>-->
+                <!--</li>-->
+              <!--</ul>-->
+              <!--<ul class="nav nav-sidebar">-->
+                <!--<li style="padding-left:20px">-->
+                  <!--<P><b>开课学期</b></P>-->
+                <!--</li>-->
+                  <!--<li>-->
+                      <!--<div class="checkbox" style="padding-left:20px">-->
+                          <!--<label>-->
+                              <!--<input type="checkbox" checked="checked" id="c_semester_1"> 第一学期-->
+                          <!--</label>-->
+                      <!--</div>-->
+                  <!--</li>-->
+                  <!--<li>-->
+                      <!--<div class="checkbox" style="padding-left:20px">-->
+                          <!--<label>-->
+                              <!--<input type="checkbox" checked="checked" id="c_semester_2"> 第二学期-->
+                          <!--</label>-->
+                      <!--</div>-->
+                  <!--</li>-->
+              <!--</ul>-->
+              <!--<ul class="nav nav-sidebar">-->
+                <!--<li style="padding-left:20px">-->
+                  <!--<P><b>学科组</b></P>-->
+                <!--</li>-->
+                  <!--<li>-->
+                    <!--<div class="checkbox" style="padding-left:20px">-->
+                      <!--<label>-->
+                        <!--<input type="checkbox" id="major_check_list_all"> 全选-->
+                      <!--</label>-->
+                    <!--</div>-->
+                  <!--</li>-->
+                  <!--{% for row in major_list %}-->
+                    <!--<li>-->
+                      <!--<div class="checkbox" style="padding-left:20px">-->
+                        <!--<label>-->
+                          <!--{% if row.0 == "1" %}-->
+                            <!--<input type="checkbox" checked name="major_check_list" value="{{row.1}}"> {{row.1}}-->
+                          <!--{% else %}-->
+                            <!--<input type="checkbox" name="major_check_list" value="{{row.1}}"> {{row.1}}-->
+                          <!--{% endif %}-->
+                        <!--</label>-->
+                      <!--</div>-->
+                    <!--</li>-->
+                  <!--{% endfor %}-->
+
+              <!--</ul>-->
+              <!--<li>-->
+                <!--&lt;!&ndash;<button type="submit" class="btn btn-default center-block">提交</button>&ndash;&gt;-->
+                <!--<button type="submit" class="btn btn-default center-block" onclick="submit_checkbox_info()">提交</button>-->
+              <!--</li>-->
+          <!--{% endif %}-->
         </div>
-        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-          <h1 class="page-header">统计信息</h1>
-          {% if year == 'None' %}
-            <div><p class="bg-info">当前不再排课当中</p></div>
-          {% else %}
-            <div><p class="bg-info">当前在排课中：目标学期为{{ year }}学年</p></div>
-          <div>
-            <p class="bg-warning">博士生课程限博士生导师申报，法学硕士必修课程限副高级职称以上者（含教授，副教授，青年副研究员）申报。</p>
-            <p class="bg-warning">申报课程的最低要求：难度为9以上的课程，不少于1门；难度大于等于7的课程（包含难度9），不少于5门；合格的申报课程总门数不少于7门（教学岗专任教师不少于10门）</p>
-          </div>
-          {% endif %}
-          <div class="row">
-            <div class="col-sm-2">
-                <div class="placeholders2">
-                  <span class="">第一学期期望学时</span>
-                  <div id="page_expect_1">{{ summary_table.0 }}%</div>
+        {% if summary_table.0 != -1 %}
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+              <h1 class="page-header">统计信息</h1>
+              {% if year == 'None' %}
+                <div><p class="bg-info">当前不再排课当中</p></div>
+              {% else %}
+                <div><p class="bg-info">当前在排课中：目标学期为{{ year }}学年</p></div>
+              <div>
+                <p class="bg-warning">博士生课程限博士生导师申报，法学硕士必修课程限副高级职称以上者（含教授，副教授，青年副研究员）申报。</p>
+                <p class="bg-warning">申报课程的最低要求：难度为9以上的课程，不少于1门；难度大于等于7的课程（包含难度9），不少于5门；合格的申报课程总门数不少于7门（教学岗专任教师不少于10门）</p>
+              </div>
+              {% endif %}
+              <div class="row">
+                <div class="col-sm-2">
+                    <div class="placeholders2">
+                      <span class="">第一学期期望学时</span>
+                      <div id="page_expect_1">{{ summary_table.0 }}%</div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-sm-2">
-                <div class="placeholders2">
-                  <span class="">第二学期期望学时</span>
-                  <div id="page_expect_2">{{ summary_table.1 }}%</div>
+                <div class="col-sm-2">
+                    <div class="placeholders2">
+                      <span class="">第二学期期望学时</span>
+                      <div id="page_expect_2">{{ summary_table.1 }}%</div>
+                    </div>
                 </div>
-            </div>
-            {% if status == 'free' %}
-              <button id="modify_expect" class="btn btn-primary" data-toggle="modal" data-target="#modifyExpectModal">修改</button>
-            {% endif %}
-          </div>
-          <h2 class="sub-header">教师信息</h2>
-          <div class="table-responsive">
-             <div class="pull-right" style="margin-top: 10px;">
-                  <!--<button id="delete" class="btn btn-danger">删除该行</button>-->
-               {% if status == 'free' %}
-                 <button class="btn btn-primary" onclick="request_course()">申报该课程</button>
-                 <button class="btn btn-primary" onclick="cancel_request()">取消申报</button>
-                 <button class="btn btn-primary" onclick="check_apply_status('{{ request.user.username }}')">完成申报</button>
-               {% elif status == 'recall' %}
-                 <button class="btn btn-primary" onclick="recall_apply_result('{{ request.user.username }}')">撤回申报</button>
-               {% elif status == 'wait_approve' %}
-                  <button class="btn btn-primary" disabled >撤回申报完成待审批</button>
-               {% endif %}
-            </div>
-            <table class="table table-striped" id="table_course_personal">
-              <thead>
-                <tr>
-                    {% for col in table_head %}
-                        <th>{{ col }}</th>
-                    {% endfor %}
-                </tr>
-              </thead>
-              <tbody>
-                {% for row in class_table %}
+                {% if status == 'free' %}
+                  <button id="modify_expect" class="btn btn-primary" data-toggle="modal" data-target="#modifyExpectModal">修改</button>
+                {% endif %}
+              </div>
+              <h2 class="sub-header">教师信息</h2>
+              <div class="table-responsive">
+                <table class="table table-striped" id="table_course_personal">
+                  <thead>
                     <tr>
-                        {% for col in row %}
-                        <td>{{ col }}</td>
+                        {% for col in table_head %}
+                            <th>{{ col }}</th>
                         {% endfor %}
                     </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                  </thead>
+                  <tbody>
+                    {% for row in class_table %}
+                        <tr>
+                            {% for col in row %}
+                            <td>{{ col }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+        {% else %}
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+                <h1 class="page-header">排课还未结束，请老师耐心等待结果</h1>
+            </div>
+        {% endif %}
 
       </div>
 

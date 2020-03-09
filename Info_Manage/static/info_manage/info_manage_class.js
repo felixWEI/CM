@@ -325,8 +325,10 @@ function edit_course_info(){
     document.getElementById('e_11').value = t.row('.selected').data()[11];
     document.getElementById('e_12').value = t.row('.selected').data()[12];
     document.getElementById('e_14').value = t.row('.selected').data()[14];
-    document.getElementById('e_15').value = t.row('.selected').data()[15];
-    document.getElementById('e_16').value = t.row('.selected').data()[16];
+    document.getElementById('e_15').innerHTML = '<option>'+t.row('.selected').data()[15]+'</option>'+document.getElementById('e_15').innerHTML;
+    document.getElementById('e_16').innerHTML = '<option>'+t.row('.selected').data()[16]+'</option>'+document.getElementById('e_16').innerHTML;
+//    document.getElementById('e_15').value = t.row('.selected').data()[15];
+//    document.getElementById('e_16').value = t.row('.selected').data()[16];
     document.getElementById('e_17').value = t.row('.selected').data()[17];
     document.getElementById('e_19').value = t.row('.selected').data()[19];
 	$.ajax({

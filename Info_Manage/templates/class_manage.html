@@ -415,13 +415,33 @@
                     <div class="col-sm-10"><input id="a_14" disabled="disabled" class="form-control" type="text" placeholder="打通课程代码"></div>
                   </div>
                   <div class="row form-group">
-                    <label for="a_15" class="col-sm-2 control-label">{{ table_head.15 }}</label>
-                    <div class="col-sm-10"><input id="a_15" disabled="disabled" class="form-control" type="text" placeholder="是否精品课程: 精品课程；非精品课程"></div>
+                      <label for="a_15" class="col-sm-2 control-label">{{ table_head.15 }}</label>
+                      <div class="col-sm-10">
+                        <select id="a_15" class="form-control">
+                          {% for row in table_default.15 %}
+                          <option>{{row}}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
                   </div>
                   <div class="row form-group">
-                    <label for="a_16" class="col-sm-2 control-label">{{ table_head.16 }}</label>
-                    <div class="col-sm-10"><input id="a_16" disabled="disabled" class="form-control" type="text" placeholder="课程是否激活 激活；非激活"></div>
+                      <label for="a_16" class="col-sm-2 control-label">{{ table_head.16 }}</label>
+                      <div class="col-sm-10">
+                        <select id="a_16" class="form-control">
+                          {% for row in table_default.16 %}
+                          <option>{{row}}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
                   </div>
+                  <!--<div class="row form-group">-->
+                    <!--<label for="a_15" class="col-sm-2 control-label">{{ table_head.15 }}</label>-->
+                    <!--<div class="col-sm-10"><input id="a_15" disabled="disabled" class="form-control" type="text" placeholder="是否精品课程: 精品课程；非精品课程"></div>-->
+                  <!--</div>-->
+                  <!--<div class="row form-group">-->
+                    <!--<label for="a_16" class="col-sm-2 control-label">{{ table_head.16 }}</label>-->
+                    <!--<div class="col-sm-10"><input id="a_16" disabled="disabled" class="form-control" type="text" placeholder="课程是否激活 激活；非激活"></div>-->
+                  <!--</div>-->
                   <div class="row form-group">
                     <label for="a_17" class="col-sm-2 control-label">{{ table_head.17 }}</label>
                     <div class="col-sm-10"><input id="a_17" disabled="disabled" class="form-control" type="text" placeholder="平行班级数"></div>
@@ -589,13 +609,33 @@
                     <div class="col-sm-10"><input id="e_14" class="form-control" type="text" placeholder="打通课程代码"></div>
                   </div>
                   <div class="row form-group">
-                    <label for="e_15" class="col-sm-2 control-label">{{ table_head.15 }}</label>
-                    <div class="col-sm-10"><input id="e_15" class="form-control" type="text" placeholder="是否精品课程: 精品课程；非精品课程"></div>
+                      <label for="e_15" class="col-sm-2 control-label">{{ table_head.15 }}</label>
+                      <div class="col-sm-10">
+                        <select id="e_15" class="form-control">
+                          {% for row in table_default.15 %}
+                          <option>{{row}}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
                   </div>
+                  <!--<div class="row form-group">-->
+                    <!--<label for="e_15" class="col-sm-2 control-label">{{ table_head.15 }}</label>-->
+                    <!--<div class="col-sm-10"><input id="e_15" class="form-control" type="text" placeholder="是否精品课程: 精品课程；非精品课程"></div>-->
+                  <!--</div>-->
                   <div class="row form-group">
-                    <label for="e_16" class="col-sm-2 control-label">{{ table_head.16 }}</label>
-                    <div class="col-sm-10"><input id="e_16" class="form-control" type="text" placeholder="课程是否激活 激活; 非激活"></div>
+                      <label for="e_16" class="col-sm-2 control-label">{{ table_head.16 }}</label>
+                      <div class="col-sm-10">
+                        <select id="e_16" class="form-control">
+                          {% for row in table_default.16 %}
+                          <option>{{row}}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
                   </div>
+                  <!--<div class="row form-group">-->
+                    <!--<label for="e_16" class="col-sm-2 control-label">{{ table_head.16 }}</label>-->
+                    <!--<div class="col-sm-10"><input id="e_16" class="form-control" type="text" placeholder="课程是否激活 激活; 非激活"></div>-->
+                  <!--</div>-->
                   <div class="row form-group">
                     <label for="e_17" class="col-sm-2 control-label">{{ table_head.17 }}</label>
                     <div class="col-sm-10"><input id="e_17" class="form-control" type="text" placeholder="平行班级数"></div>
