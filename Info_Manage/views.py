@@ -2547,7 +2547,9 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                     result_all_teachers[current_list[0]]['course_list'].append(eachCourse.course_id)
                     result_all_teachers[current_list[0]]['degree_list'].append(eachCourse.course_degree)
                     # 平行课程和非平行课程的计算方法不同
-                    allow_teachers = float(eachCourse.allow_teachers)/float(eachCourse.course_parallel) if eachCourse.course_parallel else float(eachCourse.allow_teachers)
+                    # allow_teachers = float(eachCourse.allow_teachers)/float(eachCourse.course_parallel) if eachCourse.course_parallel else float(eachCourse.allow_teachers)
+                    # 新代码里eachCourse.allow_teachers就是单课需要的老师数
+                    allow_teachers = float(eachCourse.allow_teachers)
                     result_all_teachers[current_list[0]][tmp_str1] += eachCourse.course_hour / allow_teachers
                     result_all_teachers[current_list[0]][tmp_str3] += eachCourse.course_degree / allow_teachers
                     all_teachers -= 1
@@ -2574,9 +2576,11 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
                             result_all_teachers[current_list[i]]['course_list'].append(eachCourse.course_id)
                             result_all_teachers[current_list[i]]['degree_list'].append(eachCourse.course_degree)
                             # 平行课程和非平行课程的计算方法不同
-                            allow_teachers = float(eachCourse.allow_teachers) / float(
-                                eachCourse.course_parallel) if eachCourse.course_parallel else float(
-                                eachCourse.allow_teachers)
+                            #allow_teachers = float(eachCourse.allow_teachers) / float(
+                            #    eachCourse.course_parallel) if eachCourse.course_parallel else float(
+                            #    eachCourse.allow_teachers)
+                            # 新代码里eachCourse.allow_teachers就是单课需要的老师数
+                            allow_teachers = float(eachCourse.allow_teachers)
                             result_all_teachers[current_list[i]][tmp_str1] += eachCourse.course_hour / allow_teachers
                             result_all_teachers[current_list[i]][tmp_str3] += eachCourse.course_degree / allow_teachers
                             all_teachers -= 1
@@ -2611,8 +2615,12 @@ def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_in
     for eachCourse in result_left_courses:
         print >>file_obj, '>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>'
         print >>file_obj, eachCourse.course_id
+        module_log_update.log_info(module_name, 'course id:{}'.format(eachCourse.course_id))
         logging.info(eachCourse.course_id)
         all_teachers = int(eachCourse.allow_teachers)
+        # 平行课程的教师数要乘以平行班数
+        if eachCourse.course_parallel > 1:
+            all_teachers = int(eachCourse.allow_teachers) * int(eachCourse.course_parallel)
         if eachCourse.semester == '一':
             tmp_str1 = 'total_hours_1'
             tmp_str2 = 'expect_hours_1'
@@ -2665,9 +2673,11 @@ def balance_for_course_hour(result_all_teachers, result_left_courses, teacher_in
 
             result_all_teachers[teacher_list[i]]['course_list'].append(eachCourse.course_id)
             result_all_teachers[teacher_list[i]]['degree_list'].append(eachCourse.course_degree)
-            allow_teachers = float(eachCourse.allow_teachers) / float(
-                eachCourse.course_parallel) if eachCourse.course_parallel else float(
-                eachCourse.allow_teachers)
+            # 新代码里的allow_teachers就是eachCourse.allow_teachers
+            # allow_teachers = float(eachCourse.allow_teachers) / float(
+            #     eachCourse.course_parallel) if eachCourse.course_parallel else float(
+            #     eachCourse.allow_teachers)
+            allow_teachers = eachCourse.allow_teachers
             result_all_teachers[teacher_list[i]][tmp_str1] += eachCourse.course_hour / allow_teachers
             result_all_teachers[teacher_list[i]][tmp_str3] += eachCourse.course_degree / allow_teachers
             all_teachers -= 1
@@ -2685,11 +2695,21 @@ def first_allocation_for_limit_teacher_list(result_all_teachers, result_left_cou
     module_log_update.log_info(module_name, '<STEP 1 Limitation for teacher list>')
     result_2 = []
     for eachCourse in result_left_courses:
+        module_log_update.log_info(module_name, '课程：{} 计算实际需要的老师数'.format(eachCourse.course_id))
         # 本科 - 硕士 打通课程的时候，排课时以本科的课程为主进行排课
         if eachCourse.course_relate and eachCourse.student_type != '本科':
             continue
+        if int(eachCourse.course_parallel) == 1:
+            # 非平行课实际需要的人数
+            teacher_limit_final = int(eachCourse.allow_teachers)
+            module_log_update.log_info(module_name, '非平行课程，实际需要老师数：{}'.format(teacher_limit_final))
+        else:
+            # 平行课实际需要的人数
+            teacher_limit_final = eachCourse.allow_teachers * int(eachCourse.course_parallel)
+            module_log_update.log_info(module_name, '平行课程，实际需要老师数：{}'.format(teacher_limit_final))
         teacher_list = eachCourse.teacher_ordered.split(',')
-        if len(teacher_list) == int(eachCourse.allow_teachers):
+        if len(teacher_list) == teacher_limit_final:
+            module_log_update.log_info(module_name, '申报人数正好和实际需要老师数相等')
             for eachTeacher in teacher_list:
                 print eachTeacher
                 result_all_teachers[teacher_info[eachTeacher]['id']]['course_list'].append(eachCourse.course_id)
@@ -2705,16 +2725,25 @@ def first_allocation_for_limit_teacher_list(result_all_teachers, result_left_cou
                 result_all_teachers[teacher_info[eachTeacher]['id']][tmp_str2] += int(eachCourse.course_degree) / float(
                     eachCourse.allow_teachers)
         else:
+            module_log_update.log_info(module_name, '申报人数和实际需要老师数不相等')
             if int(eachCourse.course_parallel) == 1:
+                module_log_update.log_info(module_name, '非平行课程直接进入下一轮排课循环')
                 result_2.append(eachCourse)
             else:
                 # 平行班级情况下，如果申报认识不满足最高要求，但是大于最低要求，会先行安排
                 module_log_update.log_info(module_name, '课程：{} 平行班级情况下，如果申报认识不满足最高要求，但是大于最低要求，会先行安排'.format(eachCourse))
                 teacher_limit_basic = eachCourse.allow_teachers
-                teacher_limit_final = eachCourse.allow_teachers * int(eachCourse.course_parallel)
-                if len(teacher_list) == teacher_limit_final:
+                if len(teacher_list) > teacher_limit_final:
+                    module_log_update.log_info(module_name, '平行课程申报人数大于实际需要老师数的进入下一轮排课循环')
                     result_2.append(eachCourse)
-                elif teacher_limit_basic < len(teacher_list) < teacher_limit_final:
+                elif teacher_limit_basic <= len(teacher_list) < teacher_limit_final:
+                    # 平行班级情况下，如果申报人数不满足最高要求，但是大于最低要求，会先行安排
+                    #module_log_update.log_info(module_name, '课程：{} 平行班级情况下，如果申报人数不满足最高要求，但是大于最低要求，会先行安排'.format(eachCourse.course_id))
+                #teacher_limit_final = eachCourse.allow_teachers * int(eachCourse.course_parallel)
+                #if len(teacher_list) == teacher_limit_final:
+                #    module_log_update.log_info(module_name, '平行班申报人数正好满足最高要求')
+                #    result_2.append(eachCourse)
+                    module_log_update.log_info(module_name, '平行班申报人数满足最低要求，但是不足最高要求')
                     for eachTeacher in teacher_list:
                         print eachTeacher
                         result_all_teachers[teacher_info[eachTeacher]['id']]['course_list'].append(
