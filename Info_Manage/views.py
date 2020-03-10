@@ -407,7 +407,8 @@ def teacher_personal_lock(request):
                     if CourseInfo.objects.filter(course_id=eachCourseId):
                         class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
             # todo when class name confirm, may change
-            class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
+            # class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
+            class_name_str = get_class_name(class_name_list)
             if request.user.last_name + request.user.first_name in eachItem.teacher_ordered.split(',') \
                     and request.user.last_name + request.user.first_name != '':
                 tmp = '已分配(已申报)'
@@ -435,7 +436,7 @@ def teacher_personal_lock(request):
                                   eachItem.allow_teachers,
                                   eachItem.times_every_week,
                                   eachItem.course_parallel,
-                                  eachItem.excellent_course if eachItem.excellent_course else '',
+                                  get_excellent_course(eachItem.excellent_course),
                                   tmp])
     search_result_teacher = TeacherInfo.objects.filter(teacher_id=request.user.username)
     if search_result_teacher:
@@ -455,6 +456,23 @@ def teacher_personal_lock(request):
                                                      'status': status,
                                                      'major_list':major_list,
                                                      'user_type': user_type})
+
+
+def get_class_name(class_name_list):
+    tmp_class_list = []
+    for eachClass in class_name_list:
+        student_type = eachClass.split('-')[0]
+        class_name = eachClass.split('-')[-1].split('_')[-1]
+        grade = eachClass.split('-')[-1].split('_')[0]
+        tmp_class_list.append('{}{}{}'.format(student_type, grade, class_name))
+    return " / ".join(tmp_class_list)
+
+
+def get_excellent_course(excellent_course):
+    if excellent_course != '精品课程':
+        return ''
+    else:
+        return excellent_course
 
 
 @login_required()
@@ -505,53 +523,10 @@ def teacher_personal(request):
     else:
         year = 'None'
     search_result = []
-    if current_arrange_status != 'lock done':
-        for each_major in current_teacher_major:
-            course_table = CourseInfo.objects.all().filter(major__contains=each_major, lock_state=0)
-            tmp = ''
-            for eachItem in course_table:
-                if eachItem.course_relate and eachItem.student_type != '本科':
-                    continue
-                class_name_list = [eachItem.class_name]
-                if eachItem.course_relate and eachItem.student_type == '本科':
-                    course_relate_list = eachItem.course_relate.split(',')
-                    for eachCourseId in course_relate_list:
-                        if CourseInfo.objects.filter(course_id=eachCourseId):
-                            class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
-                # todo when class name confirm, may change
-                class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
-                if request.user.last_name+request.user.first_name in eachItem.teacher_ordered.split(',') \
-                        and request.user.last_name+request.user.first_name != '':
-                    tmp = '已申报'
-                else:
-                    tmp = ''
-                if eachItem.course_relate:
-                    course_relate = eachItem.course_relate.strip(',')
-                    course_id_str = '{} / {}'.format(eachItem.course_id, course_relate)
-                    student_type_relate = CourseInfo.objects.filter(course_id=course_relate)[0].student_type
-                    student_type_str = '{} / {}'.format(eachItem.student_type, student_type_relate)
-                else:
-                    course_id_str = eachItem.course_id
-                    student_type_str = eachItem.student_type
-
-                search_result.append([course_id_str,
-                                      eachItem.course_name,
-                                      eachItem.major,
-                                      student_type_str,
-                                      class_name_str,
-                                      eachItem.semester,
-                                      eachItem.course_hour,
-                                      eachItem.course_degree,
-                                      eachItem.course_type,
-                                      eachItem.language,
-                                      eachItem.allow_teachers,
-                                      eachItem.times_every_week,
-                                      eachItem.course_parallel,
-                                      eachItem.excellent_course if eachItem.excellent_course else '',
-                                      tmp])
-    else:
-        current_user_selected = CourseInfo.objects.filter(teacher_final_pick__contains=request.user.last_name+request.user.first_name)
-        for eachItem in current_user_selected:
+    for each_major in current_teacher_major:
+        course_table = CourseInfo.objects.all().filter(major__contains=each_major, lock_state=0)
+        tmp = ''
+        for eachItem in course_table:
             if eachItem.course_relate and eachItem.student_type != '本科':
                 continue
             class_name_list = [eachItem.class_name]
@@ -561,12 +536,13 @@ def teacher_personal(request):
                     if CourseInfo.objects.filter(course_id=eachCourseId):
                         class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
             # todo when class name confirm, may change
-            class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
-            if request.user.last_name + request.user.first_name in eachItem.teacher_ordered.split(',') \
-                    and request.user.last_name + request.user.first_name != '':
-                tmp = '已分配(已申报)'
+            class_name_str = get_class_name(class_name_list)
+            # class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
+            if request.user.last_name+request.user.first_name in eachItem.teacher_ordered.split(',') \
+                    and request.user.last_name+request.user.first_name != '':
+                tmp = '已申报'
             else:
-                tmp = '已分配(未申报)'
+                tmp = ''
             if eachItem.course_relate:
                 course_relate = eachItem.course_relate.strip(',')
                 course_id_str = '{} / {}'.format(eachItem.course_id, course_relate)
@@ -589,7 +565,7 @@ def teacher_personal(request):
                                   eachItem.allow_teachers,
                                   eachItem.times_every_week,
                                   eachItem.course_parallel,
-                                  eachItem.excellent_course if eachItem.excellent_course else '',
+                                  get_excellent_course(eachItem.excellent_course),
                                   tmp])
     search_result_teacher = TeacherInfo.objects.filter(teacher_id=request.user.username)
     if search_result_teacher:
@@ -824,7 +800,6 @@ def save_teacher_to_course_info(course_id, user_name, user=''):
     search_result = CourseInfo.objects.all().filter(course_id=course_id)
     if search_result:
 
-
         teacher_list = search_result[0].teacher_ordered.split(',')
         if len(teacher_list) == 1 and teacher_list[0] == '':
             teacher_str = user_name
@@ -951,10 +926,10 @@ def check_teacher_apply_status(request):
         else:
             teacher_limit_final = teacher_limit_basic
         teacher_list = eachCourse.teacher_ordered.split(',')
-        if len(teacher_list) < teacher_limit_final and len(teacher_list) > teacher_limit_basic:
+        if len(teacher_list)-1 < teacher_limit_final and len(teacher_list) > teacher_limit_basic:
             notes = '{} {} 申报教师数满足授课最低要求,但是需要某些教师授课多次{}'.format(eachCourse.course_id,eachCourse.course_name,os.linesep)
             final_result['message'].append(notes)
-        elif len(teacher_list) < teacher_limit_basic:
+        elif len(teacher_list)-1 < teacher_limit_basic:
             notes = '{} {} 申报教师不满足授课最低要求{}'.format(eachCourse.course_id,eachCourse.course_name,os.linesep)
             final_result['message'].append(notes)
         else:
@@ -1020,7 +995,10 @@ def class_manage(request):
     for eachItem in course_table:
         if eachItem.lock_state == 1:
             lock_state = '非激活'
-            lock_class_count += 1
+            if eachItem.course_relate and eachItem.student_type != '本科':
+                lock_class_count += 0
+            else:
+                lock_class_count += 1
         else:
             lock_state = ''
 
@@ -1055,7 +1033,7 @@ def class_manage(request):
                                   eachItem.times_every_week,
                                   eachItem.teacher_ordered,
                                   course_relate,
-                                  eachItem.excellent_course if eachItem.excellent_course else '',
+                                  get_excellent_course(eachItem.excellent_course),
                                   lock_state,
                                   eachItem.course_parallel,
                                   teacher_final_pick_str,
@@ -1177,7 +1155,7 @@ def class_filter_by_submit(request):
                                               eachItem.times_every_week,
                                               eachItem.teacher_ordered,
                                               eachItem.course_relate,
-                                              eachItem.excellent_course if eachItem.excellent_course else '',
+                                              get_excellent_course(eachItem.excellent_course),
                                               lock_state,
                                               eachItem.course_parallel,
                                               teacher_final_pick_str,
@@ -1200,7 +1178,8 @@ def class_filter_by_submit(request):
                             if CourseInfo.objects.filter(course_id=eachCourseId):
                                 class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
                     # class_name_str = ' '.join(class_name_list)
-                    class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
+                    # class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
+                    class_name_str = get_class_name(class_name_list)
                     if eachItem.course_relate:
                         course_relate = eachItem.course_relate.strip(',')
                         course_id_str = '{} / {}'.format(eachItem.course_id, course_relate)
@@ -1238,7 +1217,7 @@ def class_filter_by_submit(request):
                                           eachItem.allow_teachers,
                                           eachItem.times_every_week,
                                           eachItem.course_parallel,
-                                          eachItem.excellent_course if eachItem.excellent_course else '',
+                                          get_excellent_course(eachItem.excellent_course),
                                           tmp])
     result = json.dumps({'result': search_result})
     return HttpResponse(result)
@@ -1276,8 +1255,9 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
         lock_state = 1
     else:
         lock_state = 0
-    if course_parallel:
-        allow_teachers = int(course_parallel) * int(allow_teachers)
+    excellent_course = course_info[15]
+    if excellent_course != '精品课程':
+        excellent_course = '非精品课程'
     if search_result:
         combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
         if combine_class_name in search_result[0].class_name:
@@ -1293,7 +1273,7 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                                                      times_every_week=course_info[12],
                                                                      suit_teacher=course_info[13],
                                                                      course_relate=course_info[14],
-                                                                     excellent_course=course_info[15],
+                                                                     excellent_course=excellent_course,
                                                                      lock_state=lock_state,
                                                                      course_parallel=course_parallel,
                                                                      notes=course_info[19],
@@ -1311,7 +1291,7 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                 course_info[12],
                 course_info[13],
                 course_info[14],
-                course_info[15],
+                excellent_course,
                 lock_state,
                 course_parallel,
                 course_info[19],
@@ -1340,7 +1320,7 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                                                      times_every_week=course_info[12],
                                                                      suit_teacher=suit_teacher,
                                                                      course_relate=course_info[14],
-                                                                     excellent_course=course_info[15],
+                                                                     excellent_course=excellent_course,
                                                                      lock_state=lock_state,
                                                                      course_parallel=course_parallel,
                                                                      notes=course_info[19],
@@ -1359,7 +1339,7 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                 course_info[12],
                 suit_teacher,
                 course_info[14],
-                course_info[15],
+                excellent_course,
                 lock_state,
                 course_parallel,
                 course_info[19],
@@ -1397,7 +1377,7 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                   suit_teacher='',
                                   teacher_ordered='',
                                   course_relate=course_info[14],
-                                  excellent_course=course_info[15],
+                                  excellent_course=excellent_course,
                                   lock_state=lock_state,
                                   course_parallel=course_parallel,
                                   notes=course_info[19],
@@ -1420,7 +1400,7 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
                                                '',
                                                '',
                                                course_info[14],
-                                               course_info[15],
+                                               excellent_course,
                                                lock_state,
                                                course_parallel,
                                                course_info[19],
@@ -1437,8 +1417,9 @@ def save_course_into_database_by_add(course_info, old_class_info, user=''):
         lock_state = 1
     else:
         lock_state = 0
-    if course_parallel:
-        allow_teachers = int(course_parallel) * int(allow_teachers)
+    excellent_course = course_info[15]
+    if excellent_course != '精品课程':
+        excellent_course = '非精品课程'
     if search_result:
         combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
         if combine_class_name in search_result[0].class_name:
@@ -1454,7 +1435,7 @@ def save_course_into_database_by_add(course_info, old_class_info, user=''):
                                                                      times_every_week=course_info[12],
                                                                      # suit_teacher=course_info[11],
                                                                      course_relate=course_info[14],
-                                                                     excellent_course=course_info[15],
+                                                                     excellent_course=excellent_course,
                                                                      lock_state=lock_state,
                                                                      course_parallel=course_parallel,
                                                                      notes=course_info[19],
@@ -1472,7 +1453,7 @@ def save_course_into_database_by_add(course_info, old_class_info, user=''):
                                                    allow_teachers,
                                                    course_info[12],
                                                    course_info[14],
-                                                   course_info[15],
+                                                   excellent_course,
                                                    lock_state,
                                                    course_parallel,
                                                    course_info[19],
@@ -1499,7 +1480,7 @@ def save_course_into_database_by_add(course_info, old_class_info, user=''):
                                                                      times_every_week=course_info[12],
                                                                      # suit_teacher=suit_teacher,
                                                                      course_relate=course_info[14],
-                                                                     excellent_course=course_info[15],
+                                                                     excellent_course=excellent_course,
                                                                      lock_state=lock_state,
                                                                      course_parallel=course_parallel,
                                                                      notes=course_info[19],
@@ -1518,7 +1499,7 @@ def save_course_into_database_by_add(course_info, old_class_info, user=''):
                                                    allow_teachers,
                                                    course_info[12],
                                                    course_info[14],
-                                                   course_info[15],
+                                                   excellent_course,
                                                    lock_state,
                                                    course_parallel,
                                                    course_info[19],
@@ -1541,7 +1522,7 @@ def save_course_into_database_by_add(course_info, old_class_info, user=''):
                                   suit_teacher='',
                                   teacher_ordered='',
                                   course_relate=course_info[14],
-                                  excellent_course=course_info[15],
+                                  excellent_course=excellent_course,
                                   lock_state=lock_state,
                                   course_parallel=course_parallel,
                                   notes=course_info[19],
@@ -1564,7 +1545,7 @@ def save_course_into_database_by_add(course_info, old_class_info, user=''):
                                                '',
                                                '',
                                                course_info[14],
-                                               course_info[15],
+                                               excellent_course,
                                                lock_state,
                                                course_parallel,
                                                course_info[19],
@@ -1760,13 +1741,11 @@ def class_table_upload(request):
             lock_state = 1
         else:
             lock_state = 0
-        course_parallel = int(eachLine[18].value)
-        if eachLine[17].value and eachLine[17].value == '是':
+        course_parallel = int(eachLine[18].value) if eachLine[18].value else 1
+        if eachLine[17].value and eachLine[17].value == '精品课程':
             excellent_course = '精品课程'
         else:
             excellent_course = ''
-
-        allow_teachers = allow_teachers*course_parallel
 
         class_info_to_save.append([course_id, course_name, student_type, year, class_name, semester, course_hour,
                                    course_degree, course_type, allow_teachers, times_every_week, suit_teacher,
@@ -3192,7 +3171,8 @@ def history_search_by_year(request):
                 if CourseInfo.objects.filter(course_id=eachCourseId):
                     class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
         # todo when class name confirm, may change
-        class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
+        # class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
+        class_name_str = get_class_name(class_name_list)
         if eachItem.course_relate:
             course_relate = eachItem.course_relate.strip(',')
             course_id_str = '{} / {}'.format(eachItem.course_id, course_relate)
@@ -3215,7 +3195,7 @@ def history_search_by_year(request):
                             eachItem.allow_teachers,
                             eachItem.times_every_week,
                             eachItem.course_parallel,
-                            eachItem.excellent_course,
+                            get_excellent_course(eachItem.excellent_course),
                             get_teacher_final_pick(eachItem.teacher_final_pick, eachItem.teacher_ordered),
                             eachItem.teacher_ordered,
                             '非激活' if eachItem.lock_state else '',
@@ -3273,18 +3253,18 @@ def history_export_report(request):
                                   eachItem.language,
                                   eachItem.allow_teachers,
                                   eachItem.times_every_week,
-                                  '',
+                                  eachItem.teacher_ordered,
                                   course_relate,
-                                  eachItem.excellent_course,
+                                  get_excellent_course(eachItem.excellent_course),
                                   eachItem.course_parallel,
+                                  '非激活' if eachItem.lock_state else '',
                                   get_teacher_final_pick(eachItem.teacher_final_pick, eachItem.teacher_ordered),
                                   eachItem.teacher_ordered,
-                                  '非激活' if eachItem.lock_state else '',
                                   eachItem.notes if eachItem.notes else ''
                                   ])
 
     table_head = ['学年','学期','学位','年级','班级','专业','课程代码','课程名称','学分','学时','难度','必修/选修','授课语言','教师数','每周上课次数',
-                              '可选教师','打通课程代码','是否精品课程','平行班级','授课教师','申报教师','状态','备注']
+                              '可选教师','打通课程代码','是否精品课程','平行班级','状态','授课教师','申报教师','备注']
     for col, eachTitle in enumerate(table_head):
         w.write(0, col, eachTitle)
     for row, eachRow in enumerate(search_result):
@@ -3422,7 +3402,7 @@ def class_history_history_main(request):
                               eachItem.allow_teachers,
                               eachItem.times_every_week,
                               eachItem.course_parallel,
-                              eachItem.excellent_course,
+                              get_excellent_course(eachItem.excellent_course),
                               get_teacher_final_pick(eachItem.teacher_final_pick, eachItem.teacher_ordered),
                               eachItem.teacher_ordered,
                               '非激活' if eachItem.lock_state else '',

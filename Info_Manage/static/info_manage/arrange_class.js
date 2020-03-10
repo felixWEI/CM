@@ -76,8 +76,9 @@ $(document).ready(function () {
         minute = time_split[4];
         second = 0;
         var leftTime = (new Date(year,month-1,day,hour,minute,second)) - (new Date()); //计算剩余的毫秒数
+
         if (leftTime == 0){
-            location.reload();
+            window.location.reload();
         }
         if (isNaN(leftTime) || leftTime < 0){
             return;

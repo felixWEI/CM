@@ -35,9 +35,9 @@ $(document).ready(function () {
     $('#delete').click( function () {
         course_id = t.row('.selected').data()[0];
         console.log(course_id)
-        student_type = t.row('.selected').data()[2]
-        class_grade = t.row('.selected').data()[3]
-        class_name = t.row('.selected').data()[4]
+        student_type = t.row('.selected').data()[3]
+        class_grade = t.row('.selected').data()[4]
+        class_name = t.row('.selected').data()[5]
         combine_data = student_type+'-'+class_grade+'_'+class_name
         t.row('.selected').remove().draw( false );
         $.ajax({
