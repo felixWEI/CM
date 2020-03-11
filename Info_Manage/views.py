@@ -3205,7 +3205,7 @@ def history_search_by_year(request):
         if eachItem.course_relate:
             course_relate = eachItem.course_relate.strip(',')
             course_id_str = '{} / {}'.format(eachItem.course_id, course_relate)
-            student_type_relate = CourseInfo.objects.filter(course_id=course_relate)[0].student_type
+            student_type_relate = CourseHistoryInfo.objects.filter(course_id=course_relate)[0].student_type
             student_type_str = '{} / {}'.format(eachItem.student_type, student_type_relate)
         else:
             course_id_str = eachItem.course_id
