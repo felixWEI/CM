@@ -3197,8 +3197,8 @@ def history_search_by_year(request):
         if eachItem.course_relate and eachItem.student_type == '本科':
             course_relate_list = eachItem.course_relate.split(',')
             for eachCourseId in course_relate_list:
-                if CourseInfo.objects.filter(course_id=eachCourseId):
-                    class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
+                if CourseHistoryInfo.objects.filter(year=year,course_id=eachCourseId):
+                    class_name_list.append(CourseHistoryInfo.objects.filter(year=year,course_id=eachCourseId)[0].class_name)
         # todo when class name confirm, may change
         # class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
         class_name_str = get_class_name(class_name_list)
@@ -3405,14 +3405,14 @@ def class_history_history_main(request):
         if eachItem.course_relate and eachItem.student_type == '本科':
             course_relate_list = eachItem.course_relate.split(',')
             for eachCourseId in course_relate_list:
-                if CourseInfo.objects.filter(course_id=eachCourseId):
-                    class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
+                if CourseHistoryInfo.objects.filter(year=year,course_id=eachCourseId):
+                    class_name_list.append(CourseHistoryInfo.objects.filter(year=year,course_id=eachCourseId)[0].class_name)
         # todo when class name confirm, may change
         class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
         if eachItem.course_relate:
             course_relate = eachItem.course_relate.strip(',')
             course_id_str = '{} / {}'.format(eachItem.course_id, course_relate)
-            student_type_relate = CourseInfo.objects.filter(course_id=course_relate)[0].student_type
+            student_type_relate = CourseHistoryInfo.objects.filter(year=year,course_id=course_relate)[0].student_type
             student_type_str = '{} / {}'.format(eachItem.student_type, student_type_relate)
         else:
             course_id_str = eachItem.course_id
