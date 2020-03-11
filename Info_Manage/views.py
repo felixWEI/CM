@@ -3239,7 +3239,7 @@ def history_search_by_year(request):
 def history_export_report(request):
     now = datetime.now().strftime("%Y-%m-%d %H-%M")
     ws = xlwt.Workbook(encoding='utf-8')
-    w = ws.add_sheet(u"历史结果")
+    w = ws.add_sheet(u"课程信息")
     year = request.GET.get('current_year')
     course_table = CourseHistoryInfo.objects.filter(year=year)
     search_result = []
