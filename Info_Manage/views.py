@@ -405,7 +405,7 @@ def teacher_personal_lock(request):
                 course_relate_list = eachItem.course_relate.split(',')
                 for eachCourseId in course_relate_list:
                     if CourseInfo.objects.filter(course_id=eachCourseId):
-                        class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
+                        class_name_list.extend(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name.split(' '))
             # todo when class name confirm, may change
             # class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
             class_name_str = get_class_name(class_name_list)
@@ -534,7 +534,7 @@ def teacher_personal(request):
                 course_relate_list = eachItem.course_relate.split(',')
                 for eachCourseId in course_relate_list:
                     if CourseInfo.objects.filter(course_id=eachCourseId):
-                        class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
+                        class_name_list.extend(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name.split(' '))
             # todo when class name confirm, may change
             class_name_str = get_class_name(class_name_list)
             # class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
@@ -1178,7 +1178,7 @@ def class_filter_by_submit(request):
                         course_relate_list = eachItem.course_relate.split(',')
                         for eachCourseId in course_relate_list:
                             if CourseInfo.objects.filter(course_id=eachCourseId):
-                                class_name_list.append(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name)
+                                class_name_list.extend(CourseInfo.objects.filter(course_id=eachCourseId)[0].class_name.split(' '))
                     # class_name_str = ' '.join(class_name_list)
                     # class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
                     class_name_str = get_class_name(class_name_list)
@@ -3200,7 +3200,7 @@ def history_search_by_year(request):
             course_relate_list = eachItem.course_relate.split(',')
             for eachCourseId in course_relate_list:
                 if CourseHistoryInfo.objects.filter(year=year,course_id=eachCourseId):
-                    class_name_list.append(CourseHistoryInfo.objects.filter(year=year,course_id=eachCourseId)[0].class_name)
+                    class_name_list.extend(CourseHistoryInfo.objects.filter(year=year,course_id=eachCourseId)[0].class_name.split(' '))
         # todo when class name confirm, may change
         # class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
         class_name_str = get_class_name(class_name_list)
@@ -3408,7 +3408,7 @@ def class_history_history_main(request):
             course_relate_list = eachItem.course_relate.split(',')
             for eachCourseId in course_relate_list:
                 if CourseHistoryInfo.objects.filter(year=year,course_id=eachCourseId):
-                    class_name_list.append(CourseHistoryInfo.objects.filter(year=year,course_id=eachCourseId)[0].class_name)
+                    class_name_list.extend(CourseHistoryInfo.objects.filter(year=year,course_id=eachCourseId)[0].class_name.split(' '))
         # todo when class name confirm, may change
         # class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
         class_name_str = get_class_name(class_name_list)
