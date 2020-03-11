@@ -797,7 +797,8 @@ def insert_teacher_extend_info_into_db(teacher_list, user=''):
     return retCode
 
 def save_teacher_to_course_info(course_id, user_name, user=''):
-    search_result = CourseInfo.objects.all().filter(course_id=course_id)
+    course_id_current = course_id.split('/')[0]
+    search_result = CourseInfo.objects.all().filter(course_id=course_id_current)
     if search_result:
 
         teacher_list = search_result[0].teacher_ordered.split(',')
@@ -807,7 +808,7 @@ def save_teacher_to_course_info(course_id, user_name, user=''):
             if user_name not in teacher_list:
                 teacher_list.append(user_name)
             teacher_str = ','.join(teacher_list)
-        CourseInfo.objects.filter(course_id=course_id).update(teacher_ordered=teacher_str, suit_teacher=teacher_str)
+        CourseInfo.objects.filter(course_id=course_id_current).update(teacher_ordered=teacher_str, suit_teacher=teacher_str)
         module_log_update.data_operate_log(user, '[CourseInfo]update: course_id {} teacher_ordered {} suit_teacher {}'.format(course_id, teacher_str, teacher_str))
         if search_result[0].course_relate:
             course_relate_list = search_result[0].course_relate.split(',')
