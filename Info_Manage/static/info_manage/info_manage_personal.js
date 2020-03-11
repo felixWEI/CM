@@ -199,7 +199,7 @@ function submit_checkbox_info(){
         str1 += "法学硕士 ";
     }
     if (document.getElementById('c_student_type_3').checked == true){
-        str1 += "法律硕士 ";
+        str1 += "JM ";
     }
     if (document.getElementById('c_student_type_4').checked == true){
         str1 += "法学博士 ";

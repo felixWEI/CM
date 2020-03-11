@@ -29,7 +29,7 @@ from myLogger import MyLogger
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-STUDENT_TYPE = ['本科', '法学硕士', '法律硕士', '法学博士']
+STUDENT_TYPE = ['本科', '法学硕士', 'JM', '法学博士']
 CLASS_NAME_LIST = ["第二专业教学", "通识教育","法学专业教育", "跨校辅修教学", "基础教育", "法律硕士(法学)", "法律硕士(非法学)1班",
                    "法律硕士(非法学)2班", "法律硕士在职生", "法律史", "法学理论", "国际法学", "环境与资源保护法学", "经济法学",
                    "民商法学", "诉讼法学", "刑法学", "宪法学与行政法学", "法律硕士（法学）国际班", "法律硕士（非法学）国际班"]
@@ -3409,6 +3409,7 @@ def class_history_history_main(request):
                     class_name_list.append(CourseHistoryInfo.objects.filter(year=year,course_id=eachCourseId)[0].class_name)
         # todo when class name confirm, may change
         class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
+        class_name_str = get_class_name(class_name_list)
         if eachItem.course_relate:
             course_relate = eachItem.course_relate.strip(',')
             course_id_str = '{} / {}'.format(eachItem.course_id, course_relate)
