@@ -237,7 +237,7 @@
                  <button class="btn btn-primary" onclick="cancel_request()">取消申报</button>
                  <button class="btn btn-primary" onclick="check_apply_status('{{ request.user.username }}')">完成申报</button>
                {% elif status == 'recall' %}
-                 <button class="btn btn-primary" onclick="recall_apply_result('{{ request.user.username }}')">撤回申报</button>
+                 <button class="btn btn-primary" onclick="recall_apply_result('{{ request.user.username }}')">撤回申报完成</button>
                {% elif status == 'wait_approve' %}
                   <button class="btn btn-primary" disabled >撤回申报完成待审批</button>
                {% endif %}
@@ -289,7 +289,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="button" id="submit_semester_expect">提交</button>
-                <button type="button" class="button" data-dismiss="modal">Close</button>
+                <button type="button" class="button" data-dismiss="modal">关闭</button>
             </div>
           </div>
         </div>

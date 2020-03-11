@@ -346,7 +346,7 @@ def teacher_personal_lock(request):
     if search_result:
         if search_result[0].teacher_apply_done:
             status = 'recall'
-            if search_result[0].teacher_apply_done == '申报结束/申请取消申报':
+            if search_result[0].teacher_apply_done == '申报结束/申请撤回申报完成':
                 status = 'wait_approve'
     if request.user.nickname == 'leader':
         user_type = 'leader'
@@ -400,7 +400,7 @@ def teacher_personal_lock(request):
         for eachItem in current_user_selected:
             if eachItem.course_relate and eachItem.student_type != '本科':
                 continue
-            class_name_list = [eachItem.class_name]
+            class_name_list = eachItem.class_name.split(' ')
             if eachItem.course_relate and eachItem.student_type == '本科':
                 course_relate_list = eachItem.course_relate.split(',')
                 for eachCourseId in course_relate_list:
@@ -484,7 +484,7 @@ def teacher_personal(request):
     if search_result:
         if search_result[0].teacher_apply_done:
             status = 'recall'
-            if search_result[0].teacher_apply_done == '申报结束/申请取消申报':
+            if search_result[0].teacher_apply_done == '申报结束/申请撤回申报完成':
                 status = 'wait_approve'
     if request.user.nickname == 'leader':
         user_type = 'leader'
@@ -529,7 +529,7 @@ def teacher_personal(request):
         for eachItem in course_table:
             if eachItem.course_relate and eachItem.student_type != '本科':
                 continue
-            class_name_list = [eachItem.class_name]
+            class_name_list = eachItem.class_name.split(' ')
             if eachItem.course_relate and eachItem.student_type == '本科':
                 course_relate_list = eachItem.course_relate.split(',')
                 for eachCourseId in course_relate_list:
@@ -857,6 +857,7 @@ def teacher_submit_apply_status(request):
         result = json.dumps({'status': '该老师没有在系统中注册'})
         return HttpResponse(result)
     if status_code == 'check':
+        notes = TeacherInfo.objects.filter(teacher_id=teacher_id).values('notes')[0]['notes']
         search_result = CourseInfo.objects.filter(lock_state=0)
         result_teacher = {STUDENT_TYPE[0]: [], STUDENT_TYPE[1]: [], STUDENT_TYPE[2]: [], STUDENT_TYPE[3]: []}
         for eachCourse in search_result:
@@ -869,7 +870,7 @@ def teacher_submit_apply_status(request):
         # print result_teacher
         status = 'Success'
         result = json.dumps({'status': status, 'list_1': result_teacher[STUDENT_TYPE[0]], 'list_2': result_teacher[STUDENT_TYPE[1]],
-                             'list_3': result_teacher[STUDENT_TYPE[2]], 'list_4': result_teacher[STUDENT_TYPE[3]]})
+                             'list_3': result_teacher[STUDENT_TYPE[2]], 'list_4': result_teacher[STUDENT_TYPE[3]],'notes':notes})
     elif status_code == 'save':
         status = 'Success'
         notes = request.POST['notes']
@@ -892,14 +893,14 @@ def teacher_submit_apply_status(request):
         result = json.dumps({'status': status})
     elif status_code == 'recall':
         status = 'Success'
-        TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='申报结束/申请取消申报')
+        TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='申报结束/申请撤回申报完成')
         module_log_update.data_operate_log(user, '[TeacherInfo] teacher_id: {} teacher_apply_done: {}'.format(
             teacher_id,
             '申报结束/不满足申报要求',
         ))
         result = json.dumps({'status': status})
     elif status_code == 'approve':
-        if search_result[0].teacher_apply_done == '申报结束/申请取消申报':
+        if search_result[0].teacher_apply_done == '申报结束/申请撤回申报完成':
             status = 'Success'
             TeacherInfo.objects.filter(teacher_id=teacher_id).update(teacher_apply_done='')
             module_log_update.data_operate_log(user, '[TeacherInfo] teacher_id: {} teacher_apply_done: {}'.format(
@@ -926,10 +927,11 @@ def check_teacher_apply_status(request):
         else:
             teacher_limit_final = teacher_limit_basic
         teacher_list = eachCourse.teacher_ordered.split(',')
-        if len(teacher_list)-1 < teacher_limit_final and len(teacher_list) > teacher_limit_basic:
+        teacher_count = len(teacher_list) if teacher_list else 0
+        if teacher_count < teacher_limit_final and teacher_count > teacher_limit_basic:
             notes = '{} {} 申报教师数满足授课最低要求,但是需要某些教师授课多次{}'.format(eachCourse.course_id,eachCourse.course_name,os.linesep)
             final_result['message'].append(notes)
-        elif len(teacher_list)-1 < teacher_limit_basic:
+        elif teacher_count < teacher_limit_basic:
             notes = '{} {} 申报教师不满足授课最低要求{}'.format(eachCourse.course_id,eachCourse.course_name,os.linesep)
             final_result['message'].append(notes)
         else:
@@ -1143,7 +1145,7 @@ def class_filter_by_submit(request):
                         search_result.append([eachItem.course_id,
                                               eachItem.course_name,
                                               eachItem.major,
-                                              eachClass.split('-')[0],
+                                              eachItem.student_type,
                                               eachClass.split('-')[-1].split('_')[0],
                                               eachClass.split('-')[-1].split('_')[-1],
                                               eachItem.semester,
@@ -1171,7 +1173,7 @@ def class_filter_by_submit(request):
                         tmp = ''
                     if eachItem.course_relate and eachItem.student_type != '本科':
                         continue
-                    class_name_list = [eachItem.class_name]
+                    class_name_list = eachItem.class_name.split(' ')
                     if eachItem.course_relate and eachItem.student_type == '本科':
                         course_relate_list = eachItem.course_relate.split(',')
                         for eachCourseId in course_relate_list:
@@ -3193,7 +3195,7 @@ def history_search_by_year(request):
     for eachItem in search_result:
         if eachItem.course_relate and eachItem.student_type != '本科':
             continue
-        class_name_list = [eachItem.class_name]
+        class_name_list = eachItem.class_name.split(' ')
         if eachItem.course_relate and eachItem.student_type == '本科':
             course_relate_list = eachItem.course_relate.split(',')
             for eachCourseId in course_relate_list:
@@ -3401,14 +3403,14 @@ def class_history_history_main(request):
     for eachItem in search_result:
         if eachItem.course_relate and eachItem.student_type != '本科':
             continue
-        class_name_list = [eachItem.class_name]
+        class_name_list = eachItem.class_name.split(' ')
         if eachItem.course_relate and eachItem.student_type == '本科':
             course_relate_list = eachItem.course_relate.split(',')
             for eachCourseId in course_relate_list:
                 if CourseHistoryInfo.objects.filter(year=year,course_id=eachCourseId):
                     class_name_list.append(CourseHistoryInfo.objects.filter(year=year,course_id=eachCourseId)[0].class_name)
         # todo when class name confirm, may change
-        class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
+        # class_name_str = ' / '.join((' '.join(class_name_list)).split(' '))
         class_name_str = get_class_name(class_name_list)
         if eachItem.course_relate:
             course_relate = eachItem.course_relate.strip(',')

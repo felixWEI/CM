@@ -594,6 +594,7 @@ function init_modal_content(result){
         document.getElementById('p_pass').style.display = "none"
         document.getElementById('p_fail').style.display = "block"
         document.getElementById('t_fail').style.display = "block"
+        document.getElementById('t_fail').innerText = result['notes']
     }
 }
 function apply_complete_1(){
