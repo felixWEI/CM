@@ -443,7 +443,8 @@ function get_analysis_report_3(){
 }
 function change_assign_teacher(){
     allow_teacher = document.getElementById('e_8').value;
-    if ( $('#e_10').DataTable().rows().data().length < Number(allow_teacher) ){
+    course_parallel = document.getElementById('e_12').value;
+    if ( $('#e_10').DataTable().rows().data().length != Number(allow_teacher)*Number(course_parallel) ){
         alert('少于最低上课教师数!')
         return
     }

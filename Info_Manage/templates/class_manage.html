@@ -175,7 +175,7 @@
         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
           <h1 class="page-header">统计信息</h1>
           {% if year == 'None' %}
-            <div><p class="bg-info">当前不再排课当中</p></div>
+            <div><p class="bg-info">当前不在排课当中</p></div>
           {% else %}
             <div><p class="bg-info">当前在排课中：目标学期为{{ year }}学年</p></div>
           {% endif %}
@@ -218,7 +218,7 @@
                   <button id="import" class="btn btn-primary" data-toggle="modal" data-target="#importModal">导入</button>
                   <button class="btn btn-danger" onclick="confirm_delete_class()">删除该行</button>
                   <button class="btn btn-primary" onclick="edit_course_info()">编辑课程信息</button>
-                  <button class="btn btn-primary" data-toggle="modal" data-target="#configModal">添加课程信息</button>
+                  <!--<button class="btn btn-primary" data-toggle="modal" data-target="#configModal">添加课程信息</button>-->
             </div>
             <table class="table table-striped" id="table_course_manage">
               <thead>

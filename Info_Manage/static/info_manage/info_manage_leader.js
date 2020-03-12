@@ -245,7 +245,7 @@ function approve_request_submit(){
             location.reload();
         },
         error: function () {
-            alert('驳回异常');
+            alert('批准微调异常');
         }
 
 	})

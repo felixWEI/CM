@@ -212,16 +212,20 @@ def teacher_approve_teacher_adjust(request):
 
     search_result = CourseAdjustInfo.objects.filter(course_id=course_id)
     if search_result:
-        CourseAdjustInfo.objects.filter(course_id=course_id).update(status='已批准')
-        module_log_update.data_operate_log(user, '[CourseAdjustInfo] course_id {} status: 已批准'.format(course_id))
         to_change_teacher = search_result[0].teacher_after
 
         notes = search_result[0].notes
         try:
             search_result = CourseInfo.objects.filter(course_id=course_id)
             final_teacher_list = search_result[0].teacher_final_pick.split(',') if search_result[0].teacher_final_pick else []
-            course_hour = search_result[0].course_hour / (len(final_teacher_list) if final_teacher_list else 1)
-            course_degree = search_result[0].course_degree / (len(final_teacher_list if final_teacher_list else 1))
+            # course_hour = search_result[0].course_hour / (len(final_teacher_list) if final_teacher_list else 1)
+            # course_degree = search_result[0].course_degree / (len(final_teacher_list if final_teacher_list else 1))
+
+            course_hour = (search_result[0].course_hour * int(search_result[0].course_parallel)) / (
+                len(final_teacher_list) if final_teacher_list else 1)
+            course_degree = (search_result[0].course_degree * int(search_result[0].course_parallel)) / (
+                len(final_teacher_list if final_teacher_list else 1))
+
             semester = search_result[0].semester
             for eachTeacher in final_teacher_list:
                 teacher_result = TeacherInfo.objects.filter(teacher_name=eachTeacher)
@@ -287,6 +291,8 @@ def teacher_approve_teacher_adjust(request):
                                                                                                                         eachCourse,
                                                                                                                         tmp_change_teacher))
             status = '已批准'
+            CourseAdjustInfo.objects.filter(course_id=course_id).update(status='已批准')
+            module_log_update.data_operate_log(user, '[CourseAdjustInfo] course_id {} status: 已批准'.format(course_id))
         except Exception, e:
             print e
             status = '修改失败 错误信息{}'.format(e)
@@ -1818,13 +1824,13 @@ def save_course_table_extend_info_into_database(class_info_to_save, user=''):
 @csrf_exempt
 def class_get_teacher_name(request):
     teacher_str = request.POST['teacher_str']
-    search_result = TeacherInfo.objects.all().filter(teacher_name=teacher_str)
+    search_result = TeacherInfo.objects.all().filter(teacher_name=teacher_str, lock_state=0)
     status = 'Success'
     if search_result:
         teacher_name = teacher_str
         teacher_id = search_result[0].teacher_id
     else:
-        search_result = TeacherInfo.objects.filter(teacher_id=teacher_str)
+        search_result = TeacherInfo.objects.filter(teacher_id=teacher_str,lock_state=0)
         if search_result:
             teacher_id = teacher_str
             teacher_name = search_result[0].teacher_name
@@ -3336,6 +3342,8 @@ def history_export_teacher(request):
         if eachItem.teacher_final_pick:
             teacher_list = eachItem.teacher_final_pick.split(',')
         else:
+            continue
+        if eachItem.course_relate and eachItem.student_type != '本科':
             continue
         for eachTeacher in teacher_list:
             if eachTeacher not in teacher_info.keys():
