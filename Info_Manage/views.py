@@ -469,7 +469,7 @@ def get_class_name(class_name_list):
 
 
 def get_excellent_course(excellent_course):
-    if excellent_course != '精品课程':
+    if excellent_course not in ['精品课程','校级精品课程','市级精品课程']:
         return ''
     else:
         return excellent_course
@@ -929,7 +929,7 @@ def check_teacher_apply_status(request):
             teacher_limit_final = teacher_limit_basic
         teacher_list = eachCourse.teacher_ordered.split(',')
         teacher_count = len(teacher_list) if teacher_list else 0
-        if teacher_count < teacher_limit_final and teacher_count > teacher_limit_basic:
+        if teacher_count < teacher_limit_final and teacher_count >= teacher_limit_basic:
             notes = '{} {} 申报教师数满足授课最低要求,但是需要某些教师授课多次{}'.format(eachCourse.course_id,eachCourse.course_name,os.linesep)
             final_result['message'].append(notes)
         elif teacher_count < teacher_limit_basic:
@@ -1065,7 +1065,7 @@ def class_manage(request):
                      '',
                      '',
                      '',
-                     ['精品课程','非精品课程'],
+                     ['精品课程','非精品课程','校级精品课程','市级精品课程'],
                      ['激活','非激活']]
     return render(request, 'class_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
@@ -1259,8 +1259,9 @@ def save_course_into_database_by_edit(course_info, old_class_info, old_course_id
     else:
         lock_state = 0
     excellent_course = course_info[15]
-    if excellent_course != '精品课程':
-        excellent_course = '非精品课程'
+    # if excellent_course != '精品课程':
+    #     excellent_course = '非精品课程'
+    excellent_course = get_excellent_course(excellent_course)
     if search_result:
         combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
         if combine_class_name in search_result[0].class_name:
@@ -1421,8 +1422,9 @@ def save_course_into_database_by_add(course_info, old_class_info, user=''):
     else:
         lock_state = 0
     excellent_course = course_info[15]
-    if excellent_course != '精品课程':
-        excellent_course = '非精品课程'
+    # if excellent_course != '精品课程':
+    #     excellent_course = '非精品课程'
+    excellent_course = get_excellent_course(excellent_course)
     if search_result:
         combine_class_name = '{}-{}_{}'.format(course_info[3], course_info[4], course_info[5])
         if combine_class_name in search_result[0].class_name:
@@ -1745,8 +1747,8 @@ def class_table_upload(request):
         else:
             lock_state = 0
         course_parallel = int(eachLine[18].value) if eachLine[18].value else 1
-        if eachLine[17].value and eachLine[17].value == '精品课程':
-            excellent_course = '精品课程'
+        if eachLine[17].value:
+            excellent_course = get_excellent_course(excellent_course)
         else:
             excellent_course = ''
 
@@ -2896,6 +2898,7 @@ def arrange_search_by_course_id(request):
         course_hour = search_result[0].course_hour
         times_every_week = search_result[0].times_every_week
         allow_teachers = search_result[0].allow_teachers
+        course_parallel = int(search_result[0].course_parallel)
         teacher_pick = search_result[0].teacher_final_pick
         teacher_ordered = search_result[0].teacher_ordered
         teacher_list = teacher_pick.split(',') if teacher_pick else []
@@ -2920,7 +2923,7 @@ def arrange_search_by_course_id(request):
         else:
             notes = ''
         result = [course_name, student_type, semester, class_name, course_degree, course_hour, times_every_week,
-                  allow_teachers, tmp2, tmp1,notes]
+                  allow_teachers, tmp2, tmp1,notes, course_parallel]
     else:
         status = '找不到该课程号码对应的课程'
         result = []

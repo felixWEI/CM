@@ -422,8 +422,9 @@ function initialize_arrange_class(page_info) {
     document.getElementById('whole_info_present').innerHTML = str2;
 }
 function get_course_report(){
-    var current_year = ''
-    var post_url = '/history_export_teacher/?current_year='+current_year;
+    var post_url = '/arrange_export_report/';
+//    var current_year = ''
+//    var post_url = '/history_export_teacher/?current_year='+current_year;
     location.replace(post_url);
 }
 function get_analysis_report_1(){
@@ -435,11 +436,15 @@ function get_analysis_report_2(){
     var post_url = '/arrange_export_analysis_2/';
     location.replace(post_url);
 }
-
+function get_analysis_report_3(){
+    var current_year = ''
+    var post_url = '/history_export_teacher/?current_year='+current_year;
+    location.replace(post_url);
+}
 function change_assign_teacher(){
     allow_teacher = document.getElementById('e_8').value;
-    if ( $('#e_10').DataTable().rows().data().length != Number(allow_teacher) ){
-        alert('替换教师数目不对!')
+    if ( $('#e_10').DataTable().rows().data().length < Number(allow_teacher) ){
+        alert('少于最低上课教师数!')
         return
     }
     notes = document.getElementById('e_11').value;
@@ -491,6 +496,7 @@ function search_course_by_id(){
         success: function(result){
             if (result['status'] == 'Success'){
                 course_content = result['course'];
+                console.log(course_content)
                 for (var i=0; i < course_content.length; i++){
                     if ( i == 8  ||  i == 9 ){
                         continue;
