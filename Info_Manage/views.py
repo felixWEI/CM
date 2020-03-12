@@ -224,7 +224,7 @@ def teacher_approve_teacher_adjust(request):
             course_hour = (search_result[0].course_hour * int(search_result[0].course_parallel)) / (
                 len(final_teacher_list) if final_teacher_list else 1)
             course_degree = (search_result[0].course_degree * int(search_result[0].course_parallel)) / (
-                len(final_teacher_list if final_teacher_list else 1))
+                len(final_teacher_list) if final_teacher_list else 1)
 
             semester = search_result[0].semester
             for eachTeacher in final_teacher_list:
