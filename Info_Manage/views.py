@@ -475,7 +475,7 @@ def get_class_name(class_name_list):
 
 
 def get_excellent_course(excellent_course):
-    if excellent_course not in ['精品课程','校级精品课程','市级精品课程']:
+    if excellent_course not in ['校级精品课程','上海市精品课程','国家级精品开放课程']:
         return ''
     else:
         return excellent_course
@@ -826,21 +826,23 @@ def save_teacher_to_course_info(course_id, user_name, user=''):
 
 
 def remove_teacher_from_course_info(course_id, user_name, user=''):
-    search_result = CourseInfo.objects.all().filter(course_id=course_id)
+    course_id_current = course_id.split('/')[0]
+    search_result = CourseInfo.objects.all().filter(course_id=course_id_current)
     status = 'Success'
     if search_result:
         teacher_list = search_result[0].teacher_ordered.split(',')
         if len(teacher_list) == 0:
             status = '你并未申报此课程, 取消失败'
+            return status
         else:
             if user_name in teacher_list:
                 teacher_list.remove(user_name)
             else:
                 status = '你并未申报此课程, 取消失败'
             teacher_str = ','.join(teacher_list)
-        CourseInfo.objects.filter(course_id=course_id).update(teacher_ordered=teacher_str, suit_teacher=teacher_str)
+        CourseInfo.objects.filter(course_id=course_id_current).update(teacher_ordered=teacher_str, suit_teacher=teacher_str)
         module_log_update.data_operate_log(user,
-                                           '[CourseInfo]update: course_id {} teacher_ordered {} suit_teacher {}'.format(course_id, teacher_str, teacher_str))
+                                           '[CourseInfo]update: course_id {} teacher_ordered {} suit_teacher {}'.format(course_id_current, teacher_str, teacher_str))
         if search_result[0].course_relate:
             course_relate_list = search_result[0].course_relate.split(',')
             for each_relate_course in course_relate_list:
@@ -1071,7 +1073,7 @@ def class_manage(request):
                      '',
                      '',
                      '',
-                     ['精品课程','非精品课程','校级精品课程','市级精品课程'],
+                     ['非精品课程','校级精品课程','上海市精品课程','国家级精品开放课程'],
                      ['激活','非激活']]
     return render(request, 'class_manage.html', {'UserName': request.user.last_name+request.user.first_name+request.user.username, 'class_table': search_result,
                                                  'table_head': table_head, 'table_default': table_default,
@@ -1754,7 +1756,7 @@ def class_table_upload(request):
             lock_state = 0
         course_parallel = int(eachLine[18].value) if eachLine[18].value else 1
         if eachLine[17].value:
-            excellent_course = get_excellent_course(excellent_course)
+            excellent_course = get_excellent_course(eachLine[17].value)
         else:
             excellent_course = ''
 
@@ -2499,6 +2501,9 @@ def balance_for_high_degree(result_all_teachers, result_left_courses, teacher_in
             module_log_update.log_info(module_name, eachCourse.course_id)
             teacher_list = eachCourse.teacher_ordered.split(',')
             all_teachers = int(eachCourse.allow_teachers)
+            # 平行课程的教师数要乘以平行班数
+            if eachCourse.course_parallel > 1:
+                all_teachers = int(eachCourse.allow_teachers) * int(eachCourse.course_parallel)
             teacher_without_high_degree = []
             teacher_with_high_degree = []
             teacher_id_list = []

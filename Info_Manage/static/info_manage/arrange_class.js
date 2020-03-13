@@ -498,6 +498,7 @@ function search_course_by_id(){
             if (result['status'] == 'Success'){
                 course_content = result['course'];
                 console.log(course_content)
+                //9原授课教师 8微调
                 for (var i=0; i < course_content.length; i++){
                     if ( i == 8  ||  i == 9 ){
                         continue;
@@ -509,7 +510,7 @@ function search_course_by_id(){
                     "searching": false,
                     "ordering": false,
                     "destroy": true,
-                    "data": course_content[course_content.length-2],
+                    "data": course_content[9],
                     "column":[
                         {title: '工号'},
                         {title: '姓名'}
@@ -520,7 +521,7 @@ function search_course_by_id(){
                     "searching": false,
                     "ordering": false,
                     "destroy": true,
-                    "data": course_content[course_content.length-3],
+                    "data": course_content[8],
                     "column":[
                         {title: '工号'},
                         {title: '姓名'}
