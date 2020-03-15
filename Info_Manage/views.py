@@ -2394,7 +2394,7 @@ def high_level_factor_involve(result_list, result_all_teacher, key_value_1, key_
         teacher_final_pick_list = []
         for each_year in search_course_history:
             year = each_year.year
-            teacher_final_pick = each_year.teacher_final_pick.split(',')
+            teacher_final_pick = each_year.teacher_final_pick.split(',') if each_year.teacher_final_pick else []
             teacher_id_list = []
             for each_teacher in teacher_final_pick:
                 search_result = TeacherInfo.objects.filter(teacher_name=each_teacher)
@@ -2403,7 +2403,7 @@ def high_level_factor_involve(result_list, result_all_teacher, key_value_1, key_
             teacher_final_pick_list.append([year.split('-')[0], teacher_id_list])
         tmp = sorted(teacher_final_pick_list, key=lambda x: x[0], reverse=True)
         for each_teacher in teacher_candidate_list1:
-            teachered = True
+            teachered = False
             for each_year in tmp:
                 if each_teacher not in each_year[1]:
                     teachered = False
