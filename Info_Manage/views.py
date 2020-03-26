@@ -3199,6 +3199,27 @@ def arrange_step_5(request):
     result = json.dumps({'status': status})
     return HttpResponse(result)
 
+
+@csrf_exempt
+def arrange_step_restart(request):
+    user_type = request.user.nickname
+    user = request.user.last_name + request.user.first_name + request.user.username
+    operation_status = request.POST['status']
+    status = '清楚表信息失败'
+    if user_type == 'leader':
+        if operation_status == 'clear':
+            # CurrentStepInfo.objects.all().delete()
+            # module_log_update.data_operate_log(user, '[CurrentStepInfo] delete all')
+            # CourseInfo.objects.all().delete()
+            # module_log_update.data_operate_log(user, '[CourseInfo] delete all')
+            CourseAdjustInfo.objects.all().delete()
+            module_log_update.data_operate_log(user, '[CourseAdjustInfo] delete all')
+            status = '清楚表信息成功'
+
+    result = json.dumps({'status': status})
+    return HttpResponse(result)
+
+
 @csrf_exempt
 def history_search_by_year(request):
     year = request.POST['year']

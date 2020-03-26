@@ -575,3 +575,20 @@ function unlock_other_step(){
     });
 
 }
+
+function clear_current_table(){
+    var status = 'clear';
+    $.ajax({
+        type: 'POST',
+        url: '/arrange_step_restart/',
+        data: {"status": status},
+        dataType: "json",
+        success: function(result){
+            alert(result['status'])
+            location.reload();
+        },
+        error: function (){
+
+        }
+    });
+}

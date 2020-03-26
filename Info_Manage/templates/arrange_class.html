@@ -524,6 +524,13 @@
               <button class="btn btn-primary btn-lg btn-block" type="button" onclick="unlock_other_step()">重新解锁</button>
             </div>
           </div>
+          {% if step_info.15 == 'lock done' and request.user.is_staff %}
+          <div class="col-md-12 well text-center">
+            <div class="col-md-12">
+                <button class="btn btn-primary btn-lg btn-block" type="button" onclick="clear_current_table()">清楚当前排课信息</button>
+            </div>
+          </div>
+          {% endif %}
         </div>
       </div>
     </form>
