@@ -246,6 +246,7 @@ $(document).ready(function () {
 
     $('#lock_other_step').click( function(){
         var status = 'lock done';
+        document.getElementById("lock_other_step").setAttribute('disabled', 'disabled')
         $.ajax({
             type: 'POST',
             url: '/arrange_step_5/',
@@ -257,6 +258,7 @@ $(document).ready(function () {
                     location.reload();
                 }else{
                     alert(result['status'])
+                    location.reload();
                 }
             },
             error: function (){
